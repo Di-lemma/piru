@@ -15,6 +15,12 @@
             "value" : "%@ %@"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ %@"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -38,6 +44,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ en %@"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ en %@"
@@ -71,6 +83,12 @@
             "value" : "%@ al %lld por ciento"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ al %lld por ciento"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -99,6 +117,12 @@
             "value" : "%@ en %@ al %lld por ciento"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ en %@ al %lld por ciento"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -121,6 +145,12 @@
             "value" : "%lld"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -138,6 +168,12 @@
     "%lld bpm" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld bpm"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lld bpm"
@@ -172,6 +208,12 @@
             "value" : "%lld dosis%@"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld dosis%@"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -195,6 +237,12 @@
             "value" : "%lld registros"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld registros"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -212,6 +260,12 @@
     "%lldh" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lldh"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lldh"
@@ -245,6 +299,12 @@
             "value" : "%lldh %lldm"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lldh %lldm"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -262,6 +322,12 @@
     "%lldm" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lldm"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lldm"
@@ -289,6 +355,12 @@
             "value" : "^[%lld registro](inflect: true)"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "^[%lld registro](inflect: true)"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -306,6 +378,12 @@
     "+%lld more" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "+%lld más"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "+%lld más"
@@ -333,6 +411,12 @@
             "value" : "Un cielo nocturno, cinco palos, fuegos artificiales"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un cielo nocturno, cinco palos, fuegos artificiales"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -350,6 +434,12 @@
     "A sky that follows the day" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un cielo que sigue el día"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Un cielo que sigue el día"
@@ -377,6 +467,12 @@
             "value" : "Como siempre"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Como siempre"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -394,6 +490,12 @@
     "Afterglow" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Resplandor"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Resplandor"
@@ -421,6 +523,12 @@
             "value" : "Todas tomadas"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Todas tomadas"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -438,6 +546,12 @@
     "and %lld more" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "y %lld más"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "y %lld más"
@@ -465,6 +579,12 @@
             "value" : "Cualquier hora"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cualquier hora"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -482,6 +602,12 @@
     "Aurora" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aurora"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Aurora"
@@ -509,6 +635,12 @@
             "value" : "Cerveza"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cerveza"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -526,6 +658,12 @@
     "Biweekly" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cada dos semanas"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Cada dos semanas"
@@ -553,6 +691,12 @@
             "value" : "Negro, papel y cian de señal, del índice de efectos"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Negro, papel y cian de señal, del índice de efectos"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -570,6 +714,12 @@
     "Blood pressure" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Presión arterial"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Presión arterial"
@@ -597,6 +747,12 @@
             "value" : "Bucal"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bucal"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -619,6 +775,12 @@
             "value" : "Por masa"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Por masa"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -636,6 +798,12 @@
     "By Volume" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Por volumen"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Por volumen"
@@ -664,6 +832,12 @@
             "value" : "Combinar registros repetidos"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Combinar registros repetidos"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -681,6 +855,12 @@
     "Come-up" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Subida"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Subida"
@@ -708,6 +888,12 @@
             "value" : "Subiendo"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Subiendo"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -725,6 +911,12 @@
     "Concentration" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Concentración"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Concentración"
@@ -752,6 +944,12 @@
             "value" : "Gris azulado frío, sereno"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gris azulado frío, sereno"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -771,7 +969,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Cuenta regresiva hasta tu próximo medicamento programado."
+            "value" : "Tiempo restante hasta tu próximo medicamento programado."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tiempo restante hasta tu próximo medicamento programado."
           }
         },
         "zh-Hans" : {
@@ -791,6 +995,12 @@
     "Current Session" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sesión actual"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sesión actual"
@@ -818,6 +1028,12 @@
             "value" : "Días personalizados"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Días personalizados"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -837,7 +1053,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Diario"
+            "value" : "A diario"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A diario"
           }
         },
         "zh-Hans" : {
@@ -857,6 +1079,12 @@
     "Dark Mode" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modo oscuro"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Modo oscuro"
@@ -884,6 +1112,12 @@
             "value" : "Noche púrpura profunda, una luna dormida"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Noche púrpura profunda, una luna dormida"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -901,6 +1135,12 @@
     "Deep water, bioluminescence, jellyfish" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aguas profundas, bioluminiscencia, medusas"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Aguas profundas, bioluminiscencia, medusas"
@@ -928,6 +1168,12 @@
             "value" : "dose.wiki"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "dose.wiki"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -945,6 +1191,12 @@
     "Due" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pendiente"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Pendiente"
@@ -972,6 +1224,12 @@
             "value" : "Pendiente · %@"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pendiente · %@"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -989,6 +1247,12 @@
     "Due now" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pendiente ahora"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Pendiente ahora"
@@ -1016,6 +1280,12 @@
             "value" : "los efectos terminan hacia %@"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "los efectos terminan hacia %@"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1038,6 +1308,12 @@
             "value" : "ely.pink"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ely.pink"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1055,6 +1331,12 @@
     "Engraved gold, a plum night, a turning wheel" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oro grabado, una noche ciruela, una rueda que gira"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Oro grabado, una noche ciruela, una rueda que gira"
@@ -1083,6 +1365,12 @@
             "value" : "Registros"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Registros"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1100,6 +1388,12 @@
     "Every 2 days" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cada 2 días"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Cada 2 días"
@@ -1127,6 +1421,12 @@
             "value" : "Cada 2 semanas"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cada 2 semanas"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1146,7 +1446,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Días alternos"
+            "value" : "Un día sí y otro no"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un día sí y otro no"
           }
         },
         "zh-Hans" : {
@@ -1166,6 +1472,12 @@
     "Fireflies over a dark meadow" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Luciérnagas sobre un prado oscuro"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Luciérnagas sobre un prado oscuro"
@@ -1193,6 +1505,12 @@
             "value" : "Seguir el sistema"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seguir el sistema"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1210,6 +1528,12 @@
     "Graphite" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Grafito"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Grafito"
@@ -1237,6 +1561,12 @@
             "value" : "Hanabi"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hanabi"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1254,6 +1584,12 @@
     "Heart rate" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Frecuencia cardíaca"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Frecuencia cardíaca"
@@ -1281,6 +1617,12 @@
             "value" : "alta"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "alta"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1298,6 +1640,12 @@
     "Hebi Arcade" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hebi Arcade"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Hebi Arcade"
@@ -1325,6 +1673,12 @@
             "value" : "Confianza alta"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Confianza alta"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1342,6 +1696,12 @@
     "Inhalation" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inhalación"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Inhalación"
@@ -1369,6 +1729,12 @@
             "value" : "Insuflación"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Insuflación"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1386,6 +1752,12 @@
     "Intramuscular" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Intramuscular"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Intramuscular"
@@ -1413,6 +1785,12 @@
             "value" : "Intravenosa"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Intravenosa"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1430,6 +1808,12 @@
     "Inventory" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inventario"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Inventario"
@@ -1457,6 +1841,12 @@
             "value" : "Medusa"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Medusa"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1474,6 +1864,12 @@
     "Kumo" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kumo"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Kumo"
@@ -1501,6 +1897,12 @@
             "value" : "Último registro"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Último registro"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1518,6 +1920,12 @@
     "Less" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Menos"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Menos"
@@ -1545,6 +1953,12 @@
             "value" : "Menos de lo habitual"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Menos de lo habitual"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1562,6 +1976,12 @@
     "Light Mode" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modo claro"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Modo claro"
@@ -1589,6 +2009,12 @@
             "value" : "Lino"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lino"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1606,6 +2032,12 @@
     "Logs one dose of a scheduled med." : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Registra una dosis de un medicamento programado."
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Registra una dosis de un medicamento programado."
@@ -1633,6 +2065,12 @@
             "value" : "Registra los suplementos que te quedan hoy."
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Registra los suplementos que te quedan hoy."
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1650,6 +2088,12 @@
     "Low confidence" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Confianza baja"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Confianza baja"
@@ -1677,6 +2121,12 @@
             "value" : "Identidad del medicamento"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Identidad del medicamento"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1694,6 +2144,12 @@
     "Medium confidence" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Confianza media"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Confianza media"
@@ -1721,6 +2177,12 @@
             "value" : "Medicamentos"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Medicamentos"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1738,6 +2200,12 @@
     "Monthly" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mensual"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mensual"
@@ -1765,6 +2233,12 @@
             "value" : "Más"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Más"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1782,6 +2256,12 @@
     "More than usual" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Más de lo habitual"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Más de lo habitual"
@@ -1809,6 +2289,12 @@
             "value" : "Ciudad de neón en un CRT"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ciudad de neón en un CRT"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1826,6 +2312,12 @@
     "Neutral grays, nothing moving" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Grises neutros, nada en movimiento"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Grises neutros, nada en movimiento"
@@ -1853,6 +2345,12 @@
             "value" : "Próxima dosis"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Próxima dosis"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1870,6 +2368,12 @@
     "Night and pink, stickers and pixels" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Noche y rosa, stickers y píxeles"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Noche y rosa, stickers y píxeles"
@@ -1898,6 +2402,12 @@
             "value" : "No hay registros activos"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No hay registros activos"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1915,6 +2425,12 @@
     "No active session" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No hay sesión activa"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "No hay sesión activa"
@@ -1942,6 +2458,12 @@
             "value" : "Aún no hay registros"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aún no hay registros"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1959,6 +2481,12 @@
     "No meds today" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sin medicamentos hoy"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sin medicamentos hoy"
@@ -1986,6 +2514,12 @@
             "value" : "Sin registros recientes"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sin registros recientes"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2003,6 +2537,12 @@
     "Note" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nota"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nota"
@@ -2030,6 +2570,12 @@
             "value" : "Nada activo ahora"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nada activo ahora"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2047,6 +2593,12 @@
     "Nothing tracked" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nada en seguimiento"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nada en seguimiento"
@@ -2074,6 +2626,12 @@
             "value" : "Bajada"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bajada"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2091,6 +2649,12 @@
     "Onset" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inicio"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Inicio"
@@ -2118,6 +2682,12 @@
             "value" : "Oral"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oral"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2135,6 +2705,12 @@
     "Other" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Otro"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Otro"
@@ -2162,6 +2738,12 @@
             "value" : "Agotado"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Agotado"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2184,6 +2766,12 @@
             "value" : "Jardín de papel"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jardín de papel"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2201,6 +2789,12 @@
     "Peak" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pico"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Pico"
@@ -2234,6 +2828,12 @@
             "value" : "pico de %@ a %@"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "pico de %@ a %@"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2251,6 +2851,12 @@
     "Periwinkle, snow and frost" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lavanda, nieve y escarcha"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Lavanda, nieve y escarcha"
@@ -2278,6 +2884,12 @@
             "value" : "Pinta"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pinta"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2295,6 +2907,12 @@
     "Piru" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Piru"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Piru"
@@ -2322,6 +2940,12 @@
             "value" : "Ciruela y fucsia, de la enciclopedia abierta"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ciruela y fucsia, de la enciclopedia abierta"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2342,7 +2966,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Añadir %lld registros"
+            "value" : "Agregar %lld registros"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Agregar %lld registros"
           }
         },
         "zh-Hans" : {
@@ -2362,6 +2992,12 @@
     "Rectal" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rectal"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Rectal"
@@ -2389,6 +3025,12 @@
             "value" : "Consulta cuánto te queda de lo que controlas."
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Consulta cuánto te queda de lo que controlas."
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2406,6 +3048,12 @@
     "See the entries in your current session." : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Consulta los registros de tu sesión actual."
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Consulta los registros de tu sesión actual."
@@ -2433,6 +3081,12 @@
             "value" : "Consulta el horario de medicación de hoy y registra una dosis desde la pantalla de inicio."
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Consulta el horario de medicación de hoy y registra una dosis desde la pantalla de inicio."
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2450,6 +3104,12 @@
     "See your most recent entry and when it was recorded." : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Consulta tu registro más reciente y cuándo se registró."
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Consulta tu registro más reciente y cuándo se registró."
@@ -2477,6 +3137,12 @@
             "value" : "Selenia"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Selenia"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2494,6 +3160,12 @@
     "Session" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sesión"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sesión"
@@ -2521,6 +3193,12 @@
             "value" : "Shot"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Shot"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2538,6 +3216,12 @@
     "Slate" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pizarra"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Pizarra"
@@ -2562,7 +3246,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Rosa suave, rosa intenso, cristal líquido"
+            "value" : "Rosa suave, rosa intenso, Liquid Glass"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rosa suave, rosa intenso, Liquid Glass"
           }
         },
         "zh-Hans" : {
@@ -2582,6 +3272,12 @@
     "Specific days" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Días específicos"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Días específicos"
@@ -2609,6 +3305,12 @@
             "value" : "Campo de estrellas"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Campo de estrellas"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2626,6 +3328,12 @@
     "Steel blue and gold under a thousand stars" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Azul acero y oro bajo mil estrellas"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Azul acero y oro bajo mil estrellas"
@@ -2653,6 +3361,12 @@
             "value" : "Concentración"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Concentración"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2670,6 +3384,12 @@
     "Subcutaneous" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Subcutánea"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Subcutánea"
@@ -2697,6 +3417,12 @@
             "value" : "Sublingual"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sublingual"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2714,6 +3440,12 @@
     "substance.wiki" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "substance.wiki"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "substance.wiki"
@@ -2741,6 +3473,12 @@
             "value" : "Suplementos"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Suplementos"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2758,6 +3496,12 @@
     "Take %@" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tomar %@"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Tomar %@"
@@ -2785,6 +3529,12 @@
             "value" : "Tomar todos los suplementos"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tomar todos los suplementos"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2802,6 +3552,12 @@
     "Take Med" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tomar medicamento"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Tomar medicamento"
@@ -2829,6 +3585,12 @@
             "value" : "Tomar suplementos"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tomar suplementos"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2846,6 +3608,12 @@
     "That's everything today." : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eso es todo por hoy."
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Eso es todo por hoy."
@@ -2873,6 +3641,12 @@
             "value" : "Esta curva alcanza el rango de dosis alta"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esta curva alcanza el rango de dosis alta"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2890,6 +3664,12 @@
     "Timeline" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Línea de tiempo"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Línea de tiempo"
@@ -2918,6 +3698,12 @@
             "value" : "Hoy"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hoy"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2935,6 +3721,12 @@
     "Today's Meds" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Medicamentos de hoy"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Medicamentos de hoy"
@@ -2962,6 +3754,12 @@
             "value" : "Transdérmica"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Transdérmica"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2979,6 +3777,12 @@
     "Tsuki" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tsuki"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Tsuki"
@@ -3006,6 +3810,12 @@
             "value" : "Sin verificar"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sin verificar"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3023,6 +3833,12 @@
     "Warm paper and charcoal, quiet" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Papel cálido y carboncillo, en calma"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Papel cálido y carboncillo, en calma"
@@ -3050,6 +3866,12 @@
             "value" : "Washi, arena rastrillada, sakura"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Washi, arena rastrillada, sakura"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3067,6 +3889,12 @@
     "Wearing off" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Disipándose"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Disipándose"
@@ -3094,6 +3922,12 @@
             "value" : "Semanal"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Semanal"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3116,6 +3950,12 @@
             "value" : "Vino"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vino"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3133,6 +3973,12 @@
     "Yuki" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yuki"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Yuki"
