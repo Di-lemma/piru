@@ -499,9 +499,10 @@ T = {
         "镌刻的金色、梅紫夜空、缓缓旋转的星盘",
         "鐫刻的金色、梅紫夜空、緩緩旋轉的星盤",
     ),
-    # The vanity skins' names stay as they are in every language.
-    "Gatsby": ("Gatsby", "Gatsby"),
-    "Irie": ("Irie", "Irie"),
+    # Named for what they evoke in Chinese rather than transliterated:
+    # 纸醉金迷 is the idiom for lavish gilded decadence, 雷鬼 is reggae.
+    "Gatsby": ("纸醉金迷", "紙醉金迷"),
+    "Irie": ("雷鬼", "雷鬼"),
     "Black lacquer, gold leaf, a city after dark": (
         "黑漆、金箔、入夜的城市",
         "黑漆、金箔、入夜的城市",

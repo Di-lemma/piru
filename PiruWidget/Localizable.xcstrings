@@ -546,7 +546,26 @@
       }
     },
     "Black lacquer, gold leaf, a city after dark" : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Laca negra, pan de oro, una ciudad de noche"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "黑漆、金箔、入夜的城市"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "黑漆、金箔、入夜的城市"
+          }
+        }
+      }
     },
     "Black, paper and signal cyan, from the effects index" : {
       "localizations" : {
@@ -1243,13 +1262,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Gatsby"
+            "value" : "纸醉金迷"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Gatsby"
+            "value" : "紙醉金迷"
           }
         }
       }
@@ -1507,13 +1526,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Irie"
+            "value" : "雷鬼"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Irie"
+            "value" : "雷鬼"
           }
         }
       }
