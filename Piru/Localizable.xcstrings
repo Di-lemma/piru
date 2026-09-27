@@ -1178,13 +1178,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ %@ de %@ restantes."
+            "value" : "Te quedan %@ %@ de %@."
           }
         },
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ %@ de %@ restantes."
+            "value" : "Te quedan %@ %@ de %@."
           }
         },
         "zh-Hans" : {
@@ -9618,13 +9618,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Una lectura rápida de lo potente que es la sustancia en ese objetivo — tres puntos es fuerte, uno es débil. La tarjeta Mecanismo usa la misma escala."
+            "value" : "Una lectura rápida de lo potente que es la sustancia en ese sitio de acción — tres puntos es fuerte, uno es débil. La tarjeta Mecanismo usa la misma escala."
           }
         },
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Una lectura rápida de lo potente que es la sustancia en ese objetivo — tres puntos es fuerte, uno es débil. La tarjeta Mecanismo usa la misma escala."
+            "value" : "Una lectura rápida de lo potente que es la sustancia en ese sitio de acción — tres puntos es fuerte, uno es débil. La tarjeta Mecanismo usa la misma escala."
           }
         },
         "zh-Hans" : {
@@ -9786,13 +9786,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Un recordatorio para beber un poco de agua."
+            "value" : "Recuerda beber agua."
           }
         },
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Un recordatorio para beber un poco de agua."
+            "value" : "Recuerda beber agua."
           }
         },
         "zh-Hans" : {
@@ -9814,13 +9814,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Un recordatorio para beber un poco de agua. Los estimulantes pueden enmascarar la sed."
+            "value" : "Recuerda beber agua. Los estimulantes pueden esconder la sed."
           }
         },
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Un recordatorio para beber un poco de agua. Los estimulantes pueden enmascarar la sed."
+            "value" : "Recuerda beber agua. Los estimulantes pueden esconder la sed."
           }
         },
         "zh-Hans" : {
@@ -9842,13 +9842,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Un recordatorio para tomar un poco de agua si puedes."
+            "value" : "Recuerda beber agua cuando puedas."
           }
         },
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Un recordatorio para tomar un poco de agua si puedes."
+            "value" : "Recuerda beber agua cuando puedas."
           }
         },
         "zh-Hans" : {
@@ -9870,13 +9870,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Un recordatorio para beber a sorbos y preferir electrolitos. Con esta clase, más agua no es más seguro."
+            "value" : "Recuerda beber a sorbos, mejor con electrolitos. Con esta clase, más agua no es más seguro."
           }
         },
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Un recordatorio para beber a sorbos y preferir electrolitos. Con esta clase, más agua no es más seguro."
+            "value" : "Recuerda beber a sorbos, mejor con electrolitos. Con esta clase, más agua no es más seguro."
           }
         },
         "zh-Hans" : {
@@ -25963,13 +25963,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Revisado"
+            "value" : "Recopilado"
           }
         },
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Revisado"
+            "value" : "Recopilado"
           }
         },
         "zh-Hans" : {
@@ -25991,13 +25991,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "entrada revisada a mano"
+            "value" : "entrada recopilada a mano"
           }
         },
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "entrada revisada a mano"
+            "value" : "entrada recopilada a mano"
           }
         },
         "zh-Hans" : {
@@ -34528,13 +34528,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Inicio estimado según datos de referencia. ¿Cómo te sientes?"
+            "value" : "Por lo general, a esta hora empieza a hacer efecto. ¿Cómo te sientes?"
           }
         },
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Inicio estimado según datos de referencia. ¿Cómo te sientes?"
+            "value" : "Por lo general, a esta hora empieza a hacer efecto. ¿Cómo te sientes?"
           }
         },
         "zh-Hans" : {
@@ -34584,13 +34584,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ventana de pico estimada según datos de referencia. ¿Cómo te sientes?"
+            "value" : "Por lo general, más o menos ahora llega al pico. ¿Cómo te sientes?"
           }
         },
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ventana de pico estimada según datos de referencia. ¿Cómo te sientes?"
+            "value" : "Por lo general, más o menos ahora llega al pico. ¿Cómo te sientes?"
           }
         },
         "zh-Hans" : {
@@ -40065,13 +40065,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aviso — %@%@ %@ hoy"
+            "value" : "Ojo — %@%@ %@ hoy"
           }
         },
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aviso — %@%@ %@ hoy"
+            "value" : "Ojo — %@%@ %@ hoy"
           }
         },
         "zh-Hans" : {
@@ -41612,13 +41612,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Cómo actúa el fármaco en el cuerpo — a qué receptores y transportadores se dirige, y qué hace en cada uno (los activa, los bloquea, etc.). Los puntos muestran con qué fuerza actúa en cada objetivo."
+            "value" : "Cómo actúa el fármaco en el cuerpo — a qué receptores y transportadores se dirige, y qué hace en cada uno (los activa, los bloquea, etc.). Los puntos muestran con qué fuerza actúa en cada uno."
           }
         },
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Cómo actúa el fármaco en el cuerpo — a qué receptores y transportadores se dirige, y qué hace en cada uno (los activa, los bloquea, etc.). Los puntos muestran con qué fuerza actúa en cada objetivo."
+            "value" : "Cómo actúa el fármaco en el cuerpo — a qué receptores y transportadores se dirige, y qué hace en cada uno (los activa, los bloquea, etc.). Los puntos muestran con qué fuerza actúa en cada uno."
           }
         },
         "zh-Hans" : {
@@ -42032,13 +42032,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aviso de hidratación"
+            "value" : "Hora de beber agua"
           }
         },
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aviso de hidratación"
+            "value" : "Hora de beber agua"
           }
         },
         "zh-Hans" : {
@@ -48993,13 +48993,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mide con qué fuerza el fármaco se aferra al objetivo (Ki). Un número menor significa un agarre más fuerte — menos de 100 nM es fuerte, más de 1000 nM es débil."
+            "value" : "Mide con qué fuerza el fármaco se aferra a su sitio de acción (Ki). Un número menor significa un agarre más fuerte — menos de 100 nM es fuerte, más de 1000 nM es débil."
           }
         },
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mide con qué fuerza el fármaco se aferra al objetivo (Ki). Un número menor significa un agarre más fuerte — menos de 100 nM es fuerte, más de 1000 nM es débil."
+            "value" : "Mide con qué fuerza el fármaco se aferra a su sitio de acción (Ki). Un número menor significa un agarre más fuerte — menos de 100 nM es fuerte, más de 1000 nM es débil."
           }
         },
         "zh-Hans" : {
@@ -49021,13 +49021,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mide la dosis necesaria para activar o bloquear realmente el objetivo, no solo adherirse a él. Estos valores son unas 10× mayores que los de unión, así que los puntos usan una escala acorde (menos de 1 µM fuerte, más de 10 µM débil)."
+            "value" : "Mide la dosis necesaria para activar o bloquear realmente su sitio de acción, no solo unirse a él. Estos valores son unas 10× mayores que los de unión, así que los puntos usan una escala acorde (menos de 1 µM fuerte, más de 10 µM débil)."
           }
         },
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mide la dosis necesaria para activar o bloquear realmente el objetivo, no solo adherirse a él. Estos valores son unas 10× mayores que los de unión, así que los puntos usan una escala acorde (menos de 1 µM fuerte, más de 10 µM débil)."
+            "value" : "Mide la dosis necesaria para activar o bloquear realmente su sitio de acción, no solo unirse a él. Estos valores son unas 10× mayores que los de unión, así que los puntos usan una escala acorde (menos de 1 µM fuerte, más de 10 µM débil)."
           }
         },
         "zh-Hans" : {
@@ -50118,13 +50118,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Menores / fuera del objetivo"
+            "value" : "Menores / otros sitios de acción"
           }
         },
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Menores / fuera del objetivo"
+            "value" : "Menores / otros sitios de acción"
           }
         },
         "zh-Hans" : {
@@ -57913,13 +57913,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Efectos fuera del objetivo"
+            "value" : "Efectos fuera de su sitio de acción"
           }
         },
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Efectos fuera del objetivo"
+            "value" : "Efectos fuera de su sitio de acción"
           }
         },
         "zh-Hans" : {
@@ -58337,13 +58337,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Un toque registra cómo va esta dosis — menos de lo habitual, como siempre, o más."
+            "value" : "Con un toque anotas cómo va esta dosis: menos de lo habitual, como siempre o más."
           }
         },
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Un toque registra cómo va esta dosis — menos de lo habitual, como siempre, o más."
+            "value" : "Con un toque anotas cómo va esta dosis: menos de lo habitual, como siempre o más."
           }
         },
         "zh-Hans" : {
@@ -63056,13 +63056,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "receptores objetivo principales"
+            "value" : "principales receptores sobre los que actúa"
           }
         },
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "receptores objetivo principales"
+            "value" : "principales receptores sobre los que actúa"
           }
         },
         "zh-Hans" : {
@@ -63084,13 +63084,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "potencia en el objetivo principal"
+            "value" : "potencia en su sitio de acción principal"
           }
         },
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "potencia en el objetivo principal"
+            "value" : "potencia en su sitio de acción principal"
           }
         },
         "zh-Hans" : {
@@ -63112,13 +63112,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Objetivos principales: "
+            "value" : "Actúa sobre todo en: "
           }
         },
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Objetivos principales: "
+            "value" : "Actúa sobre todo en: "
           }
         },
         "zh-Hans" : {
@@ -65224,13 +65224,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Receptor objetivo"
+            "value" : "Receptor sobre el que actúa"
           }
         },
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Receptor objetivo"
+            "value" : "Receptor sobre el que actúa"
           }
         },
         "zh-Hans" : {
@@ -66065,13 +66065,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "El contenido de referencia se compila a partir de fuentes de terceros, comunitarias y revisadas a mano, y puede estar incompleto, desactualizado o ser erróneo. Cada curva, nivel y estimación es un modelo ilustrativo, no una medición."
+            "value" : "El contenido de referencia se compila a partir de fuentes de terceros, comunitarias y recopiladas a mano, y puede estar incompleto, desactualizado o ser erróneo. Cada curva, nivel y estimación es un modelo ilustrativo, no una medición."
           }
         },
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "El contenido de referencia se compila a partir de fuentes de terceros, comunitarias y revisadas a mano, y puede estar incompleto, desactualizado o ser erróneo. Cada curva, nivel y estimación es un modelo ilustrativo, no una medición."
+            "value" : "El contenido de referencia se compila a partir de fuentes de terceros, comunitarias y recopiladas a mano, y puede estar incompleto, desactualizado o ser erróneo. Cada curva, nivel y estimación es un modelo ilustrativo, no una medición."
           }
         },
         "zh-Hans" : {
@@ -66240,13 +66240,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Inicio de referencia para esta vía: %lld-%lld minutos."
+            "value" : "Por esta vía suele hacer efecto entre %lld y %lld minutos."
           }
         },
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Inicio de referencia para esta vía: %lld-%lld minutos."
+            "value" : "Por esta vía suele hacer efecto entre %lld y %lld minutos."
           }
         },
         "zh-Hans" : {
@@ -66834,13 +66834,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Recuerda hidratarte, comer e intentar dormir un poco. Tu corazón ha estado trabajando duro."
+            "value" : "Recuerda hidratarte, comer e intentar dormir un poco. Tu corazón ha trabajado mucho."
           }
         },
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Recuerda hidratarte, comer e intentar dormir un poco. Tu corazón ha estado trabajando duro."
+            "value" : "Recuerda hidratarte, comer e intentar dormir un poco. Tu corazón ha trabajado mucho."
           }
         },
         "zh-Hans" : {
@@ -77671,13 +77671,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Más fuerte no significa más peligroso — es solo la fuerza con la que la sustancia se agarra a ese objetivo en el laboratorio."
+            "value" : "Más fuerte no significa más peligroso — es solo la fuerza con la que la sustancia se agarra a ese sitio de acción en el laboratorio."
           }
         },
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Más fuerte no significa más peligroso — es solo la fuerza con la que la sustancia se agarra a ese objetivo en el laboratorio."
+            "value" : "Más fuerte no significa más peligroso — es solo la fuerza con la que la sustancia se agarra a ese sitio de acción en el laboratorio."
           }
         },
         "zh-Hans" : {
@@ -79721,13 +79721,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Evidencia por objetivo"
+            "value" : "Evidencia sobre dónde actúa"
           }
         },
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Evidencia por objetivo"
+            "value" : "Evidencia sobre dónde actúa"
           }
         },
         "zh-Hans" : {
@@ -79749,13 +79749,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Objetivos"
+            "value" : "Dónde actúa"
           }
         },
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Objetivos"
+            "value" : "Dónde actúa"
           }
         },
         "zh-Hans" : {
@@ -82251,13 +82251,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "El mecanismo de acción de esta sustancia puede implicar múltiples objetivos farmacológicos o no estar del todo caracterizado. Consulta referencias farmacológicas específicas para información mecanística detallada."
+            "value" : "El mecanismo de acción de esta sustancia puede implicar varios sitios de acción farmacológicos o no estar del todo caracterizado. Consulta referencias farmacológicas específicas para información mecanística detallada."
           }
         },
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "El mecanismo de acción de esta sustancia puede implicar múltiples objetivos farmacológicos o no estar del todo caracterizado. Consulta referencias farmacológicas específicas para información mecanística detallada."
+            "value" : "El mecanismo de acción de esta sustancia puede implicar varios sitios de acción farmacológicos o no estar del todo caracterizado. Consulta referencias farmacológicas específicas para información mecanística detallada."
           }
         },
         "zh-Hans" : {
@@ -83799,13 +83799,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Seguimiento iniciado."
+            "value" : "Empezó el seguimiento."
           }
         },
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Seguimiento iniciado."
+            "value" : "Empezó el seguimiento."
           }
         },
         "zh-Hans" : {
