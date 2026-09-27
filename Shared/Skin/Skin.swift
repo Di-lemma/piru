@@ -1053,6 +1053,12 @@ enum SkinScene: Sendable {
     /// leaves. Still.
     case velvet(SkinVelvet)
 
+    /// A picture a pushed screen or a sheet covers with stained glass: it
+    /// belongs to the tab roots, and copy does not read over it.
+    var veilsDepth: Bool {
+        if case .nocturne = self { true } else { false }
+    }
+
     /// Drawn once and never ticked: the vanity scenes are pictures, not
     /// animations, and cost nothing after the first frame.
     var isStill: Bool {

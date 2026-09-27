@@ -43,6 +43,8 @@ struct SkinBackdrop: View {
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.displayScale) private var displayScale
     @Environment(\.scenePhase) private var scenePhase
+    /// True on a pushed screen or a sheet, false on a tab root.
+    @Environment(\.isPresented) private var isPresented
 
     var body: some View {
         let skin = skin ?? skins.current
@@ -100,6 +102,10 @@ struct SkinBackdrop: View {
                         SkinMotion.shared.release()
                         holdsMotion = false
                     }
+                }
+                // A preview card names its skin and always shows the bare scene.
+                if self.skin == nil, isPresented, decor.scene.veilsDepth {
+                    StainedGlass(tint: skin.background, lead: skin.palette.stroke)
                 }
             }
         }

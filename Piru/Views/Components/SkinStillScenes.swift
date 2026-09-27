@@ -159,3 +159,62 @@ private nonisolated enum VelvetMetrics {
     static let leafletWidth: CGFloat = 0.13
     static let leafletSteps = 18
 }
+
+// MARK: - Stained glass
+
+/// The pane over a picture scene on every screen past a tab root: the picture
+/// is the tab's, and a pushed screen or a sheet reads its copy through glass
+/// instead. A blur, a wash of the ground, and faint leading in the skin's
+/// rule color.
+struct StainedGlass: View {
+    let tint: Color
+    let lead: Color
+
+    var body: some View {
+        ZStack {
+            Rectangle().fill(.regularMaterial)
+            tint.opacity(StainedGlassMetrics.wash)
+            Canvas { context, size in
+                context.stroke(Self.leading(in: size), with: .color(lead.opacity(StainedGlassMetrics.leadOpacity)), lineWidth: 0.75)
+            }
+        }
+        .allowsHitTesting(false)
+        .accessibilityHidden(true)
+    }
+
+    /// Art-deco leading: tall arched panes side by side, each split by a
+    /// transom, the arch closing a fan of rays from the transom's middle.
+    static func leading(in size: CGSize) -> Path {
+        var path = Path()
+        let panes = StainedGlassMetrics.panes
+        let width = size.width / CGFloat(panes)
+        let transom = size.height * StainedGlassMetrics.transom
+        for i in 0 ... panes {
+            let x = CGFloat(i) * width
+            path.move(to: CGPoint(x: x, y: 0))
+            path.addLine(to: CGPoint(x: x, y: size.height))
+        }
+        path.move(to: CGPoint(x: 0, y: transom))
+        path.addLine(to: CGPoint(x: size.width, y: transom))
+        for i in 0 ..< panes {
+            let center = CGPoint(x: (CGFloat(i) + 0.5) * width, y: transom)
+            let radius = width / 2
+            path.addArc(center: center, radius: radius, startAngle: .degrees(180), endAngle: .degrees(360), clockwise: false)
+            for ray in 1 ..< StainedGlassMetrics.rays {
+                let angle = Double.pi + Double.pi * Double(ray) / Double(StainedGlassMetrics.rays)
+                path.move(to: center)
+                path.addLine(to: CGPoint(x: center.x + cos(angle) * radius, y: center.y + sin(angle) * radius))
+            }
+        }
+        return path
+    }
+}
+
+private enum StainedGlassMetrics {
+    static let wash: Double = 0.45
+    static let leadOpacity: Double = 0.18
+    static let panes = 3
+    /// The transom's height, as a share of the screen's.
+    static let transom: CGFloat = 0.3
+    static let rays = 6
+}
