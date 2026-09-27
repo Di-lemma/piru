@@ -104,6 +104,7 @@ enum ExportedSettings {
         .init(key: "usageSection.doseLevels", domain: .standard, kind: .bool),
         .init(key: "usageSection.regularity", domain: .standard, kind: .bool),
         .init(key: "usageSection.routes", domain: .standard, kind: .bool),
+        .init(key: ArcadeCabinet.bestKey, domain: .standard, kind: .int),
     ]
 }
 

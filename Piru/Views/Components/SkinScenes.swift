@@ -320,34 +320,39 @@ nonisolated extension SceneRenderer {
         context.stroke(horizon, with: .color(arcade.border.opacity(0.7)), lineWidth: 1.5)
         bloom(arcade.border, at: CGPoint(x: size.width / 2, y: vp), radius: size.width * 0.5, alpha: dark ? 0.18 : 0.08, in: &context)
         context.blendMode = .normal
-        // The snake: a real game on a 12pt grid in the upper half, one step
-        // every .16 s. It steers toward the food, never reverses, never
-        // crosses its own body, grows when it eats, and when it traps itself
-        // the round ends and a new snake starts. Deterministic from the seed,
-        // so the frame at any time is the same on every device.
-        let cell: CGFloat = 12
-        let cols = Int(size.width / cell), rows = Int(vp * 0.9 / cell)
-        let game = SnakeGame(cols: cols, rows: rows, seed: 0x5AAE)
-        let state = game.state(atStep: Int(time / 0.16) % SnakeGame.tapeLength)
-        let shift = parallax(0.6)
-        for (k, (cx, cy)) in state.body.enumerated() {
-            let rect = CGRect(x: CGFloat(cx) * cell + 1 + shift.width, y: CGFloat(cy) * cell + 1 + shift.height, width: cell - 2, height: cell - 2)
-            let head = k == 0
-            let color = head ? arcade.snake : arcade.snakeBody
-            if dark, k < 12 { bloom(color, at: CGPoint(x: rect.midX, y: rect.midY), radius: head ? 14 : 8, alpha: head ? 0.5 : 0.25, in: &context) }
-            let fade = max(0.35, 0.85 - Double(k) * 0.03)
-            context.fill(Path(roundedRect: rect, cornerRadius: 2), with: .color(color.opacity(head ? 1 : fade)))
-            if head {
-                for ex in [0.3, 0.7] {
-                    context.fill(Path(CGRect(x: rect.minX + rect.width * ex - 1, y: rect.minY + 3, width: 2, height: 2)), with: .color(.black.opacity(0.8)))
+        // While the cabinet is in play it draws the snake, the invaders and
+        // the ship itself; the backdrop keeps only the sky and the floor.
+        if !arcadeInPlay {
+            // The snake: a real game on a 12pt grid in the upper half, one step
+            // every .16 s. It steers toward the food, never reverses, never
+            // crosses its own body, grows when it eats, and when it traps itself
+            // the round ends and a new snake starts. Deterministic from the seed,
+            // so the frame at any time is the same on every device.
+            let cell: CGFloat = 12
+            let cols = Int(size.width / cell), rows = Int(vp * 0.9 / cell)
+            let game = SnakeGame(cols: cols, rows: rows, seed: 0x5AAE)
+            let state = game.state(atStep: Int(time / 0.16) % SnakeGame.tapeLength)
+            let shift = parallax(0.6)
+            for (k, (cx, cy)) in state.body.enumerated() {
+                let rect = CGRect(x: CGFloat(cx) * cell + 1 + shift.width, y: CGFloat(cy) * cell + 1 + shift.height, width: cell - 2, height: cell - 2)
+                let head = k == 0
+                let color = head ? arcade.snake : arcade.snakeBody
+                if dark, k < 12 { bloom(color, at: CGPoint(x: rect.midX, y: rect.midY), radius: head ? 14 : 8, alpha: head ? 0.5 : 0.25, in: &context) }
+                let fade = max(0.35, 0.85 - Double(k) * 0.03)
+                context.fill(Path(roundedRect: rect, cornerRadius: 2), with: .color(color.opacity(head ? 1 : fade)))
+                if head {
+                    for ex in [0.3, 0.7] {
+                        context.fill(Path(CGRect(x: rect.minX + rect.width * ex - 1, y: rect.minY + 3, width: 2, height: 2)), with: .color(.black.opacity(0.8)))
+                    }
                 }
             }
+            let (fx, fy) = state.food
+            let food = CGRect(x: CGFloat(fx) * cell + 2 + shift.width, y: CGFloat(fy) * cell + 2 + shift.height, width: cell - 4, height: cell - 4)
+            let blink = 0.6 + 0.4 * (sin(time * 2 * 6.28) > 0 ? 1 : 0)
+            bloom(arcade.food, at: CGPoint(x: food.midX, y: food.midY), radius: 12, alpha: 0.3 * blink, in: &context)
+            context.fill(Path(roundedRect: food, cornerRadius: 2), with: .color(arcade.food.opacity(blink)))
+            drawInvaders(arcade, in: &context)
         }
-        let (fx, fy) = state.food
-        let food = CGRect(x: CGFloat(fx) * cell + 2 + shift.width, y: CGFloat(fy) * cell + 2 + shift.height, width: cell - 4, height: cell - 4)
-        let blink = 0.6 + 0.4 * (sin(time * 2 * 6.28) > 0 ? 1 : 0)
-        bloom(arcade.food, at: CGPoint(x: food.midX, y: food.midY), radius: 12, alpha: 0.3 * blink, in: &context)
-        context.fill(Path(roundedRect: food, cornerRadius: 2), with: .color(arcade.food.opacity(blink)))
         // Scanlines and a vignette.
         if let scan = textures.scanlines {
             context.fill(Path(CGRect(origin: .zero, size: size)), with: .tiledImage(scan, scale: 1 / 3))

@@ -399,6 +399,8 @@ enum Skin: String, CaseIterable, Identifiable, Sendable {
                     grid: .Skin.Hebi.Arcade.grid, wall: .Skin.Hebi.Arcade.wall, border: .Skin.Hebi.Arcade.border,
                     snake: .Skin.Hebi.Arcade.snake, snakeBody: .Skin.Hebi.Arcade.snakeBody,
                     food: .Skin.Hebi.Arcade.food, star: .Skin.Hebi.Arcade.star,
+                    invader: .Skin.Hebi.Semantic.Success.accent, raider: .Skin.Hebi.Semantic.Danger.accent,
+                    pow: .Skin.Hebi.Semantic.Caution.accent,
                 )),
                 glyphs: [
                     SkinGlyph("▪", accentMark), SkinGlyph("▴", .Skin.Hebi.Arcade.food),
@@ -1182,6 +1184,12 @@ struct SkinArcade: Sendable {
     let snakeBody: Color
     let food: Color
     let star: Color
+    /// The invaders' lead row; the others take `wall` and `border`.
+    let invader: Color
+    /// The red raider formation and every enemy bomb.
+    let raider: Color
+    /// The power-up capsule a cleared raid drops.
+    let pow: Color
 }
 
 struct SkinSky: Sendable {

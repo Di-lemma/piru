@@ -14,6 +14,20 @@ from pathlib import Path
 
 # Translations: English -> (Simplified, Traditional)
 T = {
+    # Hebi Arcade: the cabinet you get by tapping the backdrop's ship
+    "Score": ("得分", "得分"),
+    "Best": ("最高分", "最高分"),
+    "Game over": ("游戏结束", "遊戲結束"),
+    "Leave the game": ("退出游戏", "退出遊戲"),
+    "Drag to fly, double-tap to roll": ("拖动来飞行，双击来翻滚", "拖曳來飛行，點兩下來翻滾"),
+    "Wide!": ("散射！", "散射！"),
+    "Wider!": ("更广！", "更廣！"),
+    "Wingmen!": ("僚机！", "僚機！"),
+    "Shields!": ("护盾！", "護盾！"),
+    "Extra roll!": ("多一次翻滚！", "多一次翻滾！"),
+    "Bomb!": ("炸弹！", "炸彈！"),
+    "Laser!": ("激光！", "雷射！"),
+    "Snake charmed!": ("蛇被驯服了！", "蛇被馴服了！"),
     "Limitations": ("局限性", "局限性"),
     # Settings → substance names in the app language, or English
     "English Substance Names": ("英文物质名称", "英文物質名稱"),
@@ -8080,6 +8094,19 @@ if __name__ == "__main__":
     # catalog yet. List them here so they get inserted; clear once Xcode has
     # picked them up on a real build (after which they're update-only).
     NEW_KEYS: set[str] = {
+        "Score",
+        "Best",
+        "Game over",
+        "Leave the game",
+        "Drag to fly, double-tap to roll",
+        "Wide!",
+        "Wider!",
+        "Wingmen!",
+        "Shields!",
+        "Extra roll!",
+        "Bomb!",
+        "Laser!",
+        "Snake charmed!",
         "Tabs",
         "In the Tab Bar",
         "Add a Tab…",

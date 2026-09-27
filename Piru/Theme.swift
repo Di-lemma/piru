@@ -84,6 +84,7 @@ struct SkinnedRoot<Content: View>: View {
             // nor the onboarding cover.
             .id(skins.chosen)
             .tapTrail()
+            .arcadeCabinet()
             .tint(Theme.accent)
             .fontDesign(skins.current.fontDesign)
             .preferredColorScheme(skins.colorScheme.colorScheme)
