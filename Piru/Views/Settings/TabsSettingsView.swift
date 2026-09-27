@@ -1,15 +1,20 @@
 import SwiftUI
 
-/// Settings ▸ Tabs: which tabs the bar shows and in what order. Any stock tab
-/// can go, and any tool, insight or the Timeline can take a slot of its own.
+/// Settings ▸ Tabs: which tabs the bar shows, in what order, and what they
+/// are called. Any stock tab can go, any tool, insight or the Timeline can
+/// take a slot of its own, and any of them can be renamed.
 struct TabsSettingsView: View {
     @State private var showsPicker = false
+    /// The tab being renamed, and the name being typed.
+    @State private var renaming: TabID?
+    @State private var draft = ""
+    @State private var store = TabLayoutStore.shared
 
     var body: some View {
         List {
             Group {
-                TabBarSection(onAdd: { showsPicker = true })
-                SearchTabSection()
+                TabBarSection(onAdd: { showsPicker = true }, onRename: startRenaming)
+                SearchTabSection(onRename: startRenaming)
             }
             .listRowBackground(CardBackground())
         }
@@ -27,6 +32,23 @@ struct TabsSettingsView: View {
                 }
             }
         }
+        .alert("Rename Tab", isPresented: Binding(get: { renaming != nil }, set: { if !$0 { renaming = nil } })) {
+            TextField("Tab name", text: $draft)
+            Button("Save") {
+                if let renaming { store.rename(renaming, to: draft) }
+            }
+            if let renaming, store.name(for: renaming) != nil {
+                Button("Use Original Name") { store.rename(renaming, to: "") }
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("Leave it empty to use the original name.")
+        }
+    }
+
+    private func startRenaming(_ tab: TabID) {
+        draft = store.name(for: tab) ?? String(localized: tab.title)
+        renaming = tab
     }
 }
 
@@ -36,12 +58,17 @@ private struct TabBarSection: View {
     /// A button, not a `NavigationLink`: in the list's permanent edit mode a
     /// link row takes no taps.
     let onAdd: () -> Void
+    let onRename: (TabID) -> Void
     @State private var store = TabLayoutStore.shared
 
     var body: some View {
         Section {
             ForEach(store.layout.tabs) { tab in
-                TabLabel(tab: tab)
+                HStack(spacing: 10) {
+                    TabLabel(tab: tab)
+                    RenameButton { onRename(tab) }
+                    Spacer(minLength: 0)
+                }
             }
             .onMove { source, destination in
                 store.move(fromOffsets: source, toOffset: destination)
@@ -72,6 +99,7 @@ private struct TabBarSection: View {
 }
 
 private struct SearchTabSection: View {
+    let onRename: (TabID) -> Void
     @State private var store = TabLayoutStore.shared
 
     var body: some View {
@@ -80,7 +108,10 @@ private struct SearchTabSection: View {
                 get: { store.layout.showsSearch },
                 set: { store.setShowsSearch($0) },
             )) {
-                TabLabel(tab: .search)
+                HStack(spacing: 10) {
+                    TabLabel(tab: .search)
+                    RenameButton { onRename(.search) }
+                }
             }
         } footer: {
             Text("Search always sits at the end of the tab bar.")
@@ -153,16 +184,48 @@ private struct PickerSection: View {
     }
 }
 
-/// A tab as the bar labels it.
+/// A tab as the bar labels it, with its own title underneath once renamed,
+/// so a renamed tab never loses what it is.
 private struct TabLabel: View {
     let tab: TabID
+    @State private var store = TabLayoutStore.shared
 
     var body: some View {
         Label {
-            Text(tab.title)
+            VStack(alignment: .leading, spacing: 1) {
+                store.label(for: tab)
+                if store.name(for: tab) != nil {
+                    Text(tab.title)
+                        .font(.caption)
+                        .foregroundStyle(Theme.secondaryLabel)
+                }
+            }
         } icon: {
             Image(systemName: tab.systemImage)
         }
+    }
+}
+
+/// Right beside the tab's name, and meant to be seen: a tinted capsule rather
+/// than a bare icon. Borderless, so it takes taps in the list's edit mode.
+private struct RenameButton: View {
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            // Built by hand rather than a `Label`: inside the Search row's
+            // `Toggle`, a label's icon and title are laid out apart.
+            HStack(spacing: 5) {
+                Image(systemName: "pencil")
+                Text("Rename")
+            }
+            .font(.subheadline.weight(.semibold))
+            .foregroundStyle(Theme.accent)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 5)
+            .background(Theme.accent.opacity(0.15), in: Capsule())
+        }
+        .buttonStyle(.borderless)
     }
 }
 
