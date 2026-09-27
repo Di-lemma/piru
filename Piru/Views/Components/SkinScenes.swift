@@ -317,6 +317,7 @@ nonisolated extension SceneRenderer {
                 sun.fill(Path(CGRect(x: disc.minX, y: vp - r * (0.55 - 0.5 * u), width: disc.width, height: 2 + 5 * u)), with: .color(.black))
             }
         }
+        drawCity(arcade, horizon: vp, in: &context)
         // The floor.
         if dark { context.blendMode = .plusLighter }
         var lines = Path()
@@ -352,6 +353,27 @@ nonisolated extension SceneRenderer {
         }
         let reach = max(size.width, size.height) * 0.72
         context.fill(Path(CGRect(origin: .zero, size: size)), with: .radialGradient(Gradient(colors: [Color.black.opacity(0), Color.black.opacity(dark ? 0.45 : 0.1)]), center: CGPoint(x: size.width / 2, y: size.height / 2), startRadius: reach * 0.5, endRadius: reach))
+    }
+
+    /// Hebi's skyline between the sun and the floor, dimmer than ely.pink's.
+    func drawCity(_ arcade: SkinArcade, horizon: CGFloat, in context: inout GraphicsContext) {
+        let city = HebiCity.laid(width: size.width, height: size.height, horizon: horizon)
+        let shift = parallax(0.08)
+        context.drawLayer { layer in
+            layer.translateBy(x: shift.width, y: 0)
+            layer.fill(city.far, with: .color(arcade.grid))
+            layer.fill(city.farRoofs, with: .color(arcade.wall.opacity(dark ? 0.5 : 0.35)))
+            layer.fill(city.near, with: .color(arcade.grid.mix(with: .black, by: dark ? 0.35 : 0.12)))
+            layer.fill(city.nearRoofs, with: .color(arcade.border.opacity(dark ? 0.5 : 0.35)))
+            // The windows go on and off slowly, one tint per path.
+            var lit = [Path(), Path(), Path(), Path()]
+            for w in city.windows where sin(time * 0.25 + w.phase) > -0.4 {
+                lit[w.tint].addRect(w.rect)
+            }
+            for (tint, path) in zip([arcade.snake, arcade.border, arcade.pow, arcade.star], lit) {
+                layer.fill(path, with: .color(tint.opacity(dark ? 0.4 : 0.3)))
+            }
+        }
     }
 
     // MARK: - Kumo: a living sky
@@ -486,6 +508,70 @@ nonisolated extension SceneRenderer {
 private nonisolated extension Path {
     func offsetBy(dx: CGFloat, dy: CGFloat) -> Path {
         applying(CGAffineTransform(translationX: dx, y: dy))
+    }
+}
+
+// MARK: - Hebi's city
+
+/// A skyline on Hebi's horizon, in front of the sun: two rows of buildings
+/// with a neon edge along each roof and a scatter of lit windows. Laid out
+/// once per size from a seed; each frame only chooses which windows are on.
+/// Sparse on purpose: it stands behind your journal.
+nonisolated struct HebiCity: Sendable {
+    struct Window: Sendable { let rect: CGRect; let tint: Int; let phase: Double }
+
+    let far: Path, near: Path, farRoofs: Path, nearRoofs: Path
+    let windows: [Window]
+
+    private struct Key: Hashable { let w: Int, h: Int, horizon: Int }
+    private static let cache = Mutex<[Key: HebiCity]>([:])
+
+    static func laid(width: CGFloat, height: CGFloat, horizon: CGFloat) -> HebiCity {
+        let key = Key(w: Int(width), h: Int(height), horizon: Int(horizon))
+        if let city = cache.withLock({ $0[key] }) { return city }
+        let city = HebiCity(width: width, height: height, horizon: horizon)
+        cache.withLock { $0[key] = city }
+        return city
+    }
+
+    private init(width: CGFloat, height: CGFloat, horizon: CGFloat) {
+        var rng = SeededRNG(seed: 0xC17E)
+        var paths = [Path(), Path()], roofs = [Path(), Path()]
+        var windows: [Window] = []
+        for row in 0 ..< 2 {
+            let tallest = height * (row == 0 ? 0.2 : 0.12)
+            var x: CGFloat = -10
+            while x < width + 10 {
+                let w = (row == 0 ? 26 : 34) + CGFloat(rng.unit()) * (row == 0 ? 46 : 70)
+                let h = tallest * (0.25 + 0.75 * CGFloat(rng.unit()))
+                // Lower in the middle, so the sun shows through the gap.
+                let fromMiddle = abs(x + w / 2 - width / 2) / (width / 2)
+                let tall = h * (0.45 + 0.55 * min(1, fromMiddle * 1.4))
+                let top = horizon - tall
+                paths[row].addRect(CGRect(x: x, y: top, width: w, height: tall))
+                roofs[row].addRect(CGRect(x: x, y: top, width: w, height: 1.5))
+                if rng.unit() < 0.3 {
+                    roofs[row].addRect(CGRect(x: x + w * 0.45, y: top - 10 - CGFloat(rng.unit()) * 14, width: 1.5, height: 10 + CGFloat(rng.unit()) * 14))
+                }
+                var wy = top + 8
+                while wy < horizon - 6 {
+                    var wx = x + 5
+                    while wx < x + w - 6 {
+                        if rng.unit() < 0.1 {
+                            windows.append(Window(rect: CGRect(x: wx, y: wy, width: 3, height: 4), tint: Int(rng.next() % 4), phase: rng.unit() * 60))
+                        }
+                        wx += 8
+                    }
+                    wy += 9
+                }
+                x += w + CGFloat(rng.unit()) * 6
+            }
+        }
+        far = paths[0]
+        near = paths[1]
+        farRoofs = roofs[0]
+        nearRoofs = roofs[1]
+        self.windows = windows
     }
 }
 
