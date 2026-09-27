@@ -502,17 +502,13 @@ T = {
     # The vanity skins' names stay as they are in every language.
     "Gatsby": ("Gatsby", "Gatsby"),
     "Irie": ("Irie", "Irie"),
-    "Black lacquer, gold leaf, Paris after midnight": (
-        "黑漆、金箔、午夜后的巴黎",
-        "黑漆、金箔、午夜後的巴黎",
+    "Black lacquer, gold leaf, a city after dark": (
+        "黑漆、金箔、入夜的城市",
+        "黑漆、金箔、入夜的城市",
     ),
     "Emerald velvet, gold foil, red, gold and green": (
         "祖母绿丝绒、金箔、红金绿",
         "祖母綠絲絨、金箔、紅金綠",
-    ),
-    "Photo: “orange aventador” by Ben, CC BY-SA 2.0 ↗": (
-        "照片：Ben 拍摄的“orange aventador”，CC BY-SA 2.0 ↗",
-        "照片：Ben 拍攝的「orange aventador」，CC BY-SA 2.0 ↗",
     ),
     "A night sky, five suits, fireworks": ("夜空、五种花色、烟花", "夜空、五種花色、煙火"),
     "Kumo": ("Kumo", "Kumo"),
@@ -8129,9 +8125,8 @@ if __name__ == "__main__":
         "Engraved gold, a plum night, a turning wheel",
         "Gatsby",
         "Irie",
-        "Black lacquer, gold leaf, Paris after midnight",
+        "Black lacquer, gold leaf, a city after dark",
         "Emerald velvet, gold foil, red, gold and green",
-        "Photo: “orange aventador” by Ben, CC BY-SA 2.0 ↗",
         "Yuki",
         "Periwinkle, snow and frost",
         "Hebi Arcade",

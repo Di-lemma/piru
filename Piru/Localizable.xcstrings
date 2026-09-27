@@ -14722,7 +14722,30 @@
         }
       }
     },
+    "Black lacquer, gold leaf, a city after dark" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Laca negra, pan de oro, una ciudad de noche"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "黑漆、金箔、入夜的城市"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "黑漆、金箔、入夜的城市"
+          }
+        }
+      }
+    },
     "Black lacquer, gold leaf, Paris after midnight" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -48557,6 +48580,7 @@
       }
     },
     "Photo: “orange aventador” by Ben, CC BY-SA 2.0 ↗" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {

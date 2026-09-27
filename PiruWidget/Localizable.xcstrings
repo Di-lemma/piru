@@ -545,7 +545,7 @@
         }
       }
     },
-    "Black lacquer, gold leaf, Paris after midnight" : {
+    "Black lacquer, gold leaf, a city after dark" : {
 
     },
     "Black, paper and signal cyan, from the effects index" : {
@@ -1056,7 +1056,26 @@
       }
     },
     "Emerald velvet, gold foil, red, gold and green" : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Terciopelo esmeralda, lámina de oro, rojo, oro y verde"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "祖母绿丝绒、金箔、红金绿"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "祖母綠絲絨、金箔、紅金綠"
+          }
+        }
+      }
     },
     "Engraved gold, a plum night, a turning wheel" : {
       "localizations" : {
@@ -1214,7 +1233,26 @@
       }
     },
     "Gatsby" : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gatsby"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gatsby"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gatsby"
+          }
+        }
+      }
     },
     "Graphite" : {
       "localizations" : {
@@ -1459,7 +1497,26 @@
       }
     },
     "Irie" : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Irie"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Irie"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Irie"
+          }
+        }
+      }
     },
     "Jellyfish" : {
       "localizations" : {

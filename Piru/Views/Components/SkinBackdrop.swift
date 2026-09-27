@@ -938,7 +938,11 @@ private struct SkinHeroTitle: ViewModifier {
     @State private var skins = SkinStore.shared
 
     func body(content: Content) -> some View {
-        if let outline = skins.current.titleOutline {
+        if let foil = skins.current.titleFoil {
+            content
+                .foregroundStyle(LinearGradient(stops: foil.titleStops, startPoint: .top, endPoint: .bottom))
+                .shadow(color: foil.ink.opacity(0.85), radius: 1, x: 0, y: 2)
+        } else if let outline = skins.current.titleOutline {
             let s = outline.stroke ?? .clear
             content
                 .foregroundStyle(outline.fill.map(AnyShapeStyle.init) ?? AnyShapeStyle(.primary))

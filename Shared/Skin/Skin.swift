@@ -84,8 +84,8 @@ enum Skin: String, CaseIterable, Identifiable, Sendable {
     /// Ecliptica). Engraved gold on a plum night, its four elements as the
     /// semantic pairs, and its chart wheel turning behind everything.
     case selenia
-    /// Gatsby — black lacquer and champagne gold, Limelight titles, gilded
-    /// buttons, and a night photograph of Paris behind everything.
+    /// Gatsby — black lacquer and champagne gold, gold-foil Limelight titles,
+    /// gilded buttons, and a supercar under a skyline behind everything.
     case gatsby
     /// Irie — emerald velvet, rasta-gold foil, the red / gold / green
     /// tricolor as a pinstripe, and embossed fan leaves.
@@ -172,7 +172,7 @@ enum Skin: String, CaseIterable, Identifiable, Sendable {
         case .substanceWiki: "Black, paper and signal cyan, from the effects index"
         case .hanabi: "A night sky, five suits, fireworks"
         case .selenia: "Engraved gold, a plum night, a turning wheel"
-        case .gatsby: "Black lacquer, gold leaf, Paris after midnight"
+        case .gatsby: "Black lacquer, gold leaf, a city after dark"
         case .irie: "Emerald velvet, gold foil, red, gold and green"
         }
     }
@@ -470,9 +470,9 @@ enum Skin: String, CaseIterable, Identifiable, Sendable {
         case .gatsby:
             SkinDecorations(
                 scene: .nocturne(SkinNocturne(
-                    photo: .Skin.Gatsby.night,
+                    night: .Skin.Gatsby.night,
+                    dusk: .Skin.Gatsby.dusk,
                     ground: palette.background,
-                    gold: palette.stroke,
                 )),
                 glyphs: [],
                 frameCorners: (SkinGlyph("◆", accentMark), SkinGlyph("◆", accentMark)),
@@ -622,8 +622,9 @@ enum Skin: String, CaseIterable, Identifiable, Sendable {
         case .doseWiki: .frosted(stroke: palette.stroke, highlight: palette.shadow)
         // Their panels: a flat fill inside a one-point hairline, no shadow at all.
         case .substanceWiki: .edged(stroke: palette.stroke, strokeWidth: 1, shadow: .clear, shadowOffset: .zero)
-        // Frosted so the photograph shows through, under a gold rule.
-        case .gatsby: .frosted(stroke: palette.stroke, highlight: palette.shadow)
+        // Solid lacquer panels in a gold rule: the picture is too busy to read
+        // copy through, so it shows between the cards instead.
+        case .gatsby: .edged(stroke: palette.stroke, strokeWidth: 1, shadow: .clear, shadowOffset: .zero)
         case .irie: .soft(stroke: palette.stroke, glow: palette.shadow, glowRadius: 14)
         }
     }
@@ -680,6 +681,13 @@ enum Skin: String, CaseIterable, Identifiable, Sendable {
     }
 
     // MARK: - Buttons
+
+    /// Titles cut from gold: the navigation bar's and every SwiftUI hero
+    /// title, painted with ``SkinGilding/titleStops`` over a dark drop.
+    /// Replaces ``titleOutline``'s fill and shadow where it is set.
+    var titleFoil: SkinGilding? {
+        self == .gatsby ? gilding : nil
+    }
 
     /// A metal finish for standalone buttons, drawn by `GildedButtonStyle`
     /// in place of the surface's own button. Cards, chips and capsules keep
@@ -1038,8 +1046,8 @@ enum SkinScene: Sendable {
     case fireworks(SkinFireworks)
     /// Selenia: an engraved chart wheel turning under a faint dome.
     case ephemeris(SkinEphemeris)
-    /// Gatsby: a night photograph under the title, falling away into the
-    /// ground, over a sunburst in gold rules. Still.
+    /// Gatsby: a supercar under a skyline — at night in dark mode, at dusk in
+    /// light. Still.
     case nocturne(SkinNocturne)
     /// Irie: a velvet ground, the tricolor as a pinstripe, embossed fan
     /// leaves. Still.
@@ -1056,12 +1064,12 @@ enum SkinScene: Sendable {
 }
 
 struct SkinNocturne: Sendable {
-    /// The photograph, resolved in the renderer like dose.wiki's ring.
-    let photo: ImageResource
-    /// What the photograph falls away into: the skin's background.
+    /// The dark-mode picture and the light-mode one, resolved in the renderer
+    /// like dose.wiki's ring.
+    let night: ImageResource
+    let dusk: ImageResource
+    /// The scrim's color: the skin's background.
     let ground: Color
-    /// The sunburst's rules.
-    let gold: Color
 }
 
 struct SkinVelvet: Sendable {
@@ -1072,6 +1080,21 @@ struct SkinVelvet: Sendable {
     let leafLight: Color
     /// The two leaves drawn in gold outline.
     let gold: Color
+}
+
+extension SkinGilding {
+    /// Chrome-style lettering, top to bottom: bright, a sheen, then a hard
+    /// horizon where the reflection breaks, and the foot lit again from below.
+    var titleStops: [Gradient.Stop] {
+        [
+            .init(color: bright, location: 0),
+            .init(color: shine, location: 0.28),
+            .init(color: mid, location: 0.5),
+            .init(color: deep, location: 0.52),
+            .init(color: mid, location: 0.78),
+            .init(color: bright, location: 1),
+        ]
+    }
 }
 
 /// A gilded button's metal. The foil ramp runs deep → mid → bright → shine;

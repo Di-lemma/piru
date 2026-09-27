@@ -66,7 +66,7 @@ roles stay split: a colour that is a fine mark can still fail as small copy
 | Selenia | `~/Developer/Ecliptica` (the folder keeps the pre-rename name) | frosted (gold hairline + glow) | system **serif** | an engraved chart wheel turning under a still dome |
 | Hanabi | `~/Developer/Hanabi` (the co-op card game) | soft (periwinkle glow) | `.rounded` | a festival night: a star field, rockets, bursts in the five suits |
 | substance.wiki | https://substance.wiki (partner; their black ground, paper ink, cyan and signal lime) | edged (1pt hairline, no shadow, `--radius: 0`) | system | none — nothing moving, by their design |
-| Gatsby (vanity) | — | frosted (gold rule + highlight), **gilded buttons** | Limelight + Josefin Sans (label) | still: a night photograph of Paris falling into black lacquer, a gold sunburst |
+| Gatsby (vanity) | — | edged (1pt gold rule, no shadow), **gilded buttons** | Limelight in gold foil + Josefin Sans (label) | still: a supercar under a skyline — night in dark mode, dusk in light |
 | Irie (vanity) | — | soft (gold hairline + green glow), **gilded buttons** with a tricolor foot | Shrikhand (scaled .88) | still: emerald velvet, embossed fan leaves, the red / gold / green pinstripe in the right gutter |
 
 **The vanity tier** (`SkinTier.vanity`, $29.99 each, covered by the
@@ -78,10 +78,11 @@ that `skinProminentFill(in:)` lends to a hand-built call to action (the Log
 sheet's Record button). A finish is not a seventh surface: cards, chips and
 capsules keep one of the six.
 
-Gatsby's photograph is "orange aventador" by Ben (Flickr, via Wikimedia
-Commons), **CC BY-SA 2.0**. The license requires the credit beside the work,
-which is the link the Skins sheet shows under the skin; the cropped asset
-(`skin/gatsby/night`) is itself CC BY-SA. Its fonts, like every bundled face,
+Gatsby's titles are gold foil (`Skin.titleFoil`): the navigation bar paints
+them with a one-line pattern color of `SkinGilding.titleStops`, since UIKit
+titles take a color and never a gradient, and `.skinHeroTitle()` uses the same
+stops as a SwiftUI gradient. Its two backgrounds (`skin/gatsby/night`,
+`skin/gatsby/dusk`) are supplied art, and its fonts, like every bundled face,
 are SIL OFL with the license beside them in `Piru/Fonts`.
 
 Hanabi's five card suits **are** its semantic pairs — red → danger, yellow →

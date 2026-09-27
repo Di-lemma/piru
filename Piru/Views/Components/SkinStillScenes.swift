@@ -7,91 +7,41 @@ import SwiftUI
 // MARK: - Nocturne
 
 nonisolated extension SceneRenderer {
-    /// Gatsby: the photograph across the top of the screen, a scrim under the
-    /// title so the gold reads, the picture falling away into the ground, and
-    /// a sunburst of gold rules rising from the foot of the screen.
+    /// Gatsby: the night picture in dark mode, the dusk one in light, filling
+    /// the screen, with a scrim under the navigation title so the gold reads
+    /// and a light veil over the skyline so the timeline's labels hold.
     func drawNocturne(_ nocturne: SkinNocturne, in context: inout GraphicsContext) {
         guard size.width > 0, size.height > 0 else { return }
-        let image = context.resolve(Image(nocturne.photo))
+        let image = context.resolve(Image(dark ? nocturne.night : nocturne.dusk))
         guard image.size.width > 0, image.size.height > 0 else { return }
-        // Fill the width, and at least the top 62% of the screen; the car sits
-        // at the foot of the frame, so the picture anchors to the top.
-        let reach = size.height * NocturneMetrics.photoReach
-        let scale = max(size.width / image.size.width, reach / image.size.height)
+        // Aspect-fill, anchored to the foot so the car stays in frame on any
+        // screen taller than the picture.
+        let scale = max(size.width / image.size.width, size.height / image.size.height)
         let width = image.size.width * scale
         let height = image.size.height * scale
-        let rect = CGRect(x: (size.width - width) / 2, y: 0, width: width, height: height)
-        context.drawLayer { layer in
-            layer.opacity = dark ? NocturneMetrics.darkOpacity : NocturneMetrics.lightOpacity
-            if !dark { layer.addFilter(.saturation(0.55)) }
-            layer.draw(image, in: rect)
-        }
+        context.draw(image, in: CGRect(x: (size.width - width) / 2, y: size.height - height, width: width, height: height))
 
-        // Deepest under the navigation title, thinning behind the first cards,
-        // clear over the car, then the ground rising over the picture's foot.
         let ground = nocturne.ground
         context.fill(
-            Path(CGRect(x: 0, y: 0, width: size.width, height: height + 1)),
+            Path(CGRect(origin: .zero, size: size)),
             with: .linearGradient(
                 Gradient(stops: [
-                    .init(color: ground.opacity(dark ? 0.75 : 0.55), location: 0),
-                    .init(color: ground.opacity(dark ? 0.4 : 0.2), location: 0.3),
-                    .init(color: ground.opacity(0), location: 0.58),
-                    .init(color: ground.opacity(1), location: 1),
+                    .init(color: ground.opacity(NocturneMetrics.titleScrim), location: 0),
+                    .init(color: ground.opacity(NocturneMetrics.veil), location: 0.22),
+                    .init(color: ground.opacity(NocturneMetrics.veil), location: 0.55),
+                    .init(color: ground.opacity(0), location: 0.72),
                 ]),
                 startPoint: .zero,
-                endPoint: CGPoint(x: 0, y: height),
+                endPoint: CGPoint(x: 0, y: size.height),
             ),
         )
-        context.fill(
-            Path(CGRect(x: 0, y: height, width: size.width, height: max(0, size.height - height))),
-            with: .color(ground),
-        )
-        drawSunburst(nocturne.gold, in: &context, from: height * 0.78)
-    }
-
-    /// Rules fanning up from below the screen's foot — the deco sunburst on
-    /// a lift door. Clipped to start at `top`, low in the picture, so the
-    /// rules rise out of the ground it falls into.
-    private func drawSunburst(_ gold: Color, in context: inout GraphicsContext, from top: CGFloat) {
-        let origin = CGPoint(x: size.width / 2, y: size.height * 1.04)
-        let length = size.height * 0.9
-        var rays = Path()
-        for i in 0 ..< NocturneMetrics.rays {
-            let t = Double(i) / Double(NocturneMetrics.rays - 1)
-            let angle = (-0.5 + t) * NocturneMetrics.fan - .pi / 2
-            rays.move(to: origin)
-            rays.addLine(to: CGPoint(x: origin.x + cos(angle) * length, y: origin.y + sin(angle) * length))
-        }
-        var arcs = Path()
-        for radius in [0.18, 0.21, 0.42] {
-            let r = size.height * radius
-            arcs.addArc(center: origin, radius: r, startAngle: .radians(-.pi / 2 - NocturneMetrics.fan / 2), endAngle: .radians(-.pi / 2 + NocturneMetrics.fan / 2), clockwise: false)
-        }
-        context.drawLayer { layer in
-            layer.clip(to: Path(CGRect(x: 0, y: top, width: size.width, height: size.height - top)))
-            // Fades out toward the top so the rules never reach a card's copy
-            // at full strength.
-            let fade = GraphicsContext.Shading.linearGradient(
-                Gradient(colors: [gold.opacity(0), gold.opacity(dark ? 0.16 : 0.22)]),
-                startPoint: CGPoint(x: 0, y: size.height * 0.2),
-                endPoint: CGPoint(x: 0, y: size.height),
-            )
-            layer.stroke(rays, with: fade, lineWidth: 0.75)
-            layer.stroke(arcs, with: fade, lineWidth: 1)
-        }
     }
 }
 
 private nonisolated enum NocturneMetrics {
-    /// The share of the screen's height the photograph covers at least.
-    static let photoReach: CGFloat = 0.62
-    static let darkOpacity: Double = 0.72
-    /// By day the picture is a faded print on the ivory.
-    static let lightOpacity: Double = 0.42
-    static let rays = 25
-    /// The fan's full angle.
-    static let fan: Double = .pi * 0.78
+    static let titleScrim: Double = 0.6
+    /// Over the skyline; the car below is left clear.
+    static let veil: Double = 0.2
 }
 
 // MARK: - Velvet
