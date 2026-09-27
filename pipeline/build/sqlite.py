@@ -1516,10 +1516,13 @@ CREATE TABLE dose_ranges (
     -- reads as medical advice. See `suppress_therapeutic_doses`.
     dose_context  TEXT NOT NULL DEFAULT 'unknown'
                   CHECK (dose_context IN ('therapeutic','recreational','unknown')),
-    citation_id   INTEGER REFERENCES citations(id),
-    UNIQUE (substance_id, route, source_id, salt_form, isomer)
+    citation_id   INTEGER REFERENCES citations(id)
 );
 CREATE INDEX idx_dose_substance_route ON dose_ranges(substance_id, route);
+-- One row per form a source states. An expression index, because a UNIQUE
+-- constraint over the nullable salt_form/isomer treats every NULL as distinct and
+-- so admits any number of rows for the base form.
+CREATE UNIQUE INDEX uq_dose_ranges_form ON dose_ranges(substance_id, route, source_id, ifnull(salt_form, ''), ifnull(isomer, ''));
 
 CREATE TABLE durations (
     id            INTEGER PRIMARY KEY,
@@ -1533,10 +1536,13 @@ CREATE TABLE durations (
     -- Stereoisomer facet (Stage A) — see dose_ranges.isomer. Lets a resolved
     -- enantiomer carry its own distinct duration profile (e.g. armodafinil).
     isomer        TEXT,
-    citation_id   INTEGER REFERENCES citations(id),
-    UNIQUE (substance_id, route, source_id, phase, salt_form, isomer)
+    citation_id   INTEGER REFERENCES citations(id)
 );
 CREATE INDEX idx_durations_substance_route ON durations(substance_id, route);
+-- One row per form a source states. An expression index, because a UNIQUE
+-- constraint over the nullable salt_form/isomer treats every NULL as distinct and
+-- so admits any number of rows for the base form.
+CREATE UNIQUE INDEX uq_durations_form ON durations(substance_id, route, source_id, phase, ifnull(salt_form, ''), ifnull(isomer, ''));
 
 -- Release / duration-of-action window for long-acting formulations (depot
 -- injections, esters, weekly peptides). Distinct from `durations` (the acute
@@ -1552,10 +1558,13 @@ CREATE TABLE durations_of_action (
     salt_form     TEXT,
     -- Stereoisomer facet (Stage A) — see dose_ranges.isomer.
     isomer        TEXT,
-    citation_id   INTEGER REFERENCES citations(id),
-    UNIQUE (substance_id, route, source_id, salt_form, isomer)
+    citation_id   INTEGER REFERENCES citations(id)
 );
 CREATE INDEX idx_doa_substance_route ON durations_of_action(substance_id, route);
+-- One row per form a source states. An expression index, because a UNIQUE
+-- constraint over the nullable salt_form/isomer treats every NULL as distinct and
+-- so admits any number of rows for the base form.
+CREATE UNIQUE INDEX uq_durations_of_action_form ON durations_of_action(substance_id, route, source_id, ifnull(salt_form, ''), ifnull(isomer, ''));
 
 CREATE TABLE half_lives (
     substance_id      INTEGER NOT NULL REFERENCES substances(id),
@@ -2223,10 +2232,13 @@ CREATE TABLE protocol_dosing (
     salt_form       TEXT,
     -- Stereoisomer facet (Stage A) — see dose_ranges.isomer.
     isomer          TEXT,
-    citation_id     INTEGER REFERENCES citations(id),
-    UNIQUE (substance_id, route, source_id, salt_form, isomer)
+    citation_id     INTEGER REFERENCES citations(id)
 );
 CREATE INDEX idx_protocol_substance_route ON protocol_dosing(substance_id, route);
+-- One row per form a source states. An expression index, because a UNIQUE
+-- constraint over the nullable salt_form/isomer treats every NULL as distinct and
+-- so admits any number of rows for the base form.
+CREATE UNIQUE INDEX uq_protocol_dosing_form ON protocol_dosing(substance_id, route, source_id, ifnull(salt_form, ''), ifnull(isomer, ''));
 
 -- Substance-level primary references (the curated `sources` array): DOIs, PMIDs,
 -- URLs, or free-text labels ("Egrifta SmPC"). Surfaced in the app as tappable
@@ -5651,6 +5663,17 @@ _NAME_REMAP: dict[str, str] = {
     "mephenmetrazine": "4-Methylphenmetrazine",
 }
 
+
+def remapped_record(name: str) -> bool:
+    """A record whose own name `_NAME_REMAP` folds into another substance.
+
+    Ingesters sort these after the substance's own record: a dose or duration
+    is stored once per (substance, route, source, form), first writer wins, and
+    TripSit's Adderall page should not decide Amphetamine's insufflated afterglow."""
+    target = _NAME_REMAP.get(name.strip().lower())
+    return target is not None and target.lower() != name.strip().lower()
+
+
 # Same-compound clusters the structural auto-dedup leaves split because the
 # members carry different/absent InChIKeys (RC analogues catalogued under a code
 # name, a code name, AND a trivial name, each holding partial dose/duration
@@ -6862,7 +6885,9 @@ class Build:
             )
             self.stats["dose_ranges"] += 1
         except sqlite3.IntegrityError:
-            pass
+            self.stats["dose_ranges_duplicate_dropped"] = (
+                self.stats.get("dose_ranges_duplicate_dropped", 0) + 1
+            )
 
     def add_peptide_profile(self, sid: int, source_slug: str, profile: dict) -> None:
         """Insert the 1:1 peptide/biologic reference row. No-op if every field
@@ -7143,7 +7168,9 @@ class Build:
                 )
                 self.stats["durations"] += 1
             except sqlite3.IntegrityError:
-                pass
+                self.stats["durations_duplicate_dropped"] = (
+                    self.stats.get("durations_duplicate_dropped", 0) + 1
+                )
 
     _DOA_UNIT_MINUTES = {
         "hour": 60,
@@ -8428,6 +8455,7 @@ class Build:
             data,
             key=lambda r: (
                 r.get("provenance", ""),
+                remapped_record((r.get("substance") or {}).get("name", "")),
                 (r.get("substance") or {}).get("name", "").lower(),
             ),
         )
@@ -8650,7 +8678,13 @@ class Build:
         data = json.loads(path.read_text())
         slug = "drug.community"
         dose_skip = self._dose_skip_map(slug)
-        for s in sorted(data, key=lambda x: (x.get("drug_name") or "").lower()):
+        for s in sorted(
+            data,
+            key=lambda x: (
+                remapped_record(split_compound_name(x.get("drug_name") or "")[0] or ""),
+                (x.get("drug_name") or "").lower(),
+            ),
+        ):
             raw = s.get("drug_name") or ""
             name, paren_aliases = split_compound_name(raw)
             if not name:
