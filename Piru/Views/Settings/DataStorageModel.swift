@@ -27,16 +27,6 @@ final class DataStorageModel {
         let message: String
     }
 
-    /// What a picked encrypted file still needs before a restore strategy can be chosen.
-    enum RestorePrompt {
-        /// Passphrase-sealed: ask for the passphrase first.
-        case passphrase
-        /// Key-sealed: go straight to merge-or-replace.
-        case strategy
-        /// Unreadable — ``notice`` carries the reason.
-        case failed
-    }
-
     var notice: Notice?
 
     /// The encrypted export waiting to be shared.
@@ -56,10 +46,15 @@ final class DataStorageModel {
     private(set) var recoverable: [RecoverableStore] = []
     private(set) var loadingRecoverable = true
 
-    // The restore payload, filled by whichever route the user took.
-    private var pendingData: Data?
-    private var pendingIsICloud = false
-    private var pendingPassphrase: String?
+    /// The restore payload, filled by whichever route the user took.
+    /// What the merge-or-replace choice will restore: a decrypted payload, or
+    /// the latest automatic iCloud backup.
+    private enum PendingRestore {
+        case plaintext(Data)
+        case iCloud
+    }
+
+    private var pendingRestore: PendingRestore?
 
     private var manager: BackupManager {
         BackupManager.shared
@@ -95,34 +90,20 @@ final class DataStorageModel {
         }
     }
 
-    func importPlain(_ result: Result<URL, Error>, context: ModelContext) async {
-        switch result {
-        case let .success(url):
-            guard url.startAccessingSecurityScopedResource() else {
-                notice = Notice(
-                    title: String(localized: "Import Failed"),
-                    message: String(localized: "Couldn't access the selected file."),
-                )
-                return
-            }
-            defer { url.stopAccessingSecurityScopedResource() }
-            do {
-                let data = try await Task.detached { try Data(contentsOf: url) }.value
-                try DataExportImport.importJSON(data: data, context: context)
-                DataExportImport.refreshLiveStores(container: context.container)
-                notice = Notice(
-                    title: String(localized: "Import Complete"),
-                    message: String(localized: "Your data was imported."),
-                )
-            } catch {
-                notice = Notice(
-                    title: String(localized: "Import Failed"),
-                    message: DataExportImport.importErrorMessage(for: error),
-                )
-            }
-        case let .failure(error):
-            notice = Notice(title: String(localized: "Import Failed"), message: error.localizedDescription)
+    /// Imports a picked file, returning the backup to unlock when it is encrypted.
+    func importPickedFile(_ result: Result<URL, Error>, context: ModelContext) async -> BackupFileImport.LockedBackup? {
+        switch await BackupFileImport.importPicked(result, context: context) {
+        case .imported:
+            notice = Notice(
+                title: String(localized: "Import Complete"),
+                message: String(localized: "Your data was imported."),
+            )
+        case let .locked(backup):
+            return backup
+        case let .failed(message):
+            notice = Notice(title: String(localized: "Import Failed"), message: message)
         }
+        return nil
     }
 
     // MARK: - Encrypted export
@@ -145,63 +126,25 @@ final class DataStorageModel {
 
     // MARK: - Restore
 
-    /// Reads and validates a picked encrypted file off the main actor, keeping
-    /// its bytes as the pending restore payload.
-    func inspectPickedFile(_ result: Result<URL, Error>) async -> RestorePrompt {
-        switch result {
-        case let .success(url):
-            guard url.startAccessingSecurityScopedResource() else {
-                notice = Notice(
-                    title: String(localized: "Restore Failed"),
-                    message: String(localized: "Couldn't access the selected file."),
-                )
-                return .failed
-            }
-            defer { url.stopAccessingSecurityScopedResource() }
-            do {
-                let (data, kind) = try await Task.detached { () -> (Data, BackupCrypto.Envelope.Kind) in
-                    let size = (try? url.resourceValues(forKeys: [.fileSizeKey]).fileSize) ?? 0
-                    guard size <= BackupCrypto.maxEnvelopeBytes else { throw BackupManager.ManagerError.fileTooLarge }
-                    let data = try Data(contentsOf: url)
-                    let envelope = try BackupCrypto.inspect(data)
-                    return (data, envelope.kind)
-                }.value
-                pendingData = data
-                pendingIsICloud = false
-                if kind == .passphrase {
-                    return .passphrase
-                }
-                pendingPassphrase = nil
-                return .strategy
-            } catch {
-                notice = Notice(title: String(localized: "Restore Failed"), message: error.localizedDescription)
-                return .failed
-            }
-        case let .failure(error):
-            notice = Notice(title: String(localized: "Restore Failed"), message: error.localizedDescription)
-            return .failed
-        }
+    /// Holds an unlocked backup's payload for the merge-or-replace choice.
+    func prepareRestore(plaintext: Data) {
+        pendingRestore = .plaintext(plaintext)
     }
 
     /// Points the pending restore at the latest automatic iCloud backup.
     func prepareICloudRestore() {
-        pendingIsICloud = true
-        pendingPassphrase = nil
-    }
-
-    func setRestorePassphrase(_ passphrase: String) {
-        pendingPassphrase = passphrase
+        pendingRestore = .iCloud
     }
 
     func executeRestore(_ strategy: BackupManager.RestoreStrategy, context: ModelContext) async {
-        let passphrase = pendingPassphrase
-        let isICloud = pendingIsICloud
-        let data = pendingData
+        guard let pending = pendingRestore else { return }
+        pendingRestore = nil
         do {
-            if isICloud {
-                try await manager.restoreFromICloud(passphrase: passphrase, strategy: strategy, context: context)
-            } else if let data {
-                try await manager.restore(data: data, passphrase: passphrase, strategy: strategy, context: context)
+            switch pending {
+            case let .plaintext(data):
+                try manager.apply(plaintext: data, strategy: strategy, context: context)
+            case .iCloud:
+                try await manager.restoreFromICloud(passphrase: nil, strategy: strategy, context: context)
             }
             DataExportImport.refreshLiveStores(container: context.container)
             notice = Notice(
@@ -211,13 +154,10 @@ final class DataStorageModel {
         } catch {
             notice = Notice(title: String(localized: "Restore Failed"), message: error.localizedDescription)
         }
-        clearPending()
     }
 
     func clearPending() {
-        pendingData = nil
-        pendingIsICloud = false
-        pendingPassphrase = nil
+        pendingRestore = nil
     }
 
     // MARK: - Recoverable copies

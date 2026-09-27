@@ -3,8 +3,8 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 /// Optional first-run import — the heaviest step, so it comes last. Lets a user arriving from
-/// another tracker bring their history in from a Piru backup, PsychonautWiki, or PsyLog JSON
-/// export. `DataExportImport.importJSON` auto-detects the format. Skippable via "Start fresh".
+/// another tracker bring their history in from a Piru backup (plain or encrypted), PsychonautWiki,
+/// or PsyLog JSON export. `BackupFileImport` works out which from the file. Skippable via "Start fresh".
 struct OnboardingImportStep: View {
     @Environment(\.onboardingNav) private var nav
     @Environment(\.modelContext) private var modelContext
@@ -12,11 +12,12 @@ struct OnboardingImportStep: View {
     @State private var picking = false
     @State private var imported = false
     @State private var error: String?
+    @State private var lockedBackup: BackupFileImport.LockedBackup?
 
     var body: some View {
         OnboardingLayout(
             title: "Bring your history",
-            subtitle: "Already keep a journal? Import a Piru backup or a PsyLog-format export — or start with a clean slate.",
+            subtitle: "Already keep a journal? Import a Piru backup, encrypted or not, or a PsyLog-format export — or start with a clean slate.",
         ) {
             OnboardingIconHero(symbol: "square.and.arrow.down")
         } mid: {
@@ -32,6 +33,11 @@ struct OnboardingImportStep: View {
                             symbol: "arrow.down.doc",
                             title: "Piru backup",
                             detail: "Restore a full journal you exported from Piru.",
+                        )
+                        OnboardingBulletRow(
+                            symbol: "lock.doc",
+                            title: "Encrypted backup",
+                            detail: "Pick the .piruenc file and enter its passphrase.",
                         )
                         OnboardingBulletRow(
                             symbol: "doc.text",
@@ -58,33 +64,36 @@ struct OnboardingImportStep: View {
                 GlassPillButton(title: "Start Fresh", prominence: .neutral, action: nav.advance)
             }
         }
-        .fileImporter(isPresented: $picking, allowedContentTypes: [.json]) { result in
-            handleImport(result)
+        .fileImporter(isPresented: $picking, allowedContentTypes: [.json, .data]) { result in
+            handlePicked(result)
+        }
+        .backupPassphraseAlert(for: $lockedBackup, onUnlock: restore)
+    }
+
+    private func handlePicked(_ result: Result<URL, Error>) {
+        Task {
+            switch await BackupFileImport.importPicked(result, context: modelContext) {
+            case .imported: succeed()
+            case let .locked(backup): lockedBackup = backup
+            case let .failed(message): error = message
+            }
         }
     }
 
-    private func handleImport(_ result: Result<URL, Error>) {
-        switch result {
-        case let .success(url):
-            Task {
-                guard url.startAccessingSecurityScopedResource() else {
-                    error = String(localized: "Couldn't access the selected file.")
-                    return
-                }
-                defer { url.stopAccessingSecurityScopedResource() }
-                do {
-                    let data = try await Task.detached { try Data(contentsOf: url) }.value
-                    try DataExportImport.importJSON(data: data, context: modelContext)
-                    DataExportImport.refreshLiveStores(container: modelContext.container)
-                    error = nil
-                    withAnimation(.smooth) { imported = true }
-                } catch {
-                    self.error = DataExportImport.importErrorMessage(for: error)
-                }
-            }
-        case let .failure(failure):
-            error = failure.localizedDescription
+    /// Merges an unlocked backup: a new journal has nothing to replace.
+    private func restore(_ plaintext: Data) {
+        do {
+            try BackupManager.shared.apply(plaintext: plaintext, strategy: .merge, context: modelContext)
+            DataExportImport.refreshLiveStores(container: modelContext.container)
+            succeed()
+        } catch {
+            self.error = DataExportImport.importErrorMessage(for: error)
         }
+    }
+
+    private func succeed() {
+        error = nil
+        withAnimation(.smooth) { imported = true }
     }
 }
 

@@ -1,4 +1,4 @@
-"""Seed the Tsuki, Starfield (astrelia) and Jellyfish skins from hex, gate
+"""Seed the skins from hex or Oklch, gate
 them, and write Oklch into palette-skins.json.
 
 Text roles are pushed in L until they clear 4.5:1 on that skin's own card
@@ -490,6 +490,82 @@ SKINS = {
         "wheel/air": ("#B08A20", "#F2D980"),  # air, which is not a semantic here
         "wheel/star": ("#9A8C74", "#E8E4F5"),
     },
+    # The vanity skins below are seeded in Oklch (L, C, h), not hex.
+    #
+    # Gatsby: black lacquer and champagne gold, a night photograph behind
+    # everything. The semantics are jewels — emerald, amber, ruby, sapphire —
+    # with amber pushed toward orange (h 45) so it holds clear of the gold
+    # accent (h 86) and short of the ruby (h 18). Light is ivory card stock with black ink.
+    "gatsby": {
+        "surface/background": ((0.955, 0.014, 88.0), (0.145, 0.006, 80.0)),
+        "surface/card": ((0.988, 0.008, 90.0), (0.195, 0.010, 80.0)),
+        "surface/input": ((0.930, 0.018, 88.0), (0.235, 0.014, 80.0)),
+        "stroke": ((0.640, 0.100, 84.0), (0.720, 0.105, 86.0)),  # a gold rule
+        "shadow": ((0.760, 0.120, 88.0), (0.860, 0.100, 92.0)),  # the frosted top highlight
+        "eyebrow": ((0.450, 0.060, 80.0), (0.820, 0.075, 88.0)),
+        "text/secondary": ((0.480, 0.018, 80.0), (0.760, 0.018, 85.0)),
+        "accent/text": ((0.500, 0.100, 82.0), (0.850, 0.110, 88.0)),
+        "accent/mark": ((0.640, 0.125, 85.0), (0.790, 0.125, 86.0)),
+        "accent/on": ((0.988, 0.008, 90.0), (0.160, 0.008, 80.0)),
+        "semantic/success/text": ((0.500, 0.110, 162.0), (0.790, 0.130, 162.0)),  # emerald
+        "semantic/success/accent": ((0.580, 0.130, 162.0), (0.760, 0.140, 162.0)),
+        "semantic/caution/text": ((0.540, 0.155, 45.0), (0.760, 0.150, 48.0)),  # amber
+        "semantic/caution/accent": ((0.630, 0.170, 45.0), (0.740, 0.160, 48.0)),
+        "semantic/info/text": ((0.480, 0.130, 258.0), (0.760, 0.100, 255.0)),  # sapphire
+        "semantic/info/accent": ((0.560, 0.150, 258.0), (0.700, 0.130, 258.0)),
+        "semantic/danger/text": ((0.520, 0.190, 18.0), (0.700, 0.180, 18.0)),  # ruby
+        "semantic/danger/accent": ((0.600, 0.210, 18.0), (0.650, 0.210, 18.0)),
+        "title/fill": ((0.200, 0.012, 80.0), (0.870, 0.110, 90.0)),
+        "title/stroke": ((0.200, 0.012, 80.0), (0.120, 0.006, 80.0)),
+        "title/shadow": ((0.760, 0.120, 88.0), (0.780, 0.130, 86.0)),
+        # Scene and buttons only: the foil ramp a gilded button is cut from,
+        # darkest to brightest, and the ink set on it. The same in both modes —
+        # metal does not change with the room.
+        "gilt/deep": ((0.600, 0.105, 78.0), (0.600, 0.105, 78.0)),
+        "gilt/mid": ((0.760, 0.125, 86.0), (0.760, 0.125, 86.0)),
+        "gilt/bright": ((0.930, 0.085, 96.0), (0.930, 0.085, 96.0)),
+        "gilt/shine": ((0.985, 0.035, 100.0), (0.985, 0.035, 100.0)),
+        "gilt/ink": ((0.220, 0.030, 70.0), (0.220, 0.030, 70.0)),
+    },
+    # Irie: Kingston velvet. A deep emerald ground, rasta gold foil, and the
+    # red / gold / green tricolor as a pinstripe. The tricolor is the semantic
+    # set — red danger, green success — with caution an orange (h 55) so it
+    # holds clear of the gold accent (h 95), and info a lagoon teal.
+    "irie": {
+        "surface/background": ((0.955, 0.024, 112.0), (0.175, 0.040, 162.0)),
+        "surface/card": ((0.988, 0.012, 110.0), (0.220, 0.048, 160.0)),
+        "surface/input": ((0.930, 0.030, 112.0), (0.265, 0.056, 158.0)),
+        "stroke": ((0.640, 0.120, 92.0), (0.780, 0.140, 92.0)),  # a gold hairline
+        "shadow": ((0.700, 0.140, 150.0), (0.600, 0.160, 150.0)),  # the green glow
+        "eyebrow": ((0.420, 0.090, 150.0), (0.840, 0.140, 95.0)),
+        "text/secondary": ((0.470, 0.040, 150.0), (0.770, 0.040, 150.0)),
+        "accent/text": ((0.500, 0.110, 90.0), (0.880, 0.160, 95.0)),
+        "accent/mark": ((0.660, 0.150, 92.0), (0.830, 0.170, 93.0)),
+        "accent/on": ((0.988, 0.012, 110.0), (0.175, 0.040, 162.0)),
+        "semantic/success/text": ((0.490, 0.140, 146.0), (0.800, 0.180, 146.0)),
+        "semantic/success/accent": ((0.580, 0.170, 146.0), (0.760, 0.190, 146.0)),
+        "semantic/caution/text": ((0.550, 0.150, 50.0), (0.770, 0.150, 55.0)),
+        "semantic/caution/accent": ((0.640, 0.170, 50.0), (0.750, 0.160, 55.0)),
+        "semantic/info/text": ((0.480, 0.100, 225.0), (0.780, 0.100, 222.0)),
+        "semantic/info/accent": ((0.560, 0.110, 225.0), (0.730, 0.110, 222.0)),
+        "semantic/danger/text": ((0.520, 0.200, 27.0), (0.700, 0.190, 27.0)),
+        "semantic/danger/accent": ((0.600, 0.220, 27.0), (0.650, 0.220, 27.0)),
+        "title/fill": ((0.330, 0.090, 152.0), (0.880, 0.160, 95.0)),
+        "title/stroke": ((0.200, 0.050, 155.0), (0.120, 0.030, 160.0)),
+        "title/shadow": ((0.820, 0.150, 93.0), (0.560, 0.160, 150.0)),
+        "gilt/deep": ((0.640, 0.135, 84.0), (0.640, 0.135, 84.0)),
+        "gilt/mid": ((0.800, 0.160, 92.0), (0.800, 0.160, 92.0)),
+        "gilt/bright": ((0.935, 0.120, 100.0), (0.935, 0.120, 100.0)),
+        "gilt/shine": ((0.985, 0.050, 104.0), (0.985, 0.050, 104.0)),
+        "gilt/ink": ((0.200, 0.050, 150.0), (0.200, 0.050, 150.0)),
+        # Scene only — the tricolor pinstripe and the embossed leaves. Art at
+        # full saturation, not UI roles, so never gated.
+        "stripe/red": ((0.580, 0.210, 27.0), (0.620, 0.220, 27.0)),
+        "stripe/gold": ((0.820, 0.165, 92.0), (0.860, 0.170, 93.0)),
+        "stripe/green": ((0.560, 0.160, 148.0), (0.620, 0.180, 148.0)),
+        "leaf/shade": ((0.900, 0.045, 135.0), (0.215, 0.055, 158.0)),
+        "leaf/light": ((0.860, 0.065, 140.0), (0.290, 0.075, 152.0)),
+    },
 }
 
 TEXT_ROLES = {
@@ -508,6 +584,14 @@ MARK_ROLES = {
     "semantic/info/accent",
     "semantic/danger/accent",
 }
+
+
+def seed_rgb(seed):
+    """A seed is hex (the skins ported from an app's own values) or an Oklch
+    (L, C, h) tuple (skins authored here)."""
+    if isinstance(seed, str):
+        return hex_to_rgb(seed)
+    return oklch_to_rgb(fit_chroma(tuple(seed)))
 
 
 def gate(lch, bg, floor, darken):
@@ -529,11 +613,11 @@ report = []
 for skin, tokens in SKINS.items():
     entry = {}
     for mode_i, mode in enumerate(("light", "dark")):
-        card = hex_to_rgb(tokens["surface/card"][mode_i])
-        bg = hex_to_rgb(tokens["surface/background"][mode_i])
+        card = seed_rgb(tokens["surface/card"][mode_i])
+        bg = seed_rgb(tokens["surface/background"][mode_i])
         darken = mode == "light"
         for name, pair in tokens.items():
-            rgb = hex_to_rgb(pair[mode_i])
+            rgb = seed_rgb(pair[mode_i])
             lch = oklch(rgb)
             if name in TEXT_ROLES:
                 lch, rgb = gate(lch, card, TEXT, darken)
@@ -541,7 +625,7 @@ for skin, tokens in SKINS.items():
             elif name in MARK_ROLES:
                 lch, rgb = gate(lch, card, MARK, darken)
             elif name == "accent/on":
-                acc = oklch_to_rgb(fit_chroma(oklch(hex_to_rgb(tokens["accent/text"][mode_i]))))
+                acc = oklch_to_rgb(fit_chroma(oklch(seed_rgb(tokens["accent/text"][mode_i]))))
                 r = wcag_ratio(rgb, acc)
                 report.append(f"  {skin} {mode} accent/on on accent/text = {r:.2f}")
             entry.setdefault(name, {})[mode] = [round(x, 5) for x in lch]

@@ -468,6 +468,34 @@
         }
       }
     },
+    "Black lacquer, gold leaf, a city after dark" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Laca negra, pan de oro, una ciudad de noche"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Laca negra, pan de oro, una ciudad de noche"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "黑漆、金箔、入夜的城市"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "黑漆、金箔、入夜的城市"
+          }
+        }
+      }
+    },
     "Black, paper and signal cyan, from the effects index" : {
       "localizations" : {
         "es" : {
@@ -1001,6 +1029,34 @@
         }
       }
     },
+    "Emerald velvet, gold foil, red, gold and green" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Terciopelo esmeralda, lámina de oro, rojo, oro y verde"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Terciopelo esmeralda, lámina de oro, rojo, oro y verde"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "祖母绿丝绒、金箔、红金绿"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "祖母綠絲絨、金箔、紅金綠"
+          }
+        }
+      }
+    },
     "Engraved gold, a plum night, a turning wheel" : {
       "localizations" : {
         "es" : {
@@ -1194,6 +1250,34 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "跟隨系統"
+          }
+        }
+      }
+    },
+    "Gatsby" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gatsby"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gatsby"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "纸醉金迷"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "紙醉金迷"
           }
         }
       }
@@ -1474,6 +1558,34 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "靜脈注射"
+          }
+        }
+      }
+    },
+    "Irie" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Irie"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Irie"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "雷鬼"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "雷鬼"
           }
         }
       }

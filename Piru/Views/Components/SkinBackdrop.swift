@@ -43,6 +43,11 @@ struct SkinBackdrop: View {
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.displayScale) private var displayScale
     @Environment(\.scenePhase) private var scenePhase
+    /// True on a pushed screen or a sheet, false on a tab root.
+    @Environment(\.isPresented) private var isPresented
+    /// Latches `isPresented`: it turns false the moment a pop or a dismiss
+    /// begins, and the screen sliding away must keep its glass until it is gone.
+    @State private var wasPresented = false
 
     var body: some View {
         let skin = skin ?? skins.current
@@ -55,13 +60,15 @@ struct SkinBackdrop: View {
                 // Resolved outside the canvas: reads inside the renderer
                 // closure are not tracked by Observation.
                 let dark = colorScheme == .dark
+                // A preview card names its skin and always shows the root scene.
+                let presented = self.skin == nil && (isPresented || wasPresented)
                 // `visible` says this screen is on top of its stack; the scene
                 // phase says the app is on screen at all, so the clock stops
                 // the moment the app is backgrounded rather than whenever the
                 // timeline notices. It does not catch a macOS scene that state
                 // restoration rebuilt without a window: that scene reports
                 // `.active` and its canvas ticks like a visible one.
-                let animate = animates && !reduceMotion && visible && scenePhase != .background && !power.isThermallyConstrained
+                let animate = animates && !decor.scene.isStill && !reduceMotion && visible && scenePhase != .background && !power.isThermallyConstrained
                 let interval = Self.frameInterval(stickers: decor.scene.isStickers, lowPower: power.isLowPower)
                 let atlas = GlyphAtlas.images(for: skin, decor: decor, dark: dark, scale: displayScale)
                 let wheel = WheelAtlas.images(for: decor.scene, dark: dark, scale: displayScale)
@@ -82,14 +89,14 @@ struct SkinBackdrop: View {
                     // asynchronous renderer calls it off the main thread on
                     // hardware. Everything it captures is a `Sendable` value.
                     Canvas(rendersAsynchronously: true) { @Sendable context, size in
-                        SceneRenderer(decor: decor, atlas: atlas, wheel: wheel, textures: textures, size: size, time: t, dark: dark, tilt: tilt, clock: clock).draw(in: &context)
+                        SceneRenderer(decor: decor, atlas: atlas, wheel: wheel, textures: textures, size: size, time: t, dark: dark, tilt: tilt, clock: clock, presented: presented).draw(in: &context)
                     }
                 }
                 .allowsHitTesting(false)
                 .accessibilityHidden(true)
                 .onAppear {
                     visible = true
-                    if animates, !reduceMotion {
+                    if animates, !decor.scene.isStill, !reduceMotion {
                         SkinMotion.shared.retain()
                         holdsMotion = true
                     }
@@ -101,7 +108,13 @@ struct SkinBackdrop: View {
                         holdsMotion = false
                     }
                 }
+                if presented, decor.scene.veilsDepth {
+                    StainedGlass(tint: skin.background, lead: skin.palette.stroke)
+                }
             }
+        }
+        .onChange(of: isPresented, initial: true) { _, presented in
+            if presented { wasPresented = true }
         }
     }
 
@@ -168,6 +181,9 @@ nonisolated struct SceneRenderer {
     /// Device tilt, -1 … 1 per axis. Zero on the simulator and at rest.
     let tilt: CGPoint
     let clock: SceneClock
+    /// The screen is pushed or a sheet, for a scene that draws those
+    /// differently from a tab root.
+    var presented = false
 
     /// The window into the aquarium: a layer at `depth` (0 far, 1 at the
     /// glass) slides opposite the tilt, farther layers less.
@@ -220,6 +236,10 @@ nonisolated struct SceneRenderer {
         case let .ephemeris(e):
             drawEphemeris(e, in: &context)
             drawGlyphs(in: &context, share: 0.2)
+        case let .nocturne(n):
+            drawNocturne(n, in: &context)
+        case let .velvet(v):
+            drawVelvet(v, in: &context)
         }
     }
 
@@ -934,7 +954,11 @@ private struct SkinHeroTitle: ViewModifier {
     @State private var skins = SkinStore.shared
 
     func body(content: Content) -> some View {
-        if let outline = skins.current.titleOutline {
+        if let foil = skins.current.titleFoil {
+            content
+                .foregroundStyle(LinearGradient(stops: foil.titleStops, startPoint: .top, endPoint: .bottom))
+                .shadow(color: foil.ink.opacity(0.85), radius: 1, x: 0, y: 2)
+        } else if let outline = skins.current.titleOutline {
             let s = outline.stroke ?? .clear
             content
                 .foregroundStyle(outline.fill.map(AnyShapeStyle.init) ?? AnyShapeStyle(.primary))

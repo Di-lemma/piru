@@ -10677,6 +10677,918 @@
      296.5464
     ]
    }
+  },
+  "skin/gatsby/surface/background": {
+   "any": {
+    "oklch": [
+     0.955,
+     0.014,
+     88.0
+    ]
+   },
+   "dark": {
+    "oklch": [
+     0.145,
+     0.006,
+     80.0
+    ]
+   }
+  },
+  "skin/gatsby/surface/card": {
+   "any": {
+    "oklch": [
+     0.988,
+     0.008,
+     90.0
+    ]
+   },
+   "dark": {
+    "oklch": [
+     0.195,
+     0.01,
+     80.0
+    ]
+   }
+  },
+  "skin/gatsby/surface/input": {
+   "any": {
+    "oklch": [
+     0.93,
+     0.018,
+     88.0
+    ]
+   },
+   "dark": {
+    "oklch": [
+     0.235,
+     0.014,
+     80.0
+    ]
+   }
+  },
+  "skin/gatsby/stroke": {
+   "any": {
+    "oklch": [
+     0.64,
+     0.1,
+     84.0
+    ]
+   },
+   "dark": {
+    "oklch": [
+     0.72,
+     0.105,
+     86.0
+    ]
+   }
+  },
+  "skin/gatsby/shadow": {
+   "any": {
+    "oklch": [
+     0.76,
+     0.12,
+     88.0
+    ]
+   },
+   "dark": {
+    "oklch": [
+     0.86,
+     0.1,
+     92.0
+    ]
+   }
+  },
+  "skin/gatsby/eyebrow": {
+   "any": {
+    "oklch": [
+     0.45,
+     0.06,
+     80.0
+    ]
+   },
+   "dark": {
+    "oklch": [
+     0.82,
+     0.075,
+     88.0
+    ]
+   }
+  },
+  "skin/gatsby/text/secondary": {
+   "any": {
+    "oklch": [
+     0.48,
+     0.018,
+     80.0
+    ]
+   },
+   "dark": {
+    "oklch": [
+     0.76,
+     0.018,
+     85.0
+    ]
+   }
+  },
+  "skin/gatsby/accent/text": {
+   "any": {
+    "oklch": [
+     0.5,
+     0.1,
+     82.0
+    ]
+   },
+   "dark": {
+    "oklch": [
+     0.85,
+     0.11,
+     88.0
+    ]
+   }
+  },
+  "skin/gatsby/accent/mark": {
+   "any": {
+    "oklch": [
+     0.64,
+     0.125,
+     85.0
+    ]
+   },
+   "dark": {
+    "oklch": [
+     0.79,
+     0.125,
+     86.0
+    ]
+   }
+  },
+  "skin/gatsby/accent/on": {
+   "any": {
+    "oklch": [
+     0.988,
+     0.008,
+     90.0
+    ]
+   },
+   "dark": {
+    "oklch": [
+     0.16,
+     0.008,
+     80.0
+    ]
+   }
+  },
+  "skin/gatsby/semantic/success/text": {
+   "any": {
+    "oklch": [
+     0.5,
+     0.10971,
+     162.0
+    ]
+   },
+   "dark": {
+    "oklch": [
+     0.79,
+     0.13,
+     162.0
+    ]
+   }
+  },
+  "skin/gatsby/semantic/success/accent": {
+   "any": {
+    "oklch": [
+     0.58,
+     0.12725,
+     162.0
+    ]
+   },
+   "dark": {
+    "oklch": [
+     0.76,
+     0.14,
+     162.0
+    ]
+   }
+  },
+  "skin/gatsby/semantic/caution/text": {
+   "any": {
+    "oklch": [
+     0.54,
+     0.15433,
+     45.0
+    ]
+   },
+   "dark": {
+    "oklch": [
+     0.76,
+     0.15,
+     48.0
+    ]
+   }
+  },
+  "skin/gatsby/semantic/caution/accent": {
+   "any": {
+    "oklch": [
+     0.63,
+     0.17,
+     45.0
+    ]
+   },
+   "dark": {
+    "oklch": [
+     0.74,
+     0.16,
+     48.0
+    ]
+   }
+  },
+  "skin/gatsby/semantic/info/text": {
+   "any": {
+    "oklch": [
+     0.48,
+     0.13,
+     258.0
+    ]
+   },
+   "dark": {
+    "oklch": [
+     0.76,
+     0.1,
+     255.0
+    ]
+   }
+  },
+  "skin/gatsby/semantic/info/accent": {
+   "any": {
+    "oklch": [
+     0.56,
+     0.15,
+     258.0
+    ]
+   },
+   "dark": {
+    "oklch": [
+     0.7,
+     0.13,
+     258.0
+    ]
+   }
+  },
+  "skin/gatsby/semantic/danger/text": {
+   "any": {
+    "oklch": [
+     0.52,
+     0.19,
+     18.0
+    ]
+   },
+   "dark": {
+    "oklch": [
+     0.7,
+     0.18,
+     18.0
+    ]
+   }
+  },
+  "skin/gatsby/semantic/danger/accent": {
+   "any": {
+    "oklch": [
+     0.6,
+     0.21,
+     18.0
+    ]
+   },
+   "dark": {
+    "oklch": [
+     0.65,
+     0.21,
+     18.0
+    ]
+   }
+  },
+  "skin/gatsby/title/fill": {
+   "any": {
+    "oklch": [
+     0.2,
+     0.012,
+     80.0
+    ]
+   },
+   "dark": {
+    "oklch": [
+     0.87,
+     0.11,
+     90.0
+    ]
+   }
+  },
+  "skin/gatsby/title/stroke": {
+   "any": {
+    "oklch": [
+     0.2,
+     0.012,
+     80.0
+    ]
+   },
+   "dark": {
+    "oklch": [
+     0.12,
+     0.006,
+     80.0
+    ]
+   }
+  },
+  "skin/gatsby/title/shadow": {
+   "any": {
+    "oklch": [
+     0.76,
+     0.12,
+     88.0
+    ]
+   },
+   "dark": {
+    "oklch": [
+     0.78,
+     0.13,
+     86.0
+    ]
+   }
+  },
+  "skin/gatsby/gilt/deep": {
+   "any": {
+    "oklch": [
+     0.6,
+     0.105,
+     78.0
+    ]
+   },
+   "dark": {
+    "oklch": [
+     0.6,
+     0.105,
+     78.0
+    ]
+   }
+  },
+  "skin/gatsby/gilt/mid": {
+   "any": {
+    "oklch": [
+     0.76,
+     0.125,
+     86.0
+    ]
+   },
+   "dark": {
+    "oklch": [
+     0.76,
+     0.125,
+     86.0
+    ]
+   }
+  },
+  "skin/gatsby/gilt/bright": {
+   "any": {
+    "oklch": [
+     0.93,
+     0.085,
+     96.0
+    ]
+   },
+   "dark": {
+    "oklch": [
+     0.93,
+     0.085,
+     96.0
+    ]
+   }
+  },
+  "skin/gatsby/gilt/shine": {
+   "any": {
+    "oklch": [
+     0.985,
+     0.03312,
+     100.0
+    ]
+   },
+   "dark": {
+    "oklch": [
+     0.985,
+     0.03312,
+     100.0
+    ]
+   }
+  },
+  "skin/gatsby/gilt/ink": {
+   "any": {
+    "oklch": [
+     0.22,
+     0.03,
+     70.0
+    ]
+   },
+   "dark": {
+    "oklch": [
+     0.22,
+     0.03,
+     70.0
+    ]
+   }
+  },
+  "skin/irie/surface/background": {
+   "any": {
+    "oklch": [
+     0.955,
+     0.024,
+     112.0
+    ]
+   },
+   "dark": {
+    "oklch": [
+     0.175,
+     0.03845,
+     162.0
+    ]
+   }
+  },
+  "skin/irie/surface/card": {
+   "any": {
+    "oklch": [
+     0.988,
+     0.012,
+     110.0
+    ]
+   },
+   "dark": {
+    "oklch": [
+     0.22,
+     0.048,
+     160.0
+    ]
+   }
+  },
+  "skin/irie/surface/input": {
+   "any": {
+    "oklch": [
+     0.93,
+     0.03,
+     112.0
+    ]
+   },
+   "dark": {
+    "oklch": [
+     0.265,
+     0.056,
+     158.0
+    ]
+   }
+  },
+  "skin/irie/stroke": {
+   "any": {
+    "oklch": [
+     0.64,
+     0.12,
+     92.0
+    ]
+   },
+   "dark": {
+    "oklch": [
+     0.78,
+     0.14,
+     92.0
+    ]
+   }
+  },
+  "skin/irie/shadow": {
+   "any": {
+    "oklch": [
+     0.7,
+     0.14,
+     150.0
+    ]
+   },
+   "dark": {
+    "oklch": [
+     0.6,
+     0.16,
+     150.0
+    ]
+   }
+  },
+  "skin/irie/eyebrow": {
+   "any": {
+    "oklch": [
+     0.42,
+     0.09,
+     150.0
+    ]
+   },
+   "dark": {
+    "oklch": [
+     0.84,
+     0.14,
+     95.0
+    ]
+   }
+  },
+  "skin/irie/text/secondary": {
+   "any": {
+    "oklch": [
+     0.47,
+     0.04,
+     150.0
+    ]
+   },
+   "dark": {
+    "oklch": [
+     0.77,
+     0.04,
+     150.0
+    ]
+   }
+  },
+  "skin/irie/accent/text": {
+   "any": {
+    "oklch": [
+     0.5,
+     0.10214,
+     90.0
+    ]
+   },
+   "dark": {
+    "oklch": [
+     0.88,
+     0.16,
+     95.0
+    ]
+   }
+  },
+  "skin/irie/accent/mark": {
+   "any": {
+    "oklch": [
+     0.66,
+     0.13495,
+     92.0
+    ]
+   },
+   "dark": {
+    "oklch": [
+     0.83,
+     0.16987,
+     93.0
+    ]
+   }
+  },
+  "skin/irie/accent/on": {
+   "any": {
+    "oklch": [
+     0.988,
+     0.012,
+     110.0
+    ]
+   },
+   "dark": {
+    "oklch": [
+     0.175,
+     0.03845,
+     162.0
+    ]
+   }
+  },
+  "skin/irie/semantic/success/text": {
+   "any": {
+    "oklch": [
+     0.49,
+     0.14,
+     146.0
+    ]
+   },
+   "dark": {
+    "oklch": [
+     0.8,
+     0.18,
+     146.0
+    ]
+   }
+  },
+  "skin/irie/semantic/success/accent": {
+   "any": {
+    "oklch": [
+     0.58,
+     0.17,
+     146.0
+    ]
+   },
+   "dark": {
+    "oklch": [
+     0.76,
+     0.19,
+     146.0
+    ]
+   }
+  },
+  "skin/irie/semantic/caution/text": {
+   "any": {
+    "oklch": [
+     0.55,
+     0.14535,
+     50.0
+    ]
+   },
+   "dark": {
+    "oklch": [
+     0.77,
+     0.15,
+     55.0
+    ]
+   }
+  },
+  "skin/irie/semantic/caution/accent": {
+   "any": {
+    "oklch": [
+     0.64,
+     0.16913,
+     50.0
+    ]
+   },
+   "dark": {
+    "oklch": [
+     0.75,
+     0.16,
+     55.0
+    ]
+   }
+  },
+  "skin/irie/semantic/info/text": {
+   "any": {
+    "oklch": [
+     0.48,
+     0.09098,
+     225.0
+    ]
+   },
+   "dark": {
+    "oklch": [
+     0.78,
+     0.1,
+     222.0
+    ]
+   }
+  },
+  "skin/irie/semantic/info/accent": {
+   "any": {
+    "oklch": [
+     0.56,
+     0.10614,
+     225.0
+    ]
+   },
+   "dark": {
+    "oklch": [
+     0.73,
+     0.11,
+     222.0
+    ]
+   }
+  },
+  "skin/irie/semantic/danger/text": {
+   "any": {
+    "oklch": [
+     0.52,
+     0.2,
+     27.0
+    ]
+   },
+   "dark": {
+    "oklch": [
+     0.7,
+     0.19,
+     27.0
+    ]
+   }
+  },
+  "skin/irie/semantic/danger/accent": {
+   "any": {
+    "oklch": [
+     0.6,
+     0.22,
+     27.0
+    ]
+   },
+   "dark": {
+    "oklch": [
+     0.65,
+     0.22,
+     27.0
+    ]
+   }
+  },
+  "skin/irie/title/fill": {
+   "any": {
+    "oklch": [
+     0.33,
+     0.08687,
+     152.0
+    ]
+   },
+   "dark": {
+    "oklch": [
+     0.88,
+     0.16,
+     95.0
+    ]
+   }
+  },
+  "skin/irie/title/stroke": {
+   "any": {
+    "oklch": [
+     0.2,
+     0.04951,
+     155.0
+    ]
+   },
+   "dark": {
+    "oklch": [
+     0.12,
+     0.02729,
+     160.0
+    ]
+   }
+  },
+  "skin/irie/title/shadow": {
+   "any": {
+    "oklch": [
+     0.82,
+     0.15,
+     93.0
+    ]
+   },
+   "dark": {
+    "oklch": [
+     0.56,
+     0.15429,
+     150.0
+    ]
+   }
+  },
+  "skin/irie/gilt/deep": {
+   "any": {
+    "oklch": [
+     0.64,
+     0.13131,
+     84.0
+    ]
+   },
+   "dark": {
+    "oklch": [
+     0.64,
+     0.13131,
+     84.0
+    ]
+   }
+  },
+  "skin/irie/gilt/mid": {
+   "any": {
+    "oklch": [
+     0.8,
+     0.16,
+     92.0
+    ]
+   },
+   "dark": {
+    "oklch": [
+     0.8,
+     0.16,
+     92.0
+    ]
+   }
+  },
+  "skin/irie/gilt/bright": {
+   "any": {
+    "oklch": [
+     0.935,
+     0.12,
+     100.0
+    ]
+   },
+   "dark": {
+    "oklch": [
+     0.935,
+     0.12,
+     100.0
+    ]
+   }
+  },
+  "skin/irie/gilt/shine": {
+   "any": {
+    "oklch": [
+     0.985,
+     0.04771,
+     104.0
+    ]
+   },
+   "dark": {
+    "oklch": [
+     0.985,
+     0.04771,
+     104.0
+    ]
+   }
+  },
+  "skin/irie/gilt/ink": {
+   "any": {
+    "oklch": [
+     0.2,
+     0.05,
+     150.0
+    ]
+   },
+   "dark": {
+    "oklch": [
+     0.2,
+     0.05,
+     150.0
+    ]
+   }
+  },
+  "skin/irie/stripe/red": {
+   "any": {
+    "oklch": [
+     0.58,
+     0.21,
+     27.0
+    ]
+   },
+   "dark": {
+    "oklch": [
+     0.62,
+     0.22,
+     27.0
+    ]
+   }
+  },
+  "skin/irie/stripe/gold": {
+   "any": {
+    "oklch": [
+     0.82,
+     0.165,
+     92.0
+    ]
+   },
+   "dark": {
+    "oklch": [
+     0.86,
+     0.17,
+     93.0
+    ]
+   }
+  },
+  "skin/irie/stripe/green": {
+   "any": {
+    "oklch": [
+     0.56,
+     0.16,
+     148.0
+    ]
+   },
+   "dark": {
+    "oklch": [
+     0.62,
+     0.17953,
+     148.0
+    ]
+   }
+  },
+  "skin/irie/leaf/shade": {
+   "any": {
+    "oklch": [
+     0.9,
+     0.045,
+     135.0
+    ]
+   },
+   "dark": {
+    "oklch": [
+     0.215,
+     0.05035,
+     158.0
+    ]
+   }
+  },
+  "skin/irie/leaf/light": {
+   "any": {
+    "oklch": [
+     0.86,
+     0.065,
+     140.0
+    ]
+   },
+   "dark": {
+    "oklch": [
+     0.29,
+     0.075,
+     152.0
+    ]
+   }
   }
  }
 }

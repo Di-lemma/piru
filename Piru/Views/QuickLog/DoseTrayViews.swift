@@ -101,11 +101,10 @@ struct TrayCommitBar: View {
         Button(action: onCommit) {
             Text(commitLabel)
                 .cardTitle()
-                .foregroundStyle(.white)
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: .infinity)
                 .frame(minHeight: DoseTrayMetrics.controlHeight)
-                .background(Theme.accent, in: skinChipShape())
+                .skinProminentFill(in: skinChipShape())
         }
         .buttonStyle(.plain)
         .disabled(!model.isCommittable)

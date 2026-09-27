@@ -225,9 +225,11 @@ extension Font {
             let large = UIFont.TextStyle.largeTitle
             let inline = UIFont.TextStyle.headline
             var largeAttributes: [NSAttributedString.Key: Any] = [:]
+            var largeFont: UIFont?
             if let family = skin.typeface.display {
                 let scale = skin.typeface.displayScale
-                largeAttributes[.font] = uiFont(family, weight: .bold, style: large, scale: scale)
+                largeFont = uiFont(family, weight: .bold, style: large, scale: scale)
+                largeAttributes[.font] = largeFont
                 bar.titleTextAttributes = [.font: uiFont(family, weight: .semibold, style: inline, scale: scale)]
             } else if let design = skin.fontDesign {
                 largeAttributes[.font] = systemFont(design: design, weight: .bold, style: large)
@@ -249,6 +251,11 @@ extension Font {
                 if let fill = outline.fill { largeAttributes[.foregroundColor] = UIColor(fill) }
                 largeAttributes[.shadow] = drop
             }
+            if let foil = skin.titleFoil {
+                let lineHeight = (largeFont ?? UIFont.preferredFont(forTextStyle: large)).lineHeight
+                largeAttributes[.foregroundColor] = foilPattern(foil, height: lineHeight)
+                largeAttributes[.shadow] = foilDrop(foil)
+            }
             bar.largeTitleTextAttributes = largeAttributes.isEmpty ? nil : largeAttributes
         }
 
@@ -267,13 +274,46 @@ extension Font {
             return UIFontMetrics(forTextStyle: style).scaledFont(for: UIFont(descriptor: descriptor, size: base.pointSize))
         }
 
-        /// The same family + weight descriptor `SkinFace` renders with, as a `UIFont`.
+        /// A pattern color one line tall with the foil ramp down it. UIKit
+        /// titles take a color, never a gradient, and a pattern tiles from the
+        /// label's own origin, so each line of the title gets the whole ramp.
+        private static func foilPattern(_ foil: SkinGilding, height: CGFloat) -> UIColor {
+            let size = CGSize(width: 1, height: max(1, height.rounded(.up)))
+            let image = UIGraphicsImageRenderer(size: size).image { context in
+                let stops = foil.titleStops
+                let gradient = CGGradient(
+                    colorsSpace: nil,
+                    colors: stops.map { UIColor($0.color).cgColor } as CFArray,
+                    locations: stops.map(\.location),
+                )
+                if let gradient {
+                    context.cgContext.drawLinearGradient(gradient, start: .zero, end: CGPoint(x: 0, y: size.height), options: [])
+                }
+            }
+            return UIColor(patternImage: image)
+        }
+
+        /// The drop that gives foil lettering its depth: the ink, tight.
+        private static func foilDrop(_ foil: SkinGilding) -> NSShadow {
+            let drop = NSShadow()
+            drop.shadowColor = UIColor(foil.ink).withAlphaComponent(0.85)
+            drop.shadowOffset = CGSize(width: 0, height: 2)
+            drop.shadowBlurRadius = 2
+            return drop
+        }
+
+        /// The same family + weight descriptor `SkinFace` renders with, as a
+        /// `UIFont`. A family with one face gets no weight trait: UIKit fakes a
+        /// bold by thickening every stroke, which flattens a high-contrast
+        /// face like Limelight into something that no longer matches the
+        /// card titles set in the real one.
         private static func uiFont(_ family: String, weight: UIFont.Weight, style: UIFont.TextStyle, scale: CGFloat = 1) -> UIFont {
             let size = UIFont.preferredFont(forTextStyle: style).pointSize * scale
-            let descriptor = UIFontDescriptor(fontAttributes: [
-                .family: family,
-                .traits: [UIFontDescriptor.TraitKey.weight: weight],
-            ])
+            var attributes: [UIFontDescriptor.AttributeName: Any] = [.family: family]
+            if UIFont.fontNames(forFamilyName: family).count > 1 {
+                attributes[.traits] = [UIFontDescriptor.TraitKey.weight: weight]
+            }
+            let descriptor = UIFontDescriptor(fontAttributes: attributes)
             return UIFontMetrics(forTextStyle: style).scaledFont(for: UIFont(descriptor: descriptor, size: size))
         }
     }

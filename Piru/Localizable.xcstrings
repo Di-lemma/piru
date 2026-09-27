@@ -6024,6 +6024,34 @@
         }
       }
     },
+    "%lld tabs · about %lld days left" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld pastillas · quedan unos %lld días"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld pastillas · quedan unos %lld días"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld 片 · 约剩 %lld 天"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld 錠 · 約剩 %lld 天"
+          }
+        }
+      }
+    },
     "%lld trials" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -9558,6 +9586,7 @@
       }
     },
     "A passphrase-protected .piruenc file" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -9585,7 +9614,36 @@
         }
       }
     },
+    "A Piru or PsychonautWiki file, or an encrypted backup" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un archivo de Piru o PsychonautWiki, o una copia de seguridad cifrada"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un archivo de Piru o PsychonautWiki, o una copia de seguridad cifrada"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Piru 或 PsychonautWiki 文件，或加密备份"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Piru 或 PsychonautWiki 檔案，或加密備份"
+          }
+        }
+      }
+    },
     "A Piru or PsychonautWiki JSON file" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -12455,6 +12513,34 @@
         }
       }
     },
+    "Add what you have on hand, or scan the box. Every dose you log comes off it, with days left and a heads-up before you run out." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Agrega lo que tienes a mano o escanea la caja. Cada dosis que registras se descuenta, con los días que quedan y un aviso antes de que se acabe."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Agrega lo que tienes a mano o escanea la caja. Cada dosis que registras se descuenta, con los días que quedan y un aviso antes de que se acabe."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "添加你手头的存量，或扫描药盒。每记录一次剂量都会自动扣除，并显示剩余天数，在用完之前提醒你。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "新增你手邊的存量，或掃描藥盒。每記錄一次劑量都會自動扣除，並顯示剩餘天數，在用完之前提醒你。"
+          }
+        }
+      }
+    },
     "Add Your Meds" : {
       "localizations" : {
         "es" : {
@@ -14586,6 +14672,7 @@
       }
     },
     "Already keep a journal? Import a Piru backup or a PsyLog-format export — or start with a clean slate." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -14609,6 +14696,34 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "已經在記錄了？匯入 Piru 備份或 PsyLog 格式的匯出檔案——或者從頭開始。"
+          }
+        }
+      }
+    },
+    "Already keep a journal? Import a Piru backup, encrypted or not, or a PsyLog-format export — or start with a clean slate." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Ya llevas un diario? Importa una copia de seguridad de Piru, cifrada o no, o una exportación en formato PsyLog — o empieza de cero."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Ya llevas un diario? Importa una copia de seguridad de Piru, cifrada o no, o una exportación en formato PsyLog — o empieza de cero."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已经在记录了？导入 Piru 备份（加密或未加密均可）或 PsyLog 格式的导出文件——或者从头开始。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已經在記錄了？匯入 Piru 備份（加密或未加密皆可）或 PsyLog 格式的匯出檔案——或者從頭開始。"
           }
         }
       }
@@ -18449,6 +18564,57 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "兩週一次"
+          }
+        }
+      }
+    },
+    "Black lacquer, gold leaf, a city after dark" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Laca negra, pan de oro, una ciudad de noche"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Laca negra, pan de oro, una ciudad de noche"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "黑漆、金箔、入夜的城市"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "黑漆、金箔、入夜的城市"
+          }
+        }
+      }
+    },
+    "Black lacquer, gold leaf, Paris after midnight" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Laca negra, pan de oro, París pasada la medianoche"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "黑漆、金箔、午夜后的巴黎"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "黑漆、金箔、午夜後的巴黎"
           }
         }
       }
@@ -29747,6 +29913,34 @@
         }
       }
     },
+    "Dose logged · 1 tab taken off" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dosis registrada · 1 pastilla descontada"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dosis registrada · 1 pastilla descontada"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已记录剂量 · 扣除 1 片"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已記錄劑量 · 扣除 1 錠"
+          }
+        }
+      }
+    },
     "Dose Ranges" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -32795,6 +32989,34 @@
         }
       }
     },
+    "Emerald velvet, gold foil, red, gold and green" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Terciopelo esmeralda, lámina de oro, rojo, oro y verde"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Terciopelo esmeralda, lámina de oro, rojo, oro y verde"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "祖母绿丝绒、金箔、红金绿"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "祖母綠絲絨、金箔、紅金綠"
+          }
+        }
+      }
+    },
     "Emergencias" : {
       "localizations" : {
         "es" : {
@@ -33241,6 +33463,34 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "加密"
+          }
+        }
+      }
+    },
+    "Encrypted backup" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copia de seguridad cifrada"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copia de seguridad cifrada"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "加密备份"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "加密備份"
           }
         }
       }
@@ -37948,6 +38198,7 @@
       }
     },
     "From a file or an encrypted backup" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -37976,6 +38227,7 @@
       }
     },
     "From a file, an encrypted backup, or iCloud" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -38789,6 +39041,34 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "胃腸道藥物"
+          }
+        }
+      }
+    },
+    "Gatsby" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gatsby"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gatsby"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "纸醉金迷"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "紙醉金迷"
           }
         }
       }
@@ -42898,6 +43178,7 @@
       }
     },
     "Import & Restore…" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -43038,6 +43319,7 @@
       }
     },
     "Import from a File…" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -43089,6 +43371,34 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "從 PsyLog 或任何使用該格式的應用程式匯入——新舊版本皆支援。"
+          }
+        }
+      }
+    },
+    "Import…" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Importar…"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Importar…"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "导入…"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "匯入…"
           }
         }
       }
@@ -44523,6 +44833,34 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "反向促效劑"
+          }
+        }
+      }
+    },
+    "Irie" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Irie"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Irie"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "雷鬼"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "雷鬼"
           }
         }
       }
@@ -61249,6 +61587,29 @@
         }
       }
     },
+    "Photo: “orange aventador” by Ben, CC BY-SA 2.0 ↗" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Foto: «orange aventador» de Ben, CC BY-SA 2.0 ↗"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "照片：Ben 拍摄的“orange aventador”，CC BY-SA 2.0 ↗"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "照片：Ben 拍攝的「orange aventador」，CC BY-SA 2.0 ↗"
+          }
+        }
+      }
+    },
     "Physical" : {
       "comment" : "Effect domain",
       "localizations" : {
@@ -61414,6 +61775,34 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "自己挑選時間"
+          }
+        }
+      }
+    },
+    "Pick the .piruenc file and enter its passphrase." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Elige el archivo .piruenc y escribe su frase de contraseña."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Elige el archivo .piruenc y escribe su frase de contraseña."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "选择 .piruenc 文件并输入其密码短语。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "選擇 .piruenc 檔案並輸入其密碼短語。"
           }
         }
       }
@@ -68539,6 +68928,7 @@
       }
     },
     "Restore Encrypted Backup…" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -77329,6 +77719,34 @@
         }
       }
     },
+    "Stock that counts itself" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Existencias que se cuentan solas"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Existencias que se cuentan solas"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "会自己计数的库存"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "會自己計數的庫存"
+          }
+        }
+      }
+    },
     "Stop Live Activity" : {
       "localizations" : {
         "es" : {
@@ -81658,6 +82076,34 @@
         }
       }
     },
+    "This backup is encrypted. Enter the passphrase it was made with." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esta copia de seguridad está cifrada. Escribe la frase de contraseña con la que se creó."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esta copia de seguridad está cifrada. Escribe la frase de contraseña con la que se creó."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此备份已加密。请输入创建它时使用的密码短语。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此備份已加密。請輸入建立它時使用的密碼短語。"
+          }
+        }
+      }
+    },
     "This backup uses a newer format (v%lld) than this version of Piru understands. Please update the app." : {
       "localizations" : {
         "es" : {
@@ -82022,7 +82468,36 @@
         }
       }
     },
+    "This is an encrypted Piru backup. Import it from Tools → Data & Backup, which asks for its passphrase." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esta es una copia de seguridad cifrada de Piru. Impórtala desde Herramientas → Datos y copia de seguridad, donde se te pedirá su frase de contraseña."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esta es una copia de seguridad cifrada de Piru. Impórtala desde Herramientas → Datos y copia de seguridad, donde se te pedirá su frase de contraseña."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这是加密的 Piru 备份。请在“工具 → 数据与备份”中导入，届时会要求输入其密码短语。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "這是加密的 Piru 備份。請在「工具 → 資料與備份」中匯入，屆時會要求輸入其密碼短語。"
+          }
+        }
+      }
+    },
     "This is an encrypted Piru backup. Use Restore Encrypted Backup and enter its passphrase." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -85027,6 +85502,34 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "不太可能佔主導"
+          }
+        }
+      }
+    },
+    "Unlock" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desbloquear"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desbloquear"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "解锁"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "解鎖"
           }
         }
       }
