@@ -19,7 +19,17 @@ extension View {
     /// `.buttonStyle(.glass)` at every standalone action.
     @ViewBuilder
     func skinButtonStyle(_ prominence: SkinButtonProminence) -> some View {
-        switch SkinStore.shared.current.surface {
+        let skin = SkinStore.shared.current
+        if let gilding = skin.gilding {
+            buttonStyle(GildedButtonStyle(prominence: prominence, gilding: gilding))
+        } else {
+            surfaceButtonStyle(prominence, surface: skin.surface)
+        }
+    }
+
+    @ViewBuilder
+    private func surfaceButtonStyle(_ prominence: SkinButtonProminence, surface: SkinSurface) -> some View {
+        switch surface {
         case .glass:
             switch prominence {
             case .prominent: buttonStyle(.glassProminent)
@@ -41,6 +51,117 @@ extension View {
             buttonStyle(PaperButtonStyle(prominence: prominence, stroke: stroke))
         case let .neon(stroke, glow):
             buttonStyle(NeonButtonStyle(prominence: prominence, stroke: stroke, glow: glow))
+        }
+    }
+}
+
+/// A gilded button: a ``GildedPlate`` under the ink, or, for the neutral
+/// twin, a dark plate inside the same gold rim. Pressing takes the light off
+/// the metal.
+struct GildedButtonStyle: ButtonStyle {
+    let prominence: SkinButtonProminence
+    let gilding: SkinGilding
+
+    func makeBody(configuration: Configuration) -> some View {
+        let skin = SkinStore.shared.current
+        let shape = RoundedRectangle(cornerRadius: 12, style: .continuous)
+        let pressed = configuration.isPressed
+        configuration.label
+            .foregroundStyle(prominence == .prominent ? gilding.ink : skin.accent)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+            .background {
+                switch prominence {
+                case .prominent:
+                    GildedPlate(gilding: gilding, shape: shape, pressed: pressed)
+                case .neutral:
+                    shape.fill(skin.cardBackground.opacity(0.85))
+                    shape.strokeBorder(gilding.rim, lineWidth: 1.25)
+                }
+            }
+            .brightness(pressed ? -0.07 : 0)
+            .scaleEffect(pressed ? 0.98 : 1)
+            .animation(.easeOut(duration: 0.1), value: pressed)
+    }
+}
+
+/// Gold leaf in any shape: the foil ramp bright along the top as if lit from
+/// above, a diagonal sheen across the face, a bright bevel inside the top
+/// edge, the skin's pinstripe along the foot, and a rim that darkens toward it.
+struct GildedPlate<S: Shape>: View {
+    let gilding: SkinGilding
+    let shape: S
+    var pressed = false
+
+    var body: some View {
+        ZStack {
+            shape.fill(foil)
+                .shadow(color: gilding.deep.opacity(pressed ? 0.2 : 0.45), radius: pressed ? 3 : 8, y: pressed ? 1 : 4)
+            shape.fill(sheen)
+            if !gilding.stripe.isEmpty {
+                pinstripe.clipShape(shape)
+            }
+            shape.stroke(gilding.shine.opacity(0.7), lineWidth: 0.75)
+                .padding(1.5)
+                .mask { LinearGradient(colors: [.white, .clear], startPoint: .top, endPoint: .center) }
+            shape.stroke(gilding.rim, lineWidth: 1)
+        }
+    }
+
+    private var foil: LinearGradient {
+        LinearGradient(stops: [
+            .init(color: gilding.mid, location: 0),
+            .init(color: gilding.bright, location: 0.2),
+            .init(color: gilding.shine, location: 0.32),
+            .init(color: gilding.mid, location: 0.55),
+            .init(color: gilding.deep, location: 0.85),
+            .init(color: gilding.mid, location: 1),
+        ], startPoint: .top, endPoint: .bottom)
+    }
+
+    private var sheen: LinearGradient {
+        LinearGradient(stops: [
+            .init(color: gilding.shine.opacity(0), location: 0.3),
+            .init(color: gilding.shine.opacity(0.5), location: 0.46),
+            .init(color: gilding.shine.opacity(0), location: 0.6),
+        ], startPoint: .topLeading, endPoint: .bottomTrailing)
+    }
+
+    /// The stripe's bands side by side along the foot.
+    private var pinstripe: some View {
+        VStack(spacing: 0) {
+            Spacer(minLength: 0)
+            HStack(spacing: 0) {
+                ForEach(gilding.stripe.indices, id: \.self) { i in
+                    Rectangle().fill(gilding.stripe[i])
+                }
+            }
+            .frame(height: 3)
+        }
+    }
+}
+
+extension SkinGilding {
+    /// Bright at the top edge, dark at the foot.
+    var rim: LinearGradient {
+        LinearGradient(colors: [shine, mid, deep], startPoint: .top, endPoint: .bottom)
+    }
+}
+
+extension View {
+    /// The fill and label color of a hand-built call to action — one that
+    /// lays its own label out and so cannot take ``skinButtonStyle(_:)``.
+    /// Gold leaf with its ink under a gilded skin, the accent with the
+    /// skin's `onAccent` everywhere else.
+    @ViewBuilder
+    func skinProminentFill(in shape: some Shape) -> some View {
+        let skin = SkinStore.shared.current
+        if let gilding = skin.gilding {
+            foregroundStyle(gilding.ink)
+                .background { GildedPlate(gilding: gilding, shape: shape) }
+        } else {
+            foregroundStyle(skin.onAccent)
+                .background(skin.accent, in: shape)
         }
     }
 }

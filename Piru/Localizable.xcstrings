@@ -14722,6 +14722,28 @@
         }
       }
     },
+    "Black lacquer, gold leaf, Paris after midnight" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Laca negra, pan de oro, París pasada la medianoche"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "黑漆、金箔、午夜后的巴黎"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "黑漆、金箔、午夜後的巴黎"
+          }
+        }
+      }
+    },
     "Black, paper and signal cyan, from the effects index" : {
       "localizations" : {
         "es" : {
@@ -26026,6 +26048,28 @@
         }
       }
     },
+    "Emerald velvet, gold foil, red, gold and green" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Terciopelo esmeralda, lámina de oro, rojo, oro y verde"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "祖母绿丝绒、金箔、红金绿"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "祖母綠絲絨、金箔、紅金綠"
+          }
+        }
+      }
+    },
     "Emergencias" : {
       "localizations" : {
         "es" : {
@@ -30770,6 +30814,28 @@
         }
       }
     },
+    "Gatsby" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gatsby"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gatsby"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gatsby"
+          }
+        }
+      }
+    },
     "Generate PDF Report" : {
       "localizations" : {
         "es" : {
@@ -35300,6 +35366,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "反向促效劑"
+          }
+        }
+      }
+    },
+    "Irie" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Irie"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Irie"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Irie"
           }
         }
       }
@@ -48464,6 +48552,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "表型"
+          }
+        }
+      }
+    },
+    "Photo: “orange aventador” by Ben, CC BY-SA 2.0 ↗" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Foto: «orange aventador» de Ben, CC BY-SA 2.0 ↗"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "照片：Ben 拍摄的“orange aventador”，CC BY-SA 2.0 ↗"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "照片：Ben 拍攝的「orange aventador」，CC BY-SA 2.0 ↗"
           }
         }
       }

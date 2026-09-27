@@ -31,6 +31,10 @@ import SwiftUI
 enum Skin: String, CaseIterable, Identifiable, Sendable {
     /// The app's own look: soft pink light, hot pink dark, Liquid Glass.
     case piru
+    /// dose.wiki — the partner encyclopedia's plum and fuchsia, their dose-tier
+    /// ramp as the semantic colours, their molecule ring behind everything.
+    /// Second in the picker, after the app's own look.
+    case doseWiki
     /// Graphite — neutral grays, nothing moving. For people who want none of it.
     case graphite
     /// Linen — warm paper and charcoal, quiet.
@@ -68,9 +72,6 @@ enum Skin: String, CaseIterable, Identifiable, Sendable {
     /// Kumo — the author's weather app. A sky that follows the real time of
     /// day and the season, frosted cards that let it through.
     case kumo
-    /// dose.wiki — the partner encyclopedia's plum and fuchsia, their dose-tier
-    /// ramp as the semantic colours, their molecule ring behind everything.
-    case doseWiki
     /// substance.wiki — the effects encyclopedia Piru draws from, which lists
     /// Piru in its sidebar. Their black ground, paper ink, cyan and signal
     /// lime; square hairline panels, nothing moving.
@@ -83,6 +84,12 @@ enum Skin: String, CaseIterable, Identifiable, Sendable {
     /// Ecliptica). Engraved gold on a plum night, its four elements as the
     /// semantic pairs, and its chart wheel turning behind everything.
     case selenia
+    /// Gatsby — black lacquer and champagne gold, Limelight titles, gilded
+    /// buttons, and a night photograph of Paris behind everything.
+    case gatsby
+    /// Irie — emerald velvet, rasta-gold foil, the red / gold / green
+    /// tricolor as a pinstripe, and embossed fan leaves.
+    case irie
     var id: String {
         rawValue
     }
@@ -111,6 +118,7 @@ enum Skin: String, CaseIterable, Identifiable, Sendable {
         // else, so they are never sold.
         case .elyPink, .doseWiki, .substanceWiki: .free
         case .tsuki, .astrelia, .jellyfish, .paperGarden, .hotaru, .yuki, .hebi, .kumo, .hanabi, .selenia: .animated
+        case .gatsby, .irie: .vanity
         }
     }
 
@@ -139,6 +147,8 @@ enum Skin: String, CaseIterable, Identifiable, Sendable {
         case .substanceWiki: "substance.wiki"
         case .hanabi: "Hanabi"
         case .selenia: "Selenia"
+        case .gatsby: "Gatsby"
+        case .irie: "Irie"
         }
     }
 
@@ -162,6 +172,8 @@ enum Skin: String, CaseIterable, Identifiable, Sendable {
         case .substanceWiki: "Black, paper and signal cyan, from the effects index"
         case .hanabi: "A night sky, five suits, fireworks"
         case .selenia: "Engraved gold, a plum night, a turning wheel"
+        case .gatsby: "Black lacquer, gold leaf, Paris after midnight"
+        case .irie: "Emerald velvet, gold foil, red, gold and green"
         }
     }
 
@@ -203,6 +215,8 @@ enum Skin: String, CaseIterable, Identifiable, Sendable {
         case .substanceWiki: .substanceWiki
         case .hanabi: .hanabi
         case .selenia: .selenia
+        case .gatsby: .gatsby
+        case .irie: .irie
         }
     }
 
@@ -453,6 +467,29 @@ enum Skin: String, CaseIterable, Identifiable, Sendable {
                 frameCorners: (SkinGlyph("✦", accentMark), SkinGlyph("☾", .Skin.Selenia.Wheel.star)),
                 tapGlyph: SkinGlyph("✦", accentMark),
             )
+        case .gatsby:
+            SkinDecorations(
+                scene: .nocturne(SkinNocturne(
+                    photo: .Skin.Gatsby.night,
+                    ground: palette.background,
+                    gold: palette.stroke,
+                )),
+                glyphs: [],
+                frameCorners: (SkinGlyph("◆", accentMark), SkinGlyph("◆", accentMark)),
+                tapGlyph: SkinGlyph("✦", .Skin.Gatsby.Gilt.bright),
+            )
+        case .irie:
+            SkinDecorations(
+                scene: .velvet(SkinVelvet(
+                    stripes: [.Skin.Irie.Stripe.red, .Skin.Irie.Stripe.gold, .Skin.Irie.Stripe.green],
+                    leafShade: .Skin.Irie.Leaf.shade,
+                    leafLight: .Skin.Irie.Leaf.light,
+                    gold: palette.stroke,
+                )),
+                glyphs: [],
+                frameCorners: (SkinGlyph("✦", .Skin.Irie.Stripe.gold), SkinGlyph("✦", .Skin.Irie.Stripe.green)),
+                tapGlyph: SkinGlyph("✦", .Skin.Irie.Stripe.gold),
+            )
         case .doseWiki:
             // The site is quiet: its page halos, its molecule ring, no sticker
             // field — only a hex node at a glance card's corner and on a tap.
@@ -480,7 +517,7 @@ enum Skin: String, CaseIterable, Identifiable, Sendable {
     var cardInsetDash: Color? {
         switch self {
         case .elyPink: accentMark
-        case .piru, .graphite, .linen, .slate, .tsuki, .astrelia, .jellyfish, .paperGarden, .hotaru, .yuki, .hebi, .kumo, .doseWiki, .substanceWiki, .hanabi, .selenia: nil
+        case .piru, .graphite, .linen, .slate, .tsuki, .astrelia, .jellyfish, .paperGarden, .hotaru, .yuki, .hebi, .kumo, .doseWiki, .substanceWiki, .hanabi, .selenia, .gatsby, .irie: nil
         }
     }
 
@@ -493,7 +530,7 @@ enum Skin: String, CaseIterable, Identifiable, Sendable {
         case .paperGarden: 2
         // substance.wiki sets `--radius: 0`.
         case .hebi, .substanceWiki: 0
-        case .piru, .graphite, .linen, .slate, .tsuki, .jellyfish, .hotaru, .yuki, .kumo, .doseWiki, .hanabi, .selenia: nil
+        case .piru, .graphite, .linen, .slate, .tsuki, .jellyfish, .hotaru, .yuki, .kumo, .doseWiki, .hanabi, .selenia, .gatsby, .irie: nil
         }
     }
 
@@ -536,6 +573,17 @@ enum Skin: String, CaseIterable, Identifiable, Sendable {
                 fill: palette.titleFill, stroke: nil,
                 shadow: palette.titleShadow, shadowOffset: .zero, shadowBlur: 10,
             )
+        // Gold leaf lit from below at night, black ink with a gold halo by day.
+        case .gatsby: SkinTitleOutline(
+                fill: palette.titleFill, stroke: nil,
+                shadow: palette.titleShadow, shadowOffset: .zero, shadowBlur: 12,
+            )
+        // A sound-system flyer: gold on a hard green drop at night, green on a
+        // hard gold drop by day.
+        case .irie: SkinTitleOutline(
+                fill: palette.titleFill, stroke: nil,
+                shadow: palette.titleShadow, shadowOffset: CGSize(width: 2, height: 2), shadowBlur: 0,
+            )
         }
     }
 
@@ -574,6 +622,9 @@ enum Skin: String, CaseIterable, Identifiable, Sendable {
         case .doseWiki: .frosted(stroke: palette.stroke, highlight: palette.shadow)
         // Their panels: a flat fill inside a one-point hairline, no shadow at all.
         case .substanceWiki: .edged(stroke: palette.stroke, strokeWidth: 1, shadow: .clear, shadowOffset: .zero)
+        // Frosted so the photograph shows through, under a gold rule.
+        case .gatsby: .frosted(stroke: palette.stroke, highlight: palette.shadow)
+        case .irie: .soft(stroke: palette.stroke, glow: palette.shadow, glowRadius: 14)
         }
     }
 
@@ -590,7 +641,7 @@ enum Skin: String, CaseIterable, Identifiable, Sendable {
     /// `SkinTypeTests` enforces the exclusion.
     var fontDesign: Font.Design? {
         switch self {
-        case .piru, .graphite, .linen, .slate, .elyPink, .astrelia, .paperGarden, .hotaru, .hebi, .kumo, .doseWiki, .substanceWiki: nil
+        case .piru, .graphite, .linen, .slate, .elyPink, .astrelia, .paperGarden, .hotaru, .hebi, .kumo, .doseWiki, .substanceWiki, .gatsby, .irie: nil
         // Selenia sets its plates in system serif — engraved, with Roman
         // numerals on a plate.
         case .selenia: .serif
@@ -620,6 +671,33 @@ enum Skin: String, CaseIterable, Identifiable, Sendable {
         // Saira (variable, OFL): the squarish geometric sans closest to their
         // wordmark, which the site's font loader hides. Set a touch wide.
         case .doseWiki: SkinTypeface(display: "Saira", label: nil, displayScale: 0.94)
+        // Limelight (OFL), a 1920s marquee face, for titles; Josefin Sans
+        // (variable, OFL), geometric with deco proportions, for chips.
+        case .gatsby: SkinTypeface(display: "Limelight", label: "Josefin Sans", displayScale: 0.9)
+        // Shrikhand (OFL): heavy, warm, italic — a Kingston dance flyer.
+        case .irie: SkinTypeface(display: "Shrikhand", label: nil, displayScale: 0.88)
+        }
+    }
+
+    // MARK: - Buttons
+
+    /// A metal finish for standalone buttons, drawn by `GildedButtonStyle`
+    /// in place of the surface's own button. Cards, chips and capsules keep
+    /// the surface: a finish is the one thing a vanity skin adds to the six.
+    var gilding: SkinGilding? {
+        switch self {
+        case .gatsby: SkinGilding(
+                deep: .Skin.Gatsby.Gilt.deep, mid: .Skin.Gatsby.Gilt.mid,
+                bright: .Skin.Gatsby.Gilt.bright, shine: .Skin.Gatsby.Gilt.shine,
+                ink: .Skin.Gatsby.Gilt.ink, stripe: [],
+            )
+        case .irie: SkinGilding(
+                deep: .Skin.Irie.Gilt.deep, mid: .Skin.Irie.Gilt.mid,
+                bright: .Skin.Irie.Gilt.bright, shine: .Skin.Irie.Gilt.shine,
+                ink: .Skin.Irie.Gilt.ink,
+                stripe: [.Skin.Irie.Stripe.red, .Skin.Irie.Stripe.gold, .Skin.Irie.Stripe.green],
+            )
+        case .piru, .doseWiki, .graphite, .linen, .slate, .elyPink, .tsuki, .astrelia, .jellyfish, .paperGarden, .hotaru, .yuki, .hebi, .kumo, .substanceWiki, .hanabi, .selenia: nil
         }
     }
 }
@@ -852,6 +930,30 @@ struct SkinPalette: Sendable {
         info: (.Skin.Substancewiki.Semantic.Info.text, .Skin.Substancewiki.Semantic.Info.accent),
     )
 
+    static let gatsby = SkinPalette(
+        accent: .Skin.Gatsby.Accent.text, accentMark: .Skin.Gatsby.Accent.mark, onAccent: .Skin.Gatsby.Accent.on,
+        secondaryLabel: .Skin.Gatsby.Text.secondary,
+        background: .Skin.Gatsby.Surface.background, cardBackground: .Skin.Gatsby.Surface.card, inputBackground: .Skin.Gatsby.Surface.input,
+        eyebrow: .Skin.Gatsby.eyebrow, stroke: .Skin.Gatsby.stroke, shadow: .Skin.Gatsby.shadow,
+        titleFill: .Skin.Gatsby.Title.fill, titleStroke: .Skin.Gatsby.Title.stroke, titleShadow: .Skin.Gatsby.Title.shadow,
+        danger: (.Skin.Gatsby.Semantic.Danger.text, .Skin.Gatsby.Semantic.Danger.accent),
+        caution: (.Skin.Gatsby.Semantic.Caution.text, .Skin.Gatsby.Semantic.Caution.accent),
+        success: (.Skin.Gatsby.Semantic.Success.text, .Skin.Gatsby.Semantic.Success.accent),
+        info: (.Skin.Gatsby.Semantic.Info.text, .Skin.Gatsby.Semantic.Info.accent),
+    )
+
+    static let irie = SkinPalette(
+        accent: .Skin.Irie.Accent.text, accentMark: .Skin.Irie.Accent.mark, onAccent: .Skin.Irie.Accent.on,
+        secondaryLabel: .Skin.Irie.Text.secondary,
+        background: .Skin.Irie.Surface.background, cardBackground: .Skin.Irie.Surface.card, inputBackground: .Skin.Irie.Surface.input,
+        eyebrow: .Skin.Irie.eyebrow, stroke: .Skin.Irie.stroke, shadow: .Skin.Irie.shadow,
+        titleFill: .Skin.Irie.Title.fill, titleStroke: .Skin.Irie.Title.stroke, titleShadow: .Skin.Irie.Title.shadow,
+        danger: (.Skin.Irie.Semantic.Danger.text, .Skin.Irie.Semantic.Danger.accent),
+        caution: (.Skin.Irie.Semantic.Caution.text, .Skin.Irie.Semantic.Caution.accent),
+        success: (.Skin.Irie.Semantic.Success.text, .Skin.Irie.Semantic.Success.accent),
+        info: (.Skin.Irie.Semantic.Info.text, .Skin.Irie.Semantic.Info.accent),
+    )
+
     static let jellyfish = SkinPalette(
         accent: .Skin.Jellyfish.Accent.text, accentMark: .Skin.Jellyfish.Accent.mark, onAccent: .Skin.Jellyfish.Accent.on,
         secondaryLabel: .Skin.Jellyfish.Text.secondary,
@@ -936,6 +1038,54 @@ enum SkinScene: Sendable {
     case fireworks(SkinFireworks)
     /// Selenia: an engraved chart wheel turning under a faint dome.
     case ephemeris(SkinEphemeris)
+    /// Gatsby: a night photograph under the title, falling away into the
+    /// ground, over a sunburst in gold rules. Still.
+    case nocturne(SkinNocturne)
+    /// Irie: a velvet ground, the tricolor as a pinstripe, embossed fan
+    /// leaves. Still.
+    case velvet(SkinVelvet)
+
+    /// Drawn once and never ticked: the vanity scenes are pictures, not
+    /// animations, and cost nothing after the first frame.
+    var isStill: Bool {
+        switch self {
+        case .nocturne, .velvet: true
+        case .stickers, .nightSky, .underwater, .paper, .fireflies, .snow, .arcade, .sky, .molecule, .fireworks, .ephemeris: false
+        }
+    }
+}
+
+struct SkinNocturne: Sendable {
+    /// The photograph, resolved in the renderer like dose.wiki's ring.
+    let photo: ImageResource
+    /// What the photograph falls away into: the skin's background.
+    let ground: Color
+    /// The sunburst's rules.
+    let gold: Color
+}
+
+struct SkinVelvet: Sendable {
+    /// Red, gold, green: the pinstripe, top band first.
+    let stripes: [Color]
+    /// The embossed leaves' shadow side and lit side.
+    let leafShade: Color
+    let leafLight: Color
+    /// The two leaves drawn in gold outline.
+    let gold: Color
+}
+
+/// A gilded button's metal. The foil ramp runs deep → mid → bright → shine;
+/// `ink` is the label set on it, gated 4.5:1 against `mid` by
+/// `ColorContrastTests`.
+struct SkinGilding: Sendable {
+    let deep: Color
+    let mid: Color
+    let bright: Color
+    let shine: Color
+    let ink: Color
+    /// A pinstripe along the foot of a prominent button, left to right.
+    /// Empty for none.
+    let stripe: [Color]
 }
 
 /// Selenia's chart wheel: concentric rules, twelve sign sectors and the
@@ -1146,6 +1296,8 @@ nonisolated enum SkinTier: Sendable {
     case palette
     /// A palette with a moving scene behind it.
     case animated
+    /// A still scene, bespoke type and gilded buttons: priced above the rest.
+    case vanity
 }
 
 /// The App Store product identifiers. In `Shared/` beside `Skin` because the

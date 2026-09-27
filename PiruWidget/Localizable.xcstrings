@@ -545,6 +545,9 @@
         }
       }
     },
+    "Black lacquer, gold leaf, Paris after midnight" : {
+
+    },
     "Black, paper and signal cyan, from the effects index" : {
       "localizations" : {
         "es" : {
@@ -1052,6 +1055,9 @@
         }
       }
     },
+    "Emerald velvet, gold foil, red, gold and green" : {
+
+    },
     "Engraved gold, a plum night, a turning wheel" : {
       "localizations" : {
         "es" : {
@@ -1206,6 +1212,9 @@
           }
         }
       }
+    },
+    "Gatsby" : {
+
     },
     "Graphite" : {
       "localizations" : {
@@ -1448,6 +1457,9 @@
           }
         }
       }
+    },
+    "Irie" : {
+
     },
     "Jellyfish" : {
       "localizations" : {

@@ -66,6 +66,23 @@ roles stay split: a colour that is a fine mark can still fail as small copy
 | Selenia | `~/Developer/Ecliptica` (the folder keeps the pre-rename name) | frosted (gold hairline + glow) | system **serif** | an engraved chart wheel turning under a still dome |
 | Hanabi | `~/Developer/Hanabi` (the co-op card game) | soft (periwinkle glow) | `.rounded` | a festival night: a star field, rockets, bursts in the five suits |
 | substance.wiki | https://substance.wiki (partner; their black ground, paper ink, cyan and signal lime) | edged (1pt hairline, no shadow, `--radius: 0`) | system | none — nothing moving, by their design |
+| Gatsby (vanity) | — | frosted (gold rule + highlight), **gilded buttons** | Limelight + Josefin Sans (label) | still: a night photograph of Paris falling into black lacquer, a gold sunburst |
+| Irie (vanity) | — | soft (gold hairline + green glow), **gilded buttons** with a tricolor foot | Shrikhand (scaled .88) | still: emerald velvet, embossed fan leaves, the red / gold / green pinstripe in the right gutter |
+
+**The vanity tier** (`SkinTier.vanity`, $29.99 each, covered by the
+unlock-all like every skin) is priced on finish rather than motion. Its scenes
+are pictures: `SkinScene.isStill` keeps the backdrop's clock paused, so they
+cost one draw and nothing after. What they add is `Skin.gilding`, a metal
+finish that `skinButtonStyle` draws in place of the surface's own button, and
+that `skinProminentFill(in:)` lends to a hand-built call to action (the Log
+sheet's Record button). A finish is not a seventh surface: cards, chips and
+capsules keep one of the six.
+
+Gatsby's photograph is "orange aventador" by Ben (Flickr, via Wikimedia
+Commons), **CC BY-SA 2.0**. The license requires the credit beside the work,
+which is the link the Skins sheet shows under the skin; the cropped asset
+(`skin/gatsby/night`) is itself CC BY-SA. Its fonts, like every bundled face,
+are SIL OFL with the license beside them in `Piru/Fonts`.
 
 Hanabi's five card suits **are** its semantic pairs — red → danger, yellow →
 caution, green → success, blue → info — the move dose.wiki makes with its
@@ -127,14 +144,18 @@ worth. A new skin picks one of the six. (Decided 2026-09-08.)
 
 ## Adding a skin
 
-1. Palette: seed `skin/<id>/…` as hex in `color/build_skin_palettes.py` — it
+1. Palette: seed `skin/<id>/…` in `color/build_skin_palettes.py`, as an
+   Oklch `(L, C, h)` tuple (hex only for values ported from an app's own) — it
    gates text 4.5:1 and marks 3:1 against the skin's own card and writes
    Oklch into `palette-skins.json`; then `build_generator_input.py` and
    `generate_colorsets.py`.
 2. `Skin`: add the case, its name/tagline, a `SkinPalette` from the generated
    symbols, `surface`, `fontDesign` / `typeface`, `decorations`.
 3. `translate_catalog.py`: the name and tagline.
-4. Nothing else. `ColorContrastTests` iterates `Skin.allCases`; the picker
+4. A paid skin: its product in `StoreKit/Skins.storekit` (`SkinShopTests`
+   fails until the two agree) and in App Store Connect, with a review
+   screenshot and territory availability, or it never loads in TestFlight.
+5. Nothing else. `ColorContrastTests` iterates `Skin.allCases`; the picker
    lists them.
 
 ## Form: `Piru/Views/Components/SkinChrome.swift`

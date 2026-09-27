@@ -41,6 +41,20 @@ struct SkinShopTests {
     }
 
     @Test
+    func `The vanity skins are sold, and gilded`() {
+        for skin in [Skin.gatsby, .irie] {
+            #expect(skin.tier == .vanity)
+            #expect(skin.productID == "\(AppIdentity.bundleID).skin.\(skin.rawValue)")
+            #expect(skin.gilding != nil)
+        }
+    }
+
+    @Test
+    func `dose.wiki is second in the picker, after the app's own look`() {
+        #expect(Array(Skin.available.prefix(2)) == [.piru, .doseWiki])
+    }
+
+    @Test
     func `A paid skin's product is named after it`() {
         #expect(Skin.jellyfish.productID == "\(AppIdentity.bundleID).skin.jellyfish")
         #expect(!paidSkins.isEmpty)

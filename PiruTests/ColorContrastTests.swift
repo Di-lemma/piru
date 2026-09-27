@@ -341,6 +341,23 @@ struct ColorContrastTests {
         }
     }
 
+    /// A gilded button's label sits on the foil, which runs from `mid` to
+    /// `shine` across its face and dips to `deep` only near the foot. The ink
+    /// is gated as text on `mid`, and as a mark even on `deep`.
+    @Test
+    func `A gilded button's ink is legible on its foil`() {
+        for skin in Skin.allCases {
+            guard let gilding = skin.gilding else { continue }
+            for style in [UIUserInterfaceStyle.light, .dark] {
+                let ink = RGB(gilding.ink, style: style)
+                for (stop, color, floor) in [("mid", gilding.mid, Self.textGate), ("deep", gilding.deep, 3.0)] {
+                    let ratio = ink.contrastRatio(against: RGB(color, style: style))
+                    #expect(ratio >= floor, "\(skin.rawValue) gilt ink \(ink.hex) is \(ratio.to2dp):1 on \(stop)")
+                }
+            }
+        }
+    }
+
     // MARK: - Known gaps, pinned so they can only improve
 
     /// The default skin's `AccentColor` — soft pink `#F57896` in light — is

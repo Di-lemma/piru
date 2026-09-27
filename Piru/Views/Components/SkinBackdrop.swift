@@ -61,7 +61,7 @@ struct SkinBackdrop: View {
                 // timeline notices. It does not catch a macOS scene that state
                 // restoration rebuilt without a window: that scene reports
                 // `.active` and its canvas ticks like a visible one.
-                let animate = animates && !reduceMotion && visible && scenePhase != .background && !power.isThermallyConstrained
+                let animate = animates && !decor.scene.isStill && !reduceMotion && visible && scenePhase != .background && !power.isThermallyConstrained
                 let interval = Self.frameInterval(stickers: decor.scene.isStickers, lowPower: power.isLowPower)
                 let atlas = GlyphAtlas.images(for: skin, decor: decor, dark: dark, scale: displayScale)
                 let wheel = WheelAtlas.images(for: decor.scene, dark: dark, scale: displayScale)
@@ -89,7 +89,7 @@ struct SkinBackdrop: View {
                 .accessibilityHidden(true)
                 .onAppear {
                     visible = true
-                    if animates, !reduceMotion {
+                    if animates, !decor.scene.isStill, !reduceMotion {
                         SkinMotion.shared.retain()
                         holdsMotion = true
                     }
@@ -220,6 +220,10 @@ nonisolated struct SceneRenderer {
         case let .ephemeris(e):
             drawEphemeris(e, in: &context)
             drawGlyphs(in: &context, share: 0.2)
+        case let .nocturne(n):
+            drawNocturne(n, in: &context)
+        case let .velvet(v):
+            drawVelvet(v, in: &context)
         }
     }
 

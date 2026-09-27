@@ -74,12 +74,11 @@ struct SkinsView: View {
                     Text("Every skin has a light and a dark side. Follow System switches with iOS.")
                 }
 
-                // Last, so that it arriving with a partner's skin moves nothing
-                // above it.
-                if let partner {
+                // Last, so that it arriving with a skin moves nothing above it.
+                if let source {
                     Section {
-                        Link(destination: partner.url) {
-                            Label { Text(partner.title) } icon: { Image(systemName: "hexagon") }
+                        Link(destination: source.url) {
+                            Label { Text(source.title) } icon: { Image(systemName: source.symbol) }
                                 .font(.footnote)
                                 .foregroundStyle(Theme.secondaryLabel)
                         }
@@ -116,11 +115,20 @@ struct SkinsView: View {
         skins.setSkin(skin)
     }
 
-    /// The encyclopedia a partnership skin is drawn from, and where it lives.
-    private var partner: (title: LocalizedStringResource, url: URL)? {
+    /// What a skin is drawn from and where it lives: a partner's
+    /// encyclopedia, or the credit a Creative Commons photograph requires.
+    private var source: (title: LocalizedStringResource, url: URL, symbol: String)? {
         switch skins.current {
-        case .doseWiki: ("In partnership with dose.wiki ↗", URL(string: "https://dose.wiki")!)
-        case .substanceWiki: ("In partnership with substance.wiki ↗", URL(string: "https://substance.wiki")!)
+        case .doseWiki: ("In partnership with dose.wiki ↗", URL(string: "https://dose.wiki")!, "hexagon")
+        case .substanceWiki: ("In partnership with substance.wiki ↗", URL(string: "https://substance.wiki")!, "hexagon")
+        // CC BY-SA 2.0 requires the title, the author and the license beside
+        // the work. The Commons page carries the Flickr original and the
+        // license text.
+        case .gatsby: (
+                "Photo: “orange aventador” by Ben, CC BY-SA 2.0 ↗",
+                URL(string: "https://commons.wikimedia.org/wiki/File:Lamborghini_Aventador,_H%C3%B4tel_George-V,_Paris_January_2015.jpg")!,
+                "camera",
+            )
         default: nil
         }
     }

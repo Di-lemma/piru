@@ -178,6 +178,36 @@
       "type": "NonConsumable"
     },
     {
+      "displayPrice": "29.99",
+      "familyShareable": false,
+      "internalID": "6A1D3E90",
+      "localizations": [
+        {
+          "description": "Black lacquer, gold leaf, Paris after midnight",
+          "displayName": "Gatsby",
+          "locale": "en_US"
+        }
+      ],
+      "productID": "glass.kagerou.piru.skin.gatsby",
+      "referenceName": "Gatsby",
+      "type": "NonConsumable"
+    },
+    {
+      "displayPrice": "29.99",
+      "familyShareable": false,
+      "internalID": "B7E04C21",
+      "localizations": [
+        {
+          "description": "Emerald velvet, gold foil, red, gold and green",
+          "displayName": "Irie",
+          "locale": "en_US"
+        }
+      ],
+      "productID": "glass.kagerou.piru.skin.irie",
+      "referenceName": "Irie",
+      "type": "NonConsumable"
+    },
+    {
       "displayPrice": "59.99",
       "familyShareable": true,
       "internalID": "DF613823",
