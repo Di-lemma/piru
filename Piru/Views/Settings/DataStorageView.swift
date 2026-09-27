@@ -20,31 +20,22 @@ struct DataStorageView: View {
     /// Asks for a passphrase to seal a new encrypted backup.
     @State private var showingExportPassphrase = false
 
-    /// Asks for the passphrase that opens a picked encrypted backup.
-    @State private var showingRestorePassphrase = false
+    /// A picked encrypted backup, until its passphrase opens it.
+    @State private var lockedBackup: BackupFileImport.LockedBackup?
     /// Merge-or-replace, once the payload to restore is known.
     @State private var showingStrategyDialog = false
 
     /// The save panel for a plain (unencrypted) Piru or PsychonautWiki export.
     @State private var showingPlainExporter = false
 
-    /// Which file the single shared importer should pick. SwiftUI only honours one
-    /// `.fileImporter` per view, so the plain-JSON and encrypted-restore pickers
-    /// are driven by this one enum rather than two competing modifiers.
-    @State private var importKind: ImportKind?
+    /// The one file picker for every import: the picked file decides whether it
+    /// imports as JSON or restores as an encrypted backup.
+    @State private var showingImporter = false
 
     @State private var showingDeleteConfirmation = false
 
     @State private var pendingRestore: RecoverableStore?
     @State private var restoreComplete = false
-
-    private enum ImportKind: Identifiable {
-        case plainJSON
-        case encrypted
-        var id: Self {
-            self
-        }
-    }
 
     var body: some View {
         List {
@@ -54,8 +45,7 @@ struct DataStorageView: View {
                 isGenerating: model.isGenerating,
                 onExportPlain: exportPlain,
                 onExportEncrypted: { showingExportPassphrase = true },
-                onImportFile: { importKind = .plainJSON },
-                onRestoreEncrypted: { importKind = .encrypted },
+                onImport: { showingImporter = true },
                 onRestoreICloud: {
                     model.prepareICloudRestore()
                     showingStrategyDialog = true
@@ -84,25 +74,17 @@ struct DataStorageView: View {
             model.finishPlainExport(result)
         }
         .fileImporter(
-            isPresented: importerBinding,
-            allowedContentTypes: importKind == .encrypted ? [.data] : [.json],
+            isPresented: $showingImporter,
+            allowedContentTypes: [.json, .data],
         ) { result in
-            let kind = importKind
-            importKind = nil
-            switch kind {
-            case .encrypted: handlePickedFile(result)
-            case .plainJSON, .none: handlePlainImport(result)
-            }
+            handlePickedFile(result)
         }
         .sheet(isPresented: $showingExportPassphrase) {
-            PassphraseSheet(mode: .create) { passphrase in runExport(passphrase: passphrase) }
+            PassphraseSheet { passphrase in runExport(passphrase: passphrase) }
         }
-        .sheet(isPresented: $showingRestorePassphrase) {
-            PassphraseSheet(mode: .enter) { passphrase in
-                model.setRestorePassphrase(passphrase)
-                showingRestorePassphrase = false
-                showingStrategyDialog = true
-            }
+        .backupPassphraseAlert(for: $lockedBackup) { plaintext in
+            model.prepareRestore(plaintext: plaintext)
+            showingStrategyDialog = true
         }
         .sheet(item: $model.exported, onDismiss: { model.cleanupExportedFile() }) { item in
             ShareSheet(items: [item.url])
@@ -148,10 +130,6 @@ struct DataStorageView: View {
         Binding(get: { model.notice != nil }, set: { if !$0 { model.notice = nil } })
     }
 
-    private var importerBinding: Binding<Bool> {
-        Binding(get: { importKind != nil }, set: { if !$0 { importKind = nil } })
-    }
-
     // MARK: - Actions
 
     private func exportPlain(_ format: ExportFormat) {
@@ -162,10 +140,6 @@ struct DataStorageView: View {
         }
     }
 
-    private func handlePlainImport(_ result: Result<URL, Error>) {
-        Task { await model.importPlain(result, context: modelContext) }
-    }
-
     private func runExport(passphrase: String) {
         showingExportPassphrase = false
         Task { await model.exportEncrypted(passphrase: passphrase, context: modelContext) }
@@ -173,11 +147,7 @@ struct DataStorageView: View {
 
     private func handlePickedFile(_ result: Result<URL, Error>) {
         Task {
-            switch await model.inspectPickedFile(result) {
-            case .passphrase: showingRestorePassphrase = true
-            case .strategy: showingStrategyDialog = true
-            case .failed: break
-            }
+            lockedBackup = await model.importPickedFile(result, context: modelContext)
         }
     }
 
@@ -381,13 +351,12 @@ private struct ExportImportSection: View {
     let isGenerating: Bool
     let onExportPlain: (ExportFormat) -> Void
     let onExportEncrypted: () -> Void
-    let onImportFile: () -> Void
-    let onRestoreEncrypted: () -> Void
+    let onImport: () -> Void
     let onRestoreICloud: () -> Void
 
     @State private var manager = BackupManager.shared
     @State private var showingExportOptions = false
-    @State private var showingImportOptions = false
+    @State private var iCloudBackupFound = false
 
     var body: some View {
         Section {
@@ -402,21 +371,27 @@ private struct ExportImportSection: View {
             .popover(isPresented: $showingExportOptions) { exportOptions }
 
             DataActionRow(
-                title: "Import & Restore…",
-                subtitle: manager.iCloudAvailable
-                    ? "From a file, an encrypted backup, or iCloud"
-                    : "From a file or an encrypted backup",
+                title: "Import…",
+                subtitle: "A Piru or PsychonautWiki file, or an encrypted backup",
                 systemImage: "square.and.arrow.down",
-            ) {
-                showingImportOptions = true
+                action: onImport,
+            )
+
+            if iCloudBackupFound {
+                DataActionRow(
+                    title: "Restore Latest iCloud Backup",
+                    subtitle: "From your automatic iCloud backups",
+                    systemImage: "arrow.clockwise.icloud",
+                    action: onRestoreICloud,
+                )
             }
-            .popover(isPresented: $showingImportOptions) { importOptions }
         } header: {
             Text("Export & Import")
         } footer: {
             Text("Piru and PsychonautWiki files are plain JSON. Imports add to your journal (duplicates skipped). Encrypted restores can merge or replace. Inventory is included in Piru and encrypted backups, but not PsychonautWiki files.")
         }
         .disabled(isGenerating)
+        .task { await checkForICloudBackup() }
     }
 
     /// Choices inside the Export popover.
@@ -440,30 +415,12 @@ private struct ExportImportSection: View {
         }
     }
 
-    /// Choices inside the Import & Restore popover.
-    private var importOptions: some View {
-        ChooserPopover {
-            OptionRow(
-                title: "Import from a File…",
-                subtitle: "A Piru or PsychonautWiki JSON file",
-                systemImage: "arrow.down.doc",
-            ) { afterPopoverDismiss(onImportFile) }
-            OptionRow(
-                title: "Restore Encrypted Backup…",
-                subtitle: "A passphrase-protected .piruenc file",
-                systemImage: "lock.doc",
-            ) { afterPopoverDismiss(onRestoreEncrypted) }
-            if manager.iCloudAvailable {
-                OptionRow(
-                    title: "Restore Latest iCloud Backup",
-                    subtitle: "From your automatic iCloud backups",
-                    systemImage: "arrow.clockwise.icloud",
-                ) { afterPopoverDismiss(onRestoreICloud) }
-            }
-        }
+    private func checkForICloudBackup() async {
+        guard manager.iCloudAvailable else { return }
+        iCloudBackupFound = await Task.detached { BackupManager.iCloudBackupExists() }.value
     }
 
-    /// Dismisses whichever option popover is open, then runs `action` once the
+    /// Dismisses the Export popover, then runs `action` once the
     /// popover's dismissal animation has finished.
     ///
     /// Presenting a file importer/exporter (or confirmation dialog) in the *same*
@@ -472,7 +429,6 @@ private struct ExportImportSection: View {
     /// wins. Waiting one dismissal out lets the follow-up present reliably.
     private func afterPopoverDismiss(_ action: @escaping () -> Void) {
         showingExportOptions = false
-        showingImportOptions = false
         Task { @MainActor in
             try? await Task.sleep(for: UITiming.presentationTeardown)
             action()
@@ -733,13 +689,9 @@ private enum DataStorageFormat {
 
 // MARK: - Passphrase Sheet
 
+/// Sets the passphrase that seals a new encrypted backup: entered twice, with
+/// live length and match feedback, which an alert has no room for.
 private struct PassphraseSheet: View {
-    enum Mode {
-        case create // new backup: passphrase + confirmation
-        case enter // restoring: single passphrase
-    }
-
-    let mode: Mode
     let onSubmit: (String) -> Void
 
     /// Minimum length for a *new* passphrase. A backup file is offline-attackable
@@ -752,10 +704,7 @@ private struct PassphraseSheet: View {
     @State private var confirmation = ""
 
     private var isValid: Bool {
-        switch mode {
-        case .create: passphrase.count >= Self.minLength && passphrase == confirmation
-        case .enter: !passphrase.isEmpty
-        }
+        passphrase.count >= Self.minLength && passphrase == confirmation
     }
 
     var body: some View {
@@ -766,36 +715,32 @@ private struct PassphraseSheet: View {
                     #if canImport(UIKit)
                         .textContentType(.password).autocorrectionDisabled().textInputAutocapitalization(.never)
                     #endif
-                    if mode == .create {
-                        SecureField("Confirm Passphrase", text: $confirmation)
-                        #if canImport(UIKit)
-                            .textContentType(.password).autocorrectionDisabled().textInputAutocapitalization(.never)
-                        #endif
-                    }
+                    SecureField("Confirm Passphrase", text: $confirmation)
+                    #if canImport(UIKit)
+                        .textContentType(.password).autocorrectionDisabled().textInputAutocapitalization(.never)
+                    #endif
                 } footer: {
-                    if mode == .create { strengthFooter }
+                    strengthFooter
                 }
                 .listRowBackground(CardBackground())
 
-                if mode == .create {
-                    Section {
-                        Label {
-                            Text("If you lose this passphrase, the backup can't be recovered. There is no reset.")
-                        } icon: {
-                            Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(.cautionAccent).accessibilityHidden(true)
-                        }
-                        .font(.footnote)
+                Section {
+                    Label {
+                        Text("If you lose this passphrase, the backup can't be recovered. There is no reset.")
+                    } icon: {
+                        Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(.cautionAccent).accessibilityHidden(true)
                     }
-                    .listRowBackground(CardBackground())
+                    .font(.footnote)
                 }
+                .listRowBackground(CardBackground())
             }
             .themedPage()
-            .navigationTitle(mode == .create ? Text("Set a Passphrase") : Text("Enter Passphrase"))
+            .navigationTitle("Set a Passphrase")
             .inlineNavigationTitle()
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button(role: .cancel) { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button(mode == .create ? "Encrypt" : "Restore") { onSubmit(passphrase) }
+                    Button("Encrypt") { onSubmit(passphrase) }
                         .disabled(!isValid)
                 }
             }

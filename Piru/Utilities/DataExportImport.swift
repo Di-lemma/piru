@@ -208,7 +208,7 @@ enum DataExportImport {
         case ImportFileError.unrecognized:
             String(localized: "This file isn't a Piru export or a PsychonautWiki journal.")
         case ImportFileError.encrypted:
-            String(localized: "This is an encrypted Piru backup. Use Restore Encrypted Backup and enter its passphrase.")
+            String(localized: "This is an encrypted Piru backup. Import it from Tools → Data & Backup, which asks for its passphrase.")
         case let ImportFileError.newerFormat(version, appVersion):
             writtenBy(
                 appVersion,
@@ -323,7 +323,7 @@ nonisolated enum ImportFileError: Error {
     case notJSON
     /// Valid JSON, but none of the shapes Piru reads.
     case unrecognized
-    /// An encrypted Piru backup picked through the plain-JSON importer.
+    /// An encrypted Piru backup, which only the restore flow can open.
     case encrypted
     /// A Piru-native file in a format newer than ``DataExportImport/piruExportVersion``.
     case newerFormat(version: Int, appVersion: String?)

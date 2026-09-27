@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// The feature tour: a paged carousel of four faux-app "screenshots" rendered entirely in
+/// The feature tour: a paged carousel of five faux-app "screenshots" rendered entirely in
 /// SwiftUI (so they localize, theme, and never go stale), each captioned with what the tab does.
 /// The Journal and Library mocks reuse the *real* app components (`TimelineGraphView`,
 /// `FamilyGradientCard`, `MoleculeView`) so the preview matches the app exactly. A single
@@ -112,6 +112,12 @@ struct FeatureTourPage: Identifiable {
             title: "Tools for the details",
             caption: "Look up interactions, explore a tolerance model, track your stock, and work out a solution's concentration.",
             mock: AnyView(ToolsMock()),
+        ),
+        FeatureTourPage(
+            id: "inventory",
+            title: "Stock that counts itself",
+            caption: "Add what you have on hand, or scan the box. Every dose you log comes off it, with days left and a heads-up before you run out.",
+            mock: AnyView(InventoryMock()),
         ),
         FeatureTourPage(
             id: "insights",
@@ -451,6 +457,83 @@ private struct InsightsMock: View {
             }
         }
         .frame(height: 184, alignment: .bottom)
+    }
+}
+
+// MARK: - Inventory mock
+
+private struct InventoryMock: View {
+    private struct Item: Identifiable {
+        let id: String
+        let name: String
+        let tabs: Int
+        let days: Int
+        let supply: Double
+        let color: Color
+        var isLow = false
+    }
+
+    private let items: [Item] = [
+        Item(id: "mph", name: "Methylphenidate 36 mg", tabs: 23, days: 23, supply: 0.77, color: MockPalette.orange),
+        Item(id: "ser", name: "Sertraline 50 mg", tabs: 41, days: 41, supply: 0.68, color: MockPalette.blue),
+        Item(id: "mel", name: "Melatonin 3 mg", tabs: 4, days: 4, supply: 0.13, color: MockPalette.purple, isLow: true),
+    ]
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: Spacing.lg) {
+            MockTitle(text: "Inventory")
+            deduction
+            ForEach(items) { item in
+                row(item)
+            }
+        }
+    }
+
+    /// The dose just logged, taken off the stock it came from.
+    private var deduction: some View {
+        HStack(spacing: Spacing.md) {
+            Image(systemName: "minus.circle.fill")
+                .font(.system(size: 13))
+                .foregroundStyle(Theme.accent)
+                .accessibilityHidden(true)
+            Text("Dose logged · 1 tab taken off")
+                .font(.system(size: 11.5, weight: .medium))
+            Spacer(minLength: 0)
+        }
+        .padding(Spacing.xl)
+        .themeCard(cornerRadius: Theme.CornerRadius.container)
+    }
+
+    private func row(_ item: Item) -> some View {
+        VStack(alignment: .leading, spacing: Spacing.md) {
+            HStack(spacing: Spacing.sm) {
+                Text(verbatim: item.name)
+                    .font(.system(size: 12.5, weight: .semibold))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
+                Spacer(minLength: 0)
+                if item.isLow {
+                    Text("Low")
+                        .font(.system(size: 10, weight: .bold))
+                        .foregroundStyle(MockPalette.orange)
+                        .padding(.horizontal, Spacing.sm)
+                        .padding(.vertical, 2)
+                        .background(Capsule().fill(MockPalette.orange.opacity(0.16)))
+                }
+            }
+            GeometryReader { proxy in
+                ZStack(alignment: .leading) {
+                    Capsule().fill(item.color.opacity(0.18))
+                    Capsule().fill(item.color).frame(width: proxy.size.width * item.supply)
+                }
+            }
+            .frame(height: 6)
+            Text("\(item.tabs) tabs · about \(item.days) days left")
+                .font(.system(size: 10.5))
+                .foregroundStyle(Theme.secondaryLabel)
+        }
+        .padding(Spacing.xl)
+        .themeCard(cornerRadius: Theme.CornerRadius.container)
     }
 }
 

@@ -160,11 +160,6 @@ final class BackupManager {
 
     // MARK: - Restore
 
-    /// Restore from already-loaded backup bytes.
-    func restore(data: Data, passphrase: String?, strategy: RestoreStrategy, context: ModelContext) async throws {
-        try await applyRestore(envelope: data, passphrase: passphrase, strategy: strategy, context: context)
-    }
-
     /// Restore from a user-selected `.piruenc` file (e.g. via the document picker).
     func restore(fromFileAt url: URL, passphrase: String?, strategy: RestoreStrategy, context: ModelContext) async throws {
         let data = try Self.boundedContents(of: url)
@@ -185,6 +180,11 @@ final class BackupManager {
         // this happens *before* any destructive store mutation, so a wrong
         // passphrase or unavailable device key can never wipe data.
         let plaintext = try await Task.detached { try BackupCrypto.decrypt(data, passphrase: passphrase) }.value
+        try apply(plaintext: plaintext, strategy: strategy, context: context)
+    }
+
+    /// Imports a decrypted backup payload by `strategy`.
+    func apply(plaintext: Data, strategy: RestoreStrategy, context: ModelContext) throws {
         switch strategy {
         case .merge:
             try DataExportImport.importJSON(data: plaintext, context: context)

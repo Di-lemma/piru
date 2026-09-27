@@ -1,0 +1,69 @@
+import Foundation
+import SwiftData
+
+/// Takes a picked file as whatever it is — a Piru or PsychonautWiki JSON file
+/// imports at once, an encrypted backup comes back locked — so every import
+/// surface offers one picker rather than asking the user which kind of file
+/// they have.
+enum BackupFileImport {
+    /// An encrypted backup read from a picked file, waiting to be unlocked.
+    struct LockedBackup: Identifiable {
+        let id = UUID()
+        let envelope: Data
+        /// Sealed with a passphrase, as opposed to this device's backup key.
+        let needsPassphrase: Bool
+    }
+
+    enum Outcome {
+        case imported
+        case locked(LockedBackup)
+        case failed(String)
+    }
+
+    /// Reads the picked file off the main actor and imports it, or returns it
+    /// locked when it is an encrypted backup.
+    static func importPicked(_ result: Result<URL, Error>, context: ModelContext) async -> Outcome {
+        let url: URL
+        switch result {
+        case let .success(picked): url = picked
+        case let .failure(error): return .failed(error.localizedDescription)
+        }
+        guard url.startAccessingSecurityScopedResource() else {
+            return .failed(String(localized: "Couldn't access the selected file."))
+        }
+        defer { url.stopAccessingSecurityScopedResource() }
+        do {
+            let data = try await Task.detached {
+                let size = (try? url.resourceValues(forKeys: [.fileSizeKey]).fileSize) ?? 0
+                guard size <= BackupCrypto.maxEnvelopeBytes else { throw BackupManager.ManagerError.fileTooLarge }
+                return try Data(contentsOf: url)
+            }.value
+            do {
+                try DataExportImport.importJSON(data: data, context: context)
+            } catch ImportFileError.encrypted {
+                return await locked(data)
+            }
+            DataExportImport.refreshLiveStores(container: context.container)
+            return .imported
+        } catch {
+            return .failed(DataExportImport.importErrorMessage(for: error))
+        }
+    }
+
+    /// Decrypts a locked backup off the main actor, returning the plaintext
+    /// payload for ``BackupManager/apply(plaintext:strategy:context:)``. Throws
+    /// ``BackupCrypto/BackupError/decryptionFailed`` for a wrong passphrase.
+    static func unlock(_ backup: LockedBackup, passphrase: String?) async throws -> Data {
+        let envelope = backup.envelope
+        return try await Task.detached { try BackupCrypto.decrypt(envelope, passphrase: passphrase) }.value
+    }
+
+    private static func locked(_ data: Data) async -> Outcome {
+        do {
+            let kind = try await Task.detached { try BackupCrypto.inspect(data).kind }.value
+            return .locked(LockedBackup(envelope: data, needsPassphrase: kind == .passphrase))
+        } catch {
+            return .failed(error.localizedDescription)
+        }
+    }
+}
