@@ -25,37 +25,41 @@ struct CustomUnitsView: View {
 
     var body: some View {
         List {
-            if store.all.isEmpty {
-                Section {
-                    ContentUnavailableView {
-                        Label("No Custom Units", systemImage: "ruler")
-                    } description: {
-                        Text("Define a unit like \"1 capsule = 30 mg\" and it appears in the dose picker for that substance — log half a capsule, get 15 mg.")
-                    }
-                }
-            } else {
-                ForEach(groups, id: \.substance) { group in
-                    Section(displayName(for: group.substance)) {
-                        ForEach(group.units) { preset in
-                            NavigationLink {
-                                CustomUnitEditorView(editing: preset)
-                            } label: {
-                                unitRow(preset)
-                            }
+            Group {
+                if store.all.isEmpty {
+                    Section {
+                        ContentUnavailableView {
+                            Label("No Custom Units", systemImage: "ruler")
+                        } description: {
+                            Text("Define a unit like \"1 capsule = 30 mg\" and it appears in the dose picker for that substance — log half a capsule, get 15 mg.")
                         }
-                        .onDelete { store.delete(at: $0, forSubstanceNamed: group.substance) }
+                    }
+                } else {
+                    ForEach(groups, id: \.substance) { group in
+                        Section(displayName(for: group.substance)) {
+                            ForEach(group.units) { preset in
+                                NavigationLink {
+                                    CustomUnitEditorView(editing: preset)
+                                } label: {
+                                    unitRow(preset)
+                                }
+                            }
+                            .onDelete { store.delete(at: $0, forSubstanceNamed: group.substance) }
+                        }
+                    }
+                }
+
+                Section {
+                    NavigationLink {
+                        CustomUnitEditorView()
+                    } label: {
+                        Label("Add Custom Unit", systemImage: "plus")
                     }
                 }
             }
-
-            Section {
-                NavigationLink {
-                    CustomUnitEditorView()
-                } label: {
-                    Label("Add Custom Unit", systemImage: "plus")
-                }
-            }
+            .listRowBackground(CardBackground())
         }
+        .themedPage()
         .navigationTitle("Custom Units")
         .inlineNavigationTitle()
     }
@@ -114,46 +118,50 @@ struct CustomUnitEditorView: View {
 
     var body: some View {
         Form {
-            Section("Substance") {
-                if let canonicalName, editing != nil {
-                    Text(CustomSubstanceStore.shared.displayName(for: canonicalName))
-                        .foregroundStyle(Theme.secondaryLabel)
-                } else if let canonicalName {
-                    HStack {
+            Group {
+                Section("Substance") {
+                    if let canonicalName, editing != nil {
                         Text(CustomSubstanceStore.shared.displayName(for: canonicalName))
-                        Spacer()
-                        Button("Change") { self.canonicalName = nil; substanceQuery = "" }
-                            .font(.subheadline)
-                    }
-                } else {
-                    SubstanceSearchField(text: $substanceQuery) { substance, _ in
-                        canonicalName = substance.name
+                            .foregroundStyle(Theme.secondaryLabel)
+                    } else if let canonicalName {
+                        HStack {
+                            Text(CustomSubstanceStore.shared.displayName(for: canonicalName))
+                            Spacer()
+                            Button("Change") { self.canonicalName = nil; substanceQuery = "" }
+                                .font(.subheadline)
+                        }
+                    } else {
+                        SubstanceSearchField(text: $substanceQuery) { substance, _ in
+                            canonicalName = substance.name
+                        }
                     }
                 }
-            }
 
-            Section {
-                TextField("Unit label (e.g. capsule)", text: $label)
-                    .autocorrectionDisabled()
-                HStack {
-                    Text("1 \(trimmedLabel.isEmpty ? String(localized: "unit") : trimmedLabel) =")
-                        .foregroundStyle(Theme.secondaryLabel)
-                    TextField("Amount", text: $amountText)
-                        .decimalKeyboard()
-                    Picker("Unit", selection: $unit) {
-                        ForEach(Self.baseUnits, id: \.self) { Text($0) }
+                Section {
+                    TextField("Unit label (e.g. capsule)", text: $label)
+                        .autocorrectionDisabled()
+                    HStack {
+                        Text("1 \(trimmedLabel.isEmpty ? String(localized: "unit") : trimmedLabel) =")
+                            .foregroundStyle(Theme.secondaryLabel)
+                        TextField("Amount", text: $amountText)
+                            .decimalKeyboard()
+                        Picker("Unit", selection: $unit) {
+                            ForEach(Self.baseUnits, id: \.self) { Text($0) }
+                        }
+                        .labelsHidden()
                     }
-                    .labelsHidden()
-                }
-            } footer: {
-                if duplicateLabel {
-                    Text("This substance already has a \"\(trimmedLabel)\" unit.")
-                        .foregroundStyle(Color.Semantic.Danger.text)
-                } else {
-                    Text("Logs in this unit convert to the mass automatically.")
+                } footer: {
+                    if duplicateLabel {
+                        Text("This substance already has a \"\(trimmedLabel)\" unit.")
+                            .foregroundStyle(Color.Semantic.Danger.text)
+                    } else {
+                        Text("Logs in this unit convert to the mass automatically.")
+                    }
                 }
             }
+            .listRowBackground(CardBackground())
         }
+        .themedPage()
         .navigationTitle(editing == nil ? "Add Custom Unit" : "Edit Custom Unit")
         .inlineNavigationTitle()
         .toolbar {
