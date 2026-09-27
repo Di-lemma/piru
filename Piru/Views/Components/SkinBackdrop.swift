@@ -45,6 +45,9 @@ struct SkinBackdrop: View {
     @Environment(\.scenePhase) private var scenePhase
     /// True on a pushed screen or a sheet, false on a tab root.
     @Environment(\.isPresented) private var isPresented
+    /// Latches `isPresented`: it turns false the moment a pop or a dismiss
+    /// begins, and the screen sliding away must keep its glass until it is gone.
+    @State private var wasPresented = false
 
     var body: some View {
         let skin = skin ?? skins.current
@@ -104,10 +107,13 @@ struct SkinBackdrop: View {
                     }
                 }
                 // A preview card names its skin and always shows the bare scene.
-                if self.skin == nil, isPresented, decor.scene.veilsDepth {
+                if self.skin == nil, isPresented || wasPresented, decor.scene.veilsDepth {
                     StainedGlass(tint: skin.background, lead: skin.palette.stroke)
                 }
             }
+        }
+        .onChange(of: isPresented, initial: true) { _, presented in
+            if presented { wasPresented = true }
         }
     }
 
