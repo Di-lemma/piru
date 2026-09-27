@@ -44,7 +44,7 @@ final class ArcadeCabinet {
         else { return }
         let now = Date.now.timeIntervalSinceReferenceDate
         let frame = InvaderTape(size: windowSize).frame(atStep: InvaderTape.step(at: now))
-        let ship = CGPoint(x: frame.shipX, y: InvaderTape.shipY(in: windowSize))
+        let ship = CGPoint(x: frame.shipX, y: frame.shipY)
         guard hypot(point.x - ship.x, point.y - ship.y) < 30 else { return }
         game = ArcadeGame(size: windowSize, arcade: arcade, handoff: frame, time: now)
         isPlaying = true

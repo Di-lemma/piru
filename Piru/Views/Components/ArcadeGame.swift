@@ -125,7 +125,7 @@ final class ArcadeGame {
         self.arcade = arcade
         lastDate = time
         rng = SeededRNG(seed: UInt64(bitPattern: Int64(time * 1_000)))
-        let start = CGPoint(x: frame.shipX, y: InvaderTape.shipY(in: size))
+        let start = CGPoint(x: frame.shipX, y: frame.shipY)
         ship = start
         aim = start
         let everyone: UInt32 = (1 << UInt32(InvaderTape.cols * InvaderTape.rows)) - 1
