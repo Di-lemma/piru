@@ -7965,7 +7965,7 @@ def apply_translations(
     return translated_count, added, missing
 
 
-CANONICAL_LANGUAGES = ("zh-Hans", "zh-Hant", "es")
+CANONICAL_LANGUAGES = ("zh-Hans", "zh-Hant", "es", "es-ES")
 
 
 def canonicalize_catalogs(project_path: Path, languages=CANONICAL_LANGUAGES) -> bool:
@@ -8045,11 +8045,16 @@ except ImportError:
     pass
 
 try:
-    from es_translations import ES
+    from es_translations import ES, ES_ES
 except ImportError:
     ES: dict[str, str] = {}
+    ES_ES: dict[str, str] = {}
 
-EXTRA_LANGUAGES = {"es": ES}
+# `es` is neutral Spanish for every region. `es-ES` is authored as only the few
+# strings Spain must see differently (the iOS Settings app is "Ajustes" there),
+# but written out in full: iOS does NOT fall back per key from es-ES to es — a
+# key missing from the es-ES table shows in English on a Spain iPhone.
+EXTRA_LANGUAGES = {"es": ES, "es-ES": {**ES, **ES_ES}}
 
 if __name__ == "__main__":
     project_root = Path(__file__).resolve().parent

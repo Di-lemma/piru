@@ -14,12 +14,24 @@
             "state" : "translated",
             "value" : "%@ %@"
           }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ %@"
+          }
         }
       }
     },
     "%@ mL" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ mL"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ mL"
@@ -40,12 +52,24 @@
             "state" : "translated",
             "value" : "%@ mL · %@%%"
           }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ mL · %@%%"
+          }
         }
       }
     },
     "%@%% ABV" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@%% ABV"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@%% ABV"
@@ -73,6 +97,12 @@
             "value" : "Sincronizando ^[%lld registro](inflect: true)"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sincronizando ^[%lld registro](inflect: true)"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -90,6 +120,12 @@
     "≈ %@ g · ≈ %@ drinks" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "≈ %@ g · ≈ %@ bebidas"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "≈ %@ g · ≈ %@ bebidas"
@@ -117,6 +153,12 @@
             "value" : "Cantidad"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cantidad"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -134,6 +176,12 @@
     "Beer" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cerveza"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Cerveza"
@@ -161,6 +209,12 @@
             "value" : "Por masa"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Por masa"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -178,6 +232,12 @@
     "By Volume" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Por volumen"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Por volumen"
@@ -205,6 +265,12 @@
             "value" : "Concentración"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Concentración"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -222,6 +288,12 @@
     "Decrease ABV" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Disminuir % vol."
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Disminuir % vol."
@@ -249,6 +321,12 @@
             "value" : "Bebida"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bebida"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -266,6 +344,12 @@
     "Favorite" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Favorito"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Favorito"
@@ -290,7 +374,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Marca una sustancia como favorita o añade un registro en tu iPhone para encontrarla aquí."
+            "value" : "Marca una sustancia como favorita o agrega un registro en tu iPhone para encontrarla aquí."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Marca una sustancia como favorita o agrega un registro en tu iPhone para encontrarla aquí."
           }
         },
         "zh-Hans" : {
@@ -310,6 +400,12 @@
     "Increase ABV" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aumentar % vol."
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Aumentar % vol."
@@ -337,6 +433,12 @@
             "value" : "Registrar"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Registrar"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -354,6 +456,12 @@
     "Logged" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Registrado"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Registrado"
@@ -381,6 +489,12 @@
             "value" : "Sin bebidas predefinidas"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sin bebidas predefinidas"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -398,6 +512,12 @@
     "No Favorites Yet" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aún sin favoritos"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Aún sin favoritos"
@@ -425,6 +545,12 @@
             "value" : "Pinta"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pinta"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -442,6 +568,12 @@
     "Quick Log" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Registro rápido"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Registro rápido"
@@ -469,6 +601,12 @@
             "value" : "Shot"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Shot"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -486,6 +624,12 @@
     "Strength" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Concentración"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Concentración"
@@ -513,6 +657,12 @@
             "value" : "Sincronizando con el iPhone"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sincronizando con el iPhone"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -535,6 +685,12 @@
             "value" : "Volumen"
           }
         },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Volumen"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -552,6 +708,12 @@
     "Wine" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vino"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Vino"
