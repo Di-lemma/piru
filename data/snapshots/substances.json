@@ -28558,7 +28558,8 @@
       "Ephedra",
       "Isofedrol",
       "Ma huang",
-      "racemic ephedrine"
+      "racemic ephedrine",
+      "麻黄碱"
     ],
     "category": "Stimulant",
     "display_class": "recreational",
@@ -28582,15 +28583,13 @@
     "has_duration_data": true,
     "has_protocol_dosing": false,
     "half_life_minutes": 360.0,
-    "mechanism_summary": "",
+    "mechanism_summary": "麻黄碱的主要作用机制是通过增加儿茶酚胺在 α、β1 和 β2 肾上腺素能 受体上的活性。 它也作为一种 NDRAs（去甲肾上腺素-多巴胺 释放剂）。\n\n麻黄碱是一种拟交感胺，作用于交感神经系统 (SNS) 的一部分。主要作用机制依赖于它通过增加突触后 α 和 β 受体上的去甲肾上腺素活性来间接刺激肾上腺素能受体系统。 是否存在与 α 受体的直接相互作用是不太可能的，但仍有争议。 L-麻黄碱，特别是其立体异构体去甲伪麻黄碱（也存在于恰特草中）具有间接的拟交感神经作用，由于其能够穿过血脑屏障，它是一种类似于苯丙胺的中枢神经系统兴奋剂，但不那么明显，因为它在黑质中释放去甲肾上腺素和多巴胺。\n\n与去甲麻黄碱相比，N-甲基的存在降低了在 α 受体上的结合亲和力。不过，麻黄碱的结合力比 N-甲基麻黄碱好，后者在氮原子上有一个额外的甲基。此外，羟基的空间取向对于受体结合和功能活性也很重要。",
     "effects": [],
     "references": [
       "https://www.ncbi.nlm.nih.gov/books/NBK547661/",
       "https://dailymed.nlm.nih.gov/dailymed/search.cfm?labeltype=all&query=0143-3145"
     ],
-    "data_gaps": [
-      "mechanism_of_action"
-    ]
+    "data_gaps": []
   },
   {
     "name": "Ephenidine",
@@ -43132,35 +43131,6 @@
     ]
   },
   {
-    "name": "Methylamino",
-    "display_name": "",
-    "aliases": [
-      "伪麻黄碱",
-      "麻黄碱"
-    ],
-    "category": "Stimulant",
-    "display_class": "recreational",
-    "tags": [],
-    "default_route": "oral",
-    "all_routes": [
-      "oral"
-    ],
-    "routes_with_dose": [
-      "oral"
-    ],
-    "has_dose_data": true,
-    "has_duration_data": true,
-    "has_protocol_dosing": false,
-    "half_life_minutes": null,
-    "mechanism_summary": "Pseudoephedrine is a sympathomimetic amine with a mixed direct and indirect mechanism of action. It indirectly stimulates alpha-adrenergic receptors by causing neuronal granules to release endogenous norepinephrine. It also directly stimulates beta-adrenergic receptors, increasing catecholamine activity at alpha, beta-1, and beta-2 adrenergic receptors.\n\nIt is very similar to ephedrine but is appreciably weaker and has lower capacity for inducing tachycardia and raising systolic blood pressure. Its central effects are weaker than those of amphetamine, while its peripheral effects are analogous to those of epinephrine.",
-    "effects": [],
-    "references": [],
-    "data_gaps": [
-      "half_life_minutes",
-      "references"
-    ]
-  },
-  {
     "name": "Methylcellulose",
     "display_name": "",
     "aliases": [
@@ -52897,7 +52867,8 @@
     "name": "Pseudoephedrine",
     "display_name": "",
     "aliases": [
-      "Sudafed"
+      "Sudafed",
+      "伪麻黄碱"
     ],
     "category": "Stimulant",
     "display_class": "recreational",

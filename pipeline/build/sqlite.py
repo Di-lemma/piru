@@ -12847,7 +12847,13 @@ class Build:
             for key in product_code_keys.name_keys(name):
                 if len(key) >= 4:
                     by_key[key] = sid
-        uids = dict(self.cur.execute("SELECT id, substance_uid FROM substances").fetchall())
+        # The default form's PSID, not FAMILY-alone: an enantiomer kept as its own
+        # row (Levetiracetam, `-S-`) shares a FAMILY with its racemate.
+        default_psids = dict(
+            self.cur.execute(
+                "SELECT substance_id, psid FROM substance_forms WHERE is_default = 1"
+            ).fetchall()
+        )
 
         def resolve(name: str) -> int | None:
             for key in product_code_keys.name_keys(name):
@@ -12893,10 +12899,9 @@ class Build:
                     unresolved += 1
                     unresolved_names[name] += 1
                     continue
-                uid = uids.get(sid)
                 values = (
                     sid,
-                    psid.compose(uid) if uid else None,
+                    default_psids.get(sid),
                     row.get("brand"),
                     # BDPM composition cells carry stray HTML ("<p>5,45 mg").
                     re.sub(r"<[^>]+>", "", row.get("strength") or "").strip() or None,
@@ -13060,7 +13065,8 @@ class Build:
         display title. Facet combos come from the union of the dose/duration facet
         tags AND the facet-annotated aliases, so a dose-less folded enantiomer
         (D-methamphetamine, Levetiracetam) still gets an identity + title. The
-        canonical unspecified form is always emitted (and marked default). Runs
+        default form is always emitted — unspecified on every facet, except that an
+        enantiomer kept as its own row carries its own stereo. Runs
         after assign_substance_uids + annotate_alias_facets."""
         # Curated isomer display names keyed by (parent canonical_name, isomer code).
         iso_display: dict[tuple[str, str], str] = {}
@@ -13069,6 +13075,15 @@ class Build:
                 iso_display[(fam["parent"], self._isomer_code(v["isomer"]))] = (
                     v.get("displayName") or v["name"]
                 )
+        # An enantiomer kept as its own row (a family in _ISOMER_FOLD_SKIP) *is* that
+        # stereo form, so its unspecified form carries the family's isomer code:
+        # Levetiracetam is `-S-`, never the racemate's `-0-` that Etiracetam holds.
+        own_row_isomer: dict[str, str] = {
+            v["name"]: v["isomer"]
+            for fam in collision_registry.fold_families()
+            if fam["parent"] in self._ISOMER_FOLD_SKIP
+            for v in fam["variants"]
+        }
 
         self.cur.execute("DELETE FROM substance_forms")
         rows = 0
@@ -13090,6 +13105,10 @@ class Build:
             ):
                 if iso or salt or rel:
                     combos.add((iso, salt, rel))
+
+            if own_iso := own_row_isomer.get(canonical):
+                combos = {(iso or own_iso, salt, rel) for iso, salt, rel in combos}
+            default_iso = own_row_isomer.get(canonical)
 
             # Sorted, not set order: these tuples hold strings, so unsorted iteration
             # varies with PYTHONHASHSEED and two builds of identical inputs differ in
@@ -13121,7 +13140,9 @@ class Build:
                 if release_code != psid.UNSPECIFIED_FACET:
                     title = f"{title} {self._release_title_suffix(release_code)}"
                 is_default = (
-                    1 if (iso_label is None and salt_label is None and rel_label is None) else 0
+                    1
+                    if (iso_label == default_iso and salt_label is None and rel_label is None)
+                    else 0
                 )
                 self.cur.execute(
                     "INSERT OR REPLACE INTO substance_forms "
@@ -13143,6 +13164,12 @@ class Build:
                     ),
                 )
                 rows += 1
+        # A PSID names exactly one form; the PK can't enforce that across rows.
+        shared = self.cur.execute(
+            "SELECT psid, group_concat(substance_id) FROM substance_forms "
+            "GROUP BY psid HAVING count(*) > 1"
+        ).fetchall()
+        assert not shared, f"PSIDs naming more than one form: {shared}"
         return {"forms": rows}
 
     def audit_alias_collisions(self) -> dict[str, int]:

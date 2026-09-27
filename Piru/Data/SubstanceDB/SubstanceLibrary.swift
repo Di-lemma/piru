@@ -125,6 +125,11 @@ enum SubstanceLibrary {
         SubstanceStore.shared.substanceUID(forNameOrAlias: nameOrAlias)
     }
 
+    /// The PSID of the default form a name or alias resolves to.
+    static func defaultPSID(for nameOrAlias: String) -> String? {
+        SubstanceStore.shared.defaultPSID(forNameOrAlias: nameOrAlias)
+    }
+
     /// The isomer form-code a logged name/alias names ("Focalin" → `"D"`), from
     /// the facet-annotated alias table, or `nil` for the racemic/unspecified form.
     /// Used by the PSID backfill to recover the form a legacy string logged.

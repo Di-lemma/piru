@@ -1549,6 +1549,40 @@ class TestBuiltDatabaseInvariants(unittest.TestCase):
                 bad.append(r["psid"])
         self.assertEqual(bad, [], f"{len(bad)} substance_forms PSIDs failed round-trip: {bad[:5]}")
 
+    def test_every_substance_form_psid_is_unique(self):
+        """A PSID names one form. Co-familied rows share a FAMILY, so the facets
+        are what keep them apart — Etiracetam is `-0-0-0-`, Levetiracetam `-S-0-0-`."""
+        shared = self.db.execute(
+            "SELECT psid FROM substance_forms GROUP BY psid HAVING count(*) > 1"
+        ).fetchall()
+        self.assertEqual([r["psid"] for r in shared], [])
+        forms = dict(
+            self.db.execute(
+                "SELECT s.canonical_name, sf.stereo FROM substance_forms sf "
+                "JOIN substances s ON s.id = sf.substance_id "
+                "WHERE sf.is_default = 1 AND s.canonical_name IN ('Etiracetam', 'Levetiracetam')"
+            ).fetchall()
+        )
+        self.assertEqual(forms, {"Etiracetam": "0", "Levetiracetam": "S"})
+
+    def test_one_row_per_source_and_form(self):
+        """A source states one ladder, one window and one value per phase for each
+        form of a route. NULL salt/isomer is the base form and counts as a value,
+        or the resolvers' source ranking has nothing to break the tie with."""
+        keys = {
+            "dose_ranges": "substance_id, route, source_id",
+            "durations": "substance_id, route, source_id, phase",
+            "durations_of_action": "substance_id, route, source_id",
+            "protocol_dosing": "substance_id, route, source_id",
+        }
+        for table, key in keys.items():
+            groups = self.db.execute(
+                f"SELECT count(*) FROM (SELECT 1 FROM {table} "
+                f"GROUP BY {key}, ifnull(salt_form, ''), ifnull(isomer, '') "
+                "HAVING count(*) > 1)"
+            ).fetchone()[0]
+            self.assertEqual(groups, 0, table)
+
     def test_isomer_brand_aliases_carry_facet(self):
         """The migration's name→form resolver: an enantiomer brand/name alias is
         annotated with its isomer facet on the parent, so a logged "Focalin" or

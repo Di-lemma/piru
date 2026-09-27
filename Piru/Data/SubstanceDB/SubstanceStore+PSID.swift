@@ -145,14 +145,30 @@ extension SubstanceStore {
     /// facets would answer for the base form. Titling a dose therefore has to pass
     /// what the *entry* holds.
     ///
-    /// A `nil` or `"0"` facet is the unspecified sentinel and selects the default
-    /// form, so a plain dose composes its plain title.
+    /// A `nil` isomer selects the substance's default stereo and a `nil` release
+    /// the standard one, so a plain dose composes its plain title — including on
+    /// an enantiomer kept as its own row, whose default form is not `"0"`.
     func formTitle(forNameOrAlias nameOrAlias: String, isomer: String?, release: String?) -> String? {
         guard let id = substanceID(forNameOrAlias: nameOrAlias) else { return nil }
         return formTitleIndex[FormKey(
             substanceID: id,
-            stereo: isomer.flatMap { $0.isEmpty ? nil : $0 } ?? PSID.unspecifiedFacet,
+            stereo: isomer.flatMap { $0.isEmpty ? nil : $0 } ?? defaultStereo(forSubstanceID: id),
             release: release.flatMap { $0.isEmpty ? nil : $0 } ?? PSID.unspecifiedFacet,
         )]
+    }
+
+    /// The stereo facet of a row's default form: `"0"` unless the row is itself
+    /// an enantiomer (Levetiracetam → `"S"`).
+    func defaultStereo(forSubstanceID id: Int64) -> String {
+        defaultStereoIndex[id] ?? PSID.unspecifiedFacet
+    }
+
+    /// The PSID of the default form a name or alias resolves to — the one a box
+    /// or label that names no form identifies. Co-familied rows share a FAMILY,
+    /// so this differs from composing the FAMILY alone exactly when the row is an
+    /// enantiomer of its own.
+    func defaultPSID(forNameOrAlias nameOrAlias: String) -> String? {
+        guard let id = substanceID(forNameOrAlias: nameOrAlias), let uid = idToUIDIndex[id] else { return nil }
+        return PSID.compose(family: uid, stereo: defaultStereo(forSubstanceID: id))
     }
 }

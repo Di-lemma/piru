@@ -139,7 +139,7 @@ enum BoxIdentifier {
         if let name {
             let substance = SubstanceLibrary.lookup(name)
             chips.append(ReadChip(kind: .substance, text: substance?.displayTitle ?? name, confidence: origin == .barcode ? .high : textConfidence))
-            psid = psid ?? SubstanceLibrary.substanceUID(for: name).flatMap { PSID.compose(family: $0) }
+            psid = psid ?? SubstanceLibrary.defaultPSID(for: name)
         }
         if let strength {
             chips.append(ReadChip(kind: .strength, text: "\(strength.amount.doseFormatted) \(strength.unit)", confidence: .medium))

@@ -85,6 +85,20 @@ struct PSIDResolutionTests {
         #expect(store.formTitle(forNameOrAlias: "not-a-real-substance-xyz") == nil)
     }
 
+    /// Levetiracetam is the S-enantiomer kept as its own row beside racemic
+    /// Etiracetam. The two share a FAMILY, so its stereo facet is what keeps its
+    /// PSID its own — and a dose that names no isomer still lands on that form.
+    @Test
+    func `An enantiomer kept as its own row owns its default form`() throws {
+        let (store, tempDir) = try makeIsolatedSubstanceStore()
+        defer { tearDownIsolatedSubstanceStore(store, tempDir: tempDir) }
+
+        #expect(store.formTitle(forNameOrAlias: "Levetiracetam", isomer: nil, release: nil) == "Levetiracetam")
+        #expect(store.formTitle(forNameOrAlias: "Levetiracetam", isomer: nil, release: "XR") == "Levetiracetam XR")
+        #expect(store.defaultPSID(forNameOrAlias: "Levetiracetam") == "P1-HPHUVLMMVZITSG-S-0-0-6")
+        #expect(store.defaultPSID(forNameOrAlias: "Etiracetam") == "P1-HPHUVLMMVZITSG-0-0-0-G")
+    }
+
     @Test
     func `Branded products enumerate a substance's brands, flagships first`() throws {
         let (store, tempDir) = try makeIsolatedSubstanceStore()

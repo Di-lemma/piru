@@ -292,6 +292,10 @@ final class SubstanceStore {
     /// index covers only `salt='0'` rows, which is exhaustive for name resolution
     /// since salt is deliberately never alias-annotated (see `aliases.salt_form`).
     private(set) var formTitleIndex: [FormKey: String] = [:]
+    /// Row id → the stereo facet of that row's default form. `"0"` for nearly
+    /// every substance; an enantiomer the build keeps as its own row carries its
+    /// own (Levetiracetam `"S"`), so a dose that names no isomer still lands on it.
+    private(set) var defaultStereoIndex: [Int64: String] = [:]
     /// PSID FAMILY (`substance_uid`) → its branded products, flagships first. Feeds
     /// the QuickLog brand picker, whose selection sets `productName` (the key every
     /// downstream brand surface — curve, tablet chips, title — already reads).
@@ -790,8 +794,8 @@ final class SubstanceStore {
 
     private func buildIndexes() {
         do {
-            let (names, aliases, aliasDisplay, aliasFacets, displayNames, uids, formTitles, stubs):
-                ([(String, Int64, String)], [(String, Int64)], [(String, String)], [(String, String?, String?, String?)], [(String, String)], [(Int64, String)], [(FormKey, String)], Set<Int64>) = try substancesDB.read { db in
+            let (names, aliases, aliasDisplay, aliasFacets, displayNames, uids, formTitles, defaultStereos, stubs):
+                ([(String, Int64, String)], [(String, Int64)], [(String, String)], [(String, String?, String?, String?)], [(String, String)], [(Int64, String)], [(FormKey, String)], [(Int64, String)], Set<Int64>) = try substancesDB.read { db in
                     let nameRows = try Row.fetchAll(db, sql: "SELECT id, canonical_name, substance_uid, is_stub FROM substances ORDER BY canonical_name COLLATE NOCASE")
                     let names = nameRows.map { ($0["canonical_name"] as String, $0["id"] as Int64, ($0["canonical_name"] as String).lowercased()) }
                     // Rows the build flagged as carrying no dose data at all. Kept
@@ -826,7 +830,10 @@ final class SubstanceStore {
                     }
                     let sourceRows = try Row.fetchAll(db, sql: "SELECT slug, display_name FROM sources")
                     let displayNames = sourceRows.map { ($0["slug"] as String, $0["display_name"] as String) }
-                    let formRows = try Row.fetchAll(db, sql: "SELECT substance_id, stereo, release, display_name FROM substance_forms WHERE salt = '0'")
+                    let formRows = try Row.fetchAll(db, sql: "SELECT substance_id, stereo, release, display_name, is_default FROM substance_forms WHERE salt = '0'")
+                    let defaultStereos = formRows.compactMap { row -> (Int64, String)? in
+                        (row["is_default"] as Int) == 1 ? (row["substance_id"] as Int64, row["stereo"] as String) : nil
+                    }
                     let formTitles = formRows.map { row in
                         (
                             FormKey(
@@ -837,7 +844,7 @@ final class SubstanceStore {
                             row["display_name"] as String,
                         )
                     }
-                    return (names, aliases, aliasDisplay, aliasFacets, displayNames, uids, formTitles, stubs)
+                    return (names, aliases, aliasDisplay, aliasFacets, displayNames, uids, formTitles, defaultStereos, stubs)
                 }
             self.stubIDs = stubs
             // Which spelling to display per region. Installed here because `displayTitle` reads it from
@@ -904,6 +911,7 @@ final class SubstanceStore {
             // `substance_forms`' PK already makes these unique; uniquing defensively
             // rather than trapping at launch, matching `nameIndex` above.
             self.formTitleIndex = Dictionary(formTitles, uniquingKeysWith: { first, _ in first })
+            self.defaultStereoIndex = Dictionary(defaultStereos, uniquingKeysWith: { first, _ in first })
             // PSID FAMILY → its member row ids. One-to-many for co-familied-but-
             // unfolded rows (Etiracetam/Levetiracetam), else one row per uid.
             var ux: [String: [Int64]] = [:]
