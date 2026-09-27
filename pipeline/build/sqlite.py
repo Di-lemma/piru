@@ -512,6 +512,8 @@ FREEOD_CATEGORY_MAP = {
 # genuine FreeOD-only entries under their Chinese title.
 FREEOD_NAME_OVERRIDE = {
     "1,4-丁二醇": "1,4-Butanediol",
+    "麻黄碱": "Ephedrine",
+    "伪麻黄碱": "Pseudoephedrine",
     "尼古丁": "Nicotine",
     "美沙酮": "Methadone",
     "芬太尼": "Fentanyl",
@@ -5593,6 +5595,9 @@ _NAME_REMAP: dict[str, str] = {
     "adderall ir": "Amphetamine",
     "adderall xr": "Amphetamine",
     "mydayis": "Amphetamine",
+    # Wikidata's (±)-ephedrine, filed under a systematic name. Named at ingest
+    # because structural dedup keeps the richer row's name, which was this one.
+    "2-(methylamine)-1-phenyl-1-propanol": "Ephedrine",
     # Brand → generic for compounds whose brand record carries no InChIKey, so
     # the structural auto-dedup can't catch them. (The InChIKey connectivity
     # match handles all structurally-confirmed duplicates automatically.)

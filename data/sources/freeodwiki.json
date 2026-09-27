@@ -24317,9 +24317,7 @@
   "title": "伪麻黄碱",
   "page_slug": "伪麻黄碱",
   "names": [
-   "methylamino",
-   "(1S",
-   "2S)-2-(methylamino)-1-phenylpropan-1-ol"
+   "(1S,2S)-2-(methylamino)-1-phenylpropan-1-ol"
   ],
   "formula": "C10H15NO",
   "cas": "90-82-4",
@@ -42078,9 +42076,7 @@
   "title": "麻黄碱",
   "page_slug": "麻黄碱",
   "names": [
-   "methylamino",
-   "(1R",
-   "2S)-2-(methylamino)-1-phenylpropan-1-ol"
+   "(1R,2S)-2-(methylamino)-1-phenylpropan-1-ol"
   ],
   "formula": "C10H15NO",
   "cas": "299-42-350-98-6（盐酸盐）134-72-5（硫酸盐）",

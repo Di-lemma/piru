@@ -205,5 +205,30 @@ class TestRejoinLocantSplits(unittest.TestCase):
         self.assertEqual(_mod.rejoin_locant_splits(["JWH-018", "AM-2201"]), ["JWH-018", "AM-2201"])
 
 
+class TestSplitNamesKeepsSystematicNamesWhole(unittest.TestCase):
+    """Pseudoephedrine's and ephedrine's name cells both read
+    "(1S,2S)-2-(methylamino)-1-phenylpropan-1-ol" (1R,2S for ephedrine). Split
+    on the stereo comma, the "(methylamino)" fragment was then mined as an
+    English name, and the two drugs merged into one substance called "Methylamino"."""
+
+    def test_stereo_descriptor_comma_does_not_split(self):
+        self.assertEqual(
+            _mod.split_names("(1S,2S)-2-(methylamino)-1-phenylpropan-1-ol"),
+            ["(1S,2S)-2-(methylamino)-1-phenylpropan-1-ol"],
+        )
+
+    def test_separators_outside_brackets_still_split(self):
+        self.assertEqual(
+            _mod.split_names("伪麻黄碱（Pseudoephedrine）、Sudafed, pseudo"),
+            ["伪麻黄碱（Pseudoephedrine）", "Sudafed", "pseudo"],
+        )
+
+    def test_substituent_is_not_mined_as_an_english_name(self):
+        self.assertIsNone(_mod._PAREN_EN_RE.search("2S)-2-(methylamino)-1-phenylpropan-1-ol"))
+        self.assertEqual(
+            _mod._PAREN_EN_RE.search("哌甲酯（Methylphenidate）").group(1), "Methylphenidate"
+        )
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

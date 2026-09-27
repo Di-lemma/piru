@@ -235,8 +235,31 @@ def rejoin_locant_splits(parts: list[str]) -> list[str]:
     return out
 
 
+_NAME_SEPARATORS = frozenset("、,，/;；")
+_OPENERS, _CLOSERS = "([（【", ")]）】"
+
+
+def split_outside_brackets(value: str) -> list[str]:
+    """Split on the name separators, except inside brackets: the comma in
+    "(1S,2S)-2-(methylamino)-1-phenylpropan-1-ol" is a stereo descriptor's, and
+    cutting there turned one systematic name into "(1S" and "2S)-2-(methylamino)…"."""
+    parts, buf, depth = [], [], 0
+    for ch in value:
+        if ch in _OPENERS:
+            depth += 1
+        elif ch in _CLOSERS:
+            depth = max(depth - 1, 0)
+        if ch in _NAME_SEPARATORS and depth == 0:
+            parts.append("".join(buf))
+            buf = []
+        else:
+            buf.append(ch)
+    parts.append("".join(buf))
+    return parts
+
+
 def split_names(value: str) -> list[str]:
-    parts = re.split(r"[、,，/;；]", strip_md(value))
+    parts = split_outside_brackets(strip_md(value))
     # Strip stray italic underscores left when "_a / b_" splits mid-emphasis.
     cleaned = [p.strip().strip("_").strip() for p in parts if p.strip().strip("_").strip()]
     return rejoin_locant_splits(cleaned)
@@ -478,8 +501,10 @@ def extract_description(lines: list[str]) -> str | None:
 _EN_TOKEN = r"[A-Za-z][A-Za-z0-9 .'\-]{1,46}?"
 # A Latin bold lead: "***Mitragyna speciosa***（…)" / "**Modafinil**（…)".
 _LEAD_LATIN_RE = re.compile(rf"^\*{{2,3}}({_EN_TOKEN})\*{{2,3}}\s*[（(]")
-# English inside a "中文（English）" name cell or lead.
-_PAREN_EN_RE = re.compile(rf"[（(]\s*\*{{0,3}}({_EN_TOKEN})\*{{0,3}}\s*[，,、)）]")
+# English inside a "中文（English）" name cell or lead. A bracket right after a
+# letter, digit or hyphen opens a substituent of a systematic name — the
+# "(methylamino)" of "2-(methylamino)-1-phenylpropan-1-ol" — never a gloss.
+_PAREN_EN_RE = re.compile(rf"(?<![-0-9A-Za-z])[（(]\s*\*{{0,3}}({_EN_TOKEN})\*{{0,3}}\s*[，,、)）]")
 _GENERIC = {"the", "a", "an", "or", "and"}
 
 
