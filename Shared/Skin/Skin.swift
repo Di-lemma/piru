@@ -404,7 +404,7 @@ enum Skin: String, CaseIterable, Identifiable, Sendable {
                 )),
                 glyphs: [
                     SkinGlyph("▪", accentMark), SkinGlyph("▴", .Skin.Hebi.Arcade.food),
-                    SkinGlyph("●", semantic(.caution, .accent)), SkinGlyph("✦", accentMark),
+                    SkinGlyph("✦", accentMark),
                 ],
                 frameCorners: (SkinGlyph("✦", accentMark), SkinGlyph("▪", .Skin.Hebi.Arcade.food)),
                 tapGlyph: SkinGlyph("▪", .Skin.Hebi.Arcade.food),

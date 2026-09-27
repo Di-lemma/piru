@@ -297,6 +297,26 @@ nonisolated extension SceneRenderer {
             let a = 0.3 + 0.7 * (0.5 + 0.5 * sin(time * (1 + depth * 2) + depth * 20))
             context.fill(Path(CGRect(x: x.rounded(), y: y.rounded(), width: 2, height: 2)), with: .color(arcade.star.opacity(a * (dark ? 0.9 : 0.6))))
         }
+        // The sun, sitting on the horizon: its top half, pale pink to
+        // magenta, with the slats cut through its lower part widening toward
+        // the line. Far away, so it barely moves with the tilt.
+        let r = min(size.width * 0.36, 160)
+        let sunX = size.width / 2 + parallax(0.05).width
+        bloom(arcade.border, at: CGPoint(x: sunX, y: vp - r * 0.4), radius: r * 1.6, alpha: dark ? 0.22 : 0.12, in: &context)
+        context.drawLayer { sun in
+            sun.opacity = dark ? 1 : 0.85
+            sun.clip(to: Path(CGRect(x: 0, y: 0, width: size.width, height: vp)))
+            let disc = CGRect(x: sunX - r, y: vp - r, width: r * 2, height: r * 2)
+            sun.fill(
+                Path(ellipseIn: disc),
+                with: .linearGradient(Gradient(colors: [arcade.border.mix(with: .white, by: 0.55), arcade.border]), startPoint: CGPoint(x: 0, y: vp - r), endPoint: CGPoint(x: 0, y: vp)),
+            )
+            sun.blendMode = .destinationOut
+            for k in 0 ..< 6 {
+                let u = CGFloat(k) / 5
+                sun.fill(Path(CGRect(x: disc.minX, y: vp - r * (0.55 - 0.5 * u), width: disc.width, height: 2 + 5 * u)), with: .color(.black))
+            }
+        }
         // The floor.
         if dark { context.blendMode = .plusLighter }
         var lines = Path()
