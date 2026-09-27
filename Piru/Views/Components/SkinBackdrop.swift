@@ -60,6 +60,8 @@ struct SkinBackdrop: View {
                 // Resolved outside the canvas: reads inside the renderer
                 // closure are not tracked by Observation.
                 let dark = colorScheme == .dark
+                // A preview card names its skin and always shows the root scene.
+                let presented = self.skin == nil && (isPresented || wasPresented)
                 // `visible` says this screen is on top of its stack; the scene
                 // phase says the app is on screen at all, so the clock stops
                 // the moment the app is backgrounded rather than whenever the
@@ -87,7 +89,7 @@ struct SkinBackdrop: View {
                     // asynchronous renderer calls it off the main thread on
                     // hardware. Everything it captures is a `Sendable` value.
                     Canvas(rendersAsynchronously: true) { @Sendable context, size in
-                        SceneRenderer(decor: decor, atlas: atlas, wheel: wheel, textures: textures, size: size, time: t, dark: dark, tilt: tilt, clock: clock).draw(in: &context)
+                        SceneRenderer(decor: decor, atlas: atlas, wheel: wheel, textures: textures, size: size, time: t, dark: dark, tilt: tilt, clock: clock, presented: presented).draw(in: &context)
                     }
                 }
                 .allowsHitTesting(false)
@@ -106,8 +108,7 @@ struct SkinBackdrop: View {
                         holdsMotion = false
                     }
                 }
-                // A preview card names its skin and always shows the bare scene.
-                if self.skin == nil, isPresented || wasPresented, decor.scene.veilsDepth {
+                if presented, decor.scene.veilsDepth {
                     StainedGlass(tint: skin.background, lead: skin.palette.stroke)
                 }
             }
@@ -180,6 +181,9 @@ nonisolated struct SceneRenderer {
     /// Device tilt, -1 … 1 per axis. Zero on the simulator and at rest.
     let tilt: CGPoint
     let clock: SceneClock
+    /// The screen is pushed or a sheet, for a scene that draws those
+    /// differently from a tab root.
+    var presented = false
 
     /// The window into the aquarium: a layer at `depth` (0 far, 1 at the
     /// glass) slides opposite the tilt, farther layers less.

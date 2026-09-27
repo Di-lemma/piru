@@ -67,7 +67,12 @@ roles stay split: a colour that is a fine mark can still fail as small copy
 | Hanabi | `~/Developer/Hanabi` (the co-op card game) | soft (periwinkle glow) | `.rounded` | a festival night: a star field, rockets, bursts in the five suits |
 | substance.wiki | https://substance.wiki (partner; their black ground, paper ink, cyan and signal lime) | edged (1pt hairline, no shadow, `--radius: 0`) | system | none — nothing moving, by their design |
 | Gatsby (vanity) | — | edged (1pt gold rule, no shadow), **gilded buttons** | Limelight in gold foil + Josefin Sans (label) | still: a supercar under a skyline — night in dark mode, dusk in light |
-| Irie (vanity) | — | soft (gold hairline + green glow), **gilded buttons** with a tricolor foot | Shrikhand (scaled .88) | still: emerald velvet, embossed fan leaves, the red / gold / green pinstripe in the right gutter |
+| Irie (vanity) | — | soft (gold hairline + green glow), **gilded buttons** with a tricolor foot | Shrikhand (scaled .88) | still, two scenes: tab roots get a record-label sunburst in the tricolor from a ringed gold sun, framed by gold-leaf fan leaves; pushed screens and sheets get a crocheted tam's stitch rows clearing toward the middle. The tricolor pinstripe runs down the right gutter of both |
+
+A scene can draw a pushed screen or a sheet differently from a tab root:
+the backdrop reads `isPresented` (latched, so a screen keeps its look while it
+slides away) and hands it to the renderer as `presented`. Gatsby covers its
+picture with stained glass there; Irie swaps the canopy for the knit.
 
 **The vanity tier** (`SkinTier.vanity`, $29.99 each, covered by the
 unlock-all like every skin) is priced on finish rather than motion. Its scenes
