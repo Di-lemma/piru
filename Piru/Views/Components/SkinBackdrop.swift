@@ -76,7 +76,9 @@ struct SkinBackdrop: View {
                 let atlas = GlyphAtlas.images(for: skin, decor: decor, dark: dark, scale: displayScale)
                 let wheel = WheelAtlas.images(for: decor.scene, dark: dark, scale: displayScale)
                 let textures = SkinTextures.tiles(for: decor.scene, dark: dark, scale: displayScale)
-                let inPlay = cabinet.isPlaying
+                // Only the app's own backdrop plays the round: a preview card has
+                // its own size, and the idle round is laid out for the window.
+                let playsRound = self.skin == nil && decor.scene.isArcade
                 // Stays in the screen's own graph. Hosting the canvas in its
                 // own hosting controller was measured: the display link still
                 // reached the screen's `ForEach` evictors once per tick, and
@@ -88,12 +90,13 @@ struct SkinBackdrop: View {
                     let tilt = reduceMotion ? .zero : SkinMotion.shared.tilt
                     // The wall clock, for a sky that follows the day.
                     let clock = SceneClock(date: timeline.date)
+                    let round = playsRound ? cabinet.idleScene(at: timeline.date.timeIntervalSinceReferenceDate) : nil
                     // `@Sendable`: a closure formed in this main-actor body
                     // would otherwise inherit main-actor isolation, and the
                     // asynchronous renderer calls it off the main thread on
                     // hardware. Everything it captures is a `Sendable` value.
                     Canvas(rendersAsynchronously: true) { @Sendable context, size in
-                        SceneRenderer(decor: decor, atlas: atlas, wheel: wheel, textures: textures, size: size, time: t, dark: dark, tilt: tilt, clock: clock, presented: presented, arcadeInPlay: inPlay).draw(in: &context)
+                        SceneRenderer(decor: decor, atlas: atlas, wheel: wheel, textures: textures, size: size, time: t, dark: dark, tilt: tilt, clock: clock, presented: presented, arcadeRound: round).draw(in: &context)
                     }
                 }
                 .allowsHitTesting(false)
@@ -188,8 +191,8 @@ nonisolated struct SceneRenderer {
     /// The screen is pushed or a sheet, for a scene that draws those
     /// differently from a tab root.
     var presented = false
-    /// The arcade cabinet has the snake and the ship; see ``ArcadeCabinet``.
-    var arcadeInPlay = false
+    /// The arcade's idle round, this frame; see ``ArcadeCabinet``.
+    var arcadeRound: ArcadeScene?
 
     /// The window into the aquarium: a layer at `depth` (0 far, 1 at the
     /// glass) slides opposite the tilt, farther layers less.

@@ -40,29 +40,11 @@ nonisolated struct ArcadeFormation {
         total = max(1, members.count)
     }
 
-    /// The backdrop's block, exactly as the tap found it.
-    static func handoff(origin: CGPoint, alive: UInt32) -> ArcadeFormation {
-        var members: [Member] = []
-        for row in 0 ..< InvaderTape.rows {
-            for col in 0 ..< InvaderTape.cols {
-                let at = InvaderTape.invaderCenter(origin: .zero, col: col, row: row)
-                let live = alive & (1 << UInt32(row * InvaderTape.cols + col)) != 0
-                members.append(Member(offset: at, squad: 0, tint: row, alien: .plain, hp: 1, alive: live))
-            }
-        }
-        return ArcadeFormation(origin: origin, members: members)
-    }
-
-    /// Slot index for a backdrop diver's grid position.
-    static func handoffIndex(col: Int, row: Int) -> Int {
-        row * InvaderTape.cols + col
-    }
-
     /// Wave `wave`'s formation: wider and deeper as the waves go on, a new
     /// shape each wave, armor on the front row from the third, and splitters
     /// scattered through it from the second.
     static func wave(_ wave: Int, width: CGFloat, top: CGFloat, rng: inout SeededRNG) -> ArcadeFormation {
-        let spacing = InvaderTape.spacing
+        let spacing = ArcadeRules.spacing
         let cols = min(8, 6 + (wave - 1) / 2)
         let rows = wave >= 4 ? 4 : 3
         let shape = Shape.allCases[(wave - 1) % Shape.allCases.count]

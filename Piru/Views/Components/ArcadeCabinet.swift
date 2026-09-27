@@ -2,16 +2,15 @@ import SwiftUI
 
 // MARK: - Cabinet
 
-/// Hebi's playable round. Tap the ship the backdrop is flying and it is yours:
-/// the app dims, the ship follows your finger and fires on its own, and the
-/// formation, the snake and the raids go on from where the backdrop had them.
-/// Shoot the snake's fruit and it stops chasing fruit and starts hunting you,
-/// and the invaders come down in a swarm.
+/// Hebi's round. Behind every screen the backdrop plays one with the pilot
+/// flying (`idle`); tap its ship and that same round is yours: the app dims,
+/// the ship follows your finger and fires on its own, and everything goes on
+/// from exactly where it was. Shoot the snake's fruit and it stops chasing
+/// fruit and starts hunting you, and the invaders come down in a swarm.
 ///
-/// The backdrop is a pure function of time; a round you steer cannot be, so
-/// ``ArcadeGame`` keeps state and steps on the cabinet's own clock. While it
-/// runs the backdrop stops drawing its snake and ship (`arcadeInPlay`), so
-/// there is only ever one of each on screen.
+/// One round at a time: the idle one is stepped by whichever backdrop is on
+/// screen, so it carries on across screens, and while you play it is the
+/// overlay's and the backdrop draws only its sky.
 @Observable @MainActor
 final class ArcadeCabinet {
     static let shared = ArcadeCabinet(defaults: .standard)
@@ -20,6 +19,8 @@ final class ArcadeCabinet {
     private(set) var best: Int
     /// The round in play; set and cleared with `isPlaying`.
     @ObservationIgnored private(set) var game: ArcadeGame?
+    /// The round the backdrop plays, made on first sight of the arcade skin.
+    @ObservationIgnored private var idle: ArcadeGame?
     /// The window the backdrops fill, measured at the root.
     @ObservationIgnored var windowSize: CGSize = .zero
 
@@ -37,16 +38,16 @@ final class ArcadeCabinet {
     func touched(at point: CGPoint, reduceMotion: Bool) {
         let skins = SkinStore.shared
         guard !isPlaying, !reduceMotion, windowSize.width > 0, skins.decorationsEnabled,
-              case let .arcade(arcade)? = skins.current.decorations?.scene,
+              case .arcade? = skins.current.decorations?.scene,
               // Not under a sheet: the round draws beneath it, and a sheet's
               // backdrop is inset, so its ship is not where this one looks.
               !Self.sheetIsUp
         else { return }
-        let now = Date.now.timeIntervalSinceReferenceDate
-        let frame = InvaderTape(size: windowSize).frame(atStep: InvaderTape.step(at: now))
-        let ship = CGPoint(x: frame.shipX, y: frame.shipY)
-        guard hypot(point.x - ship.x, point.y - ship.y) < 30 else { return }
-        game = ArcadeGame(size: windowSize, arcade: arcade, handoff: frame, time: now)
+        guard let round = idle, round.size == windowSize,
+              hypot(point.x - round.ship.x, point.y - round.ship.y) < 30 else { return }
+        round.takeOver()
+        game = round
+        idle = nil
         isPlaying = true
         PlatformHaptics.impact()
     }
@@ -61,6 +62,22 @@ final class ArcadeCabinet {
         #else
             return !AppNavigator.shared.sheetStack.isEmpty
         #endif
+    }
+
+    /// The idle round, stepped to `date`, as a frame to draw: nil while a
+    /// round is in play, before the window is measured, or off the arcade skin.
+    /// Stepping it twice for one date is a no-op, so two backdrops on screen
+    /// at once do not play it at double speed.
+    func idleScene(at date: Double) -> ArcadeScene? {
+        guard !isPlaying, windowSize.width > 0,
+              case let .arcade(arcade)? = SkinStore.shared.current.decorations?.scene
+        else { return nil }
+        if idle?.size != windowSize {
+            idle = ArcadeGame(size: windowSize, arcade: arcade, time: date, idle: true)
+        }
+        guard let idle else { return nil }
+        _ = idle.advance(to: date)
+        return idle.scene
     }
 
     func end() {
@@ -128,14 +145,15 @@ private struct ArcadePlayView: View {
         // and the round looks no different.
         TimelineView(.animation(minimumInterval: 1 / 60)) { timeline in
             let clock = game.advance(to: timeline.date.timeIntervalSinceReferenceDate)
+            let scene = game.scene
             let dark = colorScheme == .dark
             ZStack {
                 skins.current.background.opacity(0.82)
                     .ignoresSafeArea()
-                // The clock is captured on purpose: `game` is one reference that
-                // never changes, and a canvas capturing only that looks
-                // unchanged to SwiftUI and keeps its last frame.
-                Canvas { context, _ in game.draw(in: &context, dark: dark, clock: clock) }
+                // The frame goes in as a value: a canvas that captured only the
+                // round, one reference that never changes, would look unchanged
+                // to SwiftUI and keep its last frame.
+                Canvas { context, _ in scene.draw(in: &context, dark: dark) }
                     .ignoresSafeArea()
                     .contentShape(Rectangle())
                     .gesture(steering)
@@ -214,10 +232,11 @@ private struct ArcadePlayView: View {
                     .foregroundStyle(arcade.raider)
                     .scaleEffect(1.8)
                 Spacer()
-            } else if clock < 3.5 {
+            } else if clock - game.startedAt < 3.5 {
+                let since = clock - game.startedAt
                 Text("Drag to fly, double-tap to roll")
                     .font(hudFont)
-                    .foregroundStyle(arcade.star.opacity(clock < 2.5 ? 0.9 : (3.5 - clock) * 0.9))
+                    .foregroundStyle(arcade.star.opacity(since < 2.5 ? 0.9 : (3.5 - since) * 0.9))
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 24)
                     .padding(.bottom, 40)

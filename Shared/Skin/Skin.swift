@@ -1026,6 +1026,10 @@ enum SkinScene: Sendable {
     var isStickers: Bool {
         if case .stickers = self { true } else { false }
     }
+
+    var isArcade: Bool {
+        if case .arcade = self { true } else { false }
+    }
     /// A night sky: a twinkling, haloed starfield over nebula glows.
     case nightSky(SkinNightSky)
     /// Deep water: a depth gradient, light rays, rising bubbles, and

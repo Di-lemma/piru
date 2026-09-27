@@ -95,7 +95,7 @@ nonisolated enum BroodKind: CaseIterable, Sendable {
 }
 
 /// One of the brood in play.
-nonisolated struct BroodJelly {
+nonisolated struct BroodJelly: Sendable {
     let kind: BroodKind
     var p: CGPoint
     var v: CGVector
