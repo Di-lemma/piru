@@ -117,17 +117,13 @@ private struct DockShortcutButton: View {
     private func perform() {
         switch shortcut {
         case .inventory:
-            navigator.selectedTab = .tools
-            navigator.push(.tool(.inventory), in: .tools)
+            navigator.open(.tool(.inventory), home: .tools)
         case .interactions:
-            navigator.selectedTab = .tools
-            navigator.push(.tool(.interactions), in: .tools)
+            navigator.open(.tool(.interactions), home: .tools)
         case .timeline:
-            navigator.selectedTab = .journal
-            navigator.push(.timeline, in: .journal)
+            navigator.open(.timeline, home: .journal)
         case .myMeds:
-            navigator.selectedTab = .journal
-            navigator.push(.myMeds, in: .journal)
+            navigator.open(.myMeds, home: .journal)
         case .addNote:
             guard navigator.sheetStack.isEmpty, let id = mostRecentSessionID() else { return }
             navigator.present(.sessionNoteEditor(sessionID: id))

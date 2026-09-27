@@ -182,10 +182,11 @@ pipeline/            # Python data pipeline that builds the bundled substance SQ
 | `Utilities/SessionNotificationScheduler.swift` | Local session notifications with session-based grouping |
 | `Views/InteractionTimelineView.swift` | PK curve overlay with interaction danger window visualization |
 | `Views/QuickLog/EntryLevelEstimateCard.swift` | Model estimate for the latest recorded entry shown during quick-log |
-| `Views/ContentView.swift` | Main TabView (Journal, Library, Tools, Insights) |
+| `Views/ContentView.swift` | Main TabView, built from the user's `TabLayoutStore` layout (stock: Journal, Library, Tools, Insights + Search) |
 | `Views/QuickLogView.swift` | Modal for quick dose logging (plus per-type `QuickLog*.swift` files split out alongside it) |
 | `Navigation/AppNavigator.swift` | `@Observable @MainActor` singleton owning `selectedTab`, per-tab push paths, and the sheet stack |
-| `Navigation/Routes.swift` | `AppTab`, `PushRoute`, `SheetRoute` enums + `NavigatorSnapshot` (all Codable for deep links) |
+| `Navigation/Routes.swift` | `AppTab`, `PushRoute`, `SheetRoute` enums + `NavigatorSnapshot` (all Codable for deep links); `TabID` (a tab-bar slot: stock tab or `PinnedScreen`) |
+| `Navigation/TabLayoutStore.swift` | The user's tab bar (Settings ▸ Tabs): order, hidden stock tabs, pinned screens, Search on/off. Cap 4 + Search, at least one tab besides Search; backed up |
 | `Navigation/DeepLink.swift` | `piru://` URL ↔ `NavigatorSnapshot` codec |
 | `Navigation/SheetRouteView.swift` | Dispatches a `SheetRoute` to its underlying view |
 | `Theme.swift` | Accent color + secondary label styling |
@@ -209,9 +210,10 @@ Navigation state is centralised in `AppNavigator` (`Piru/Navigation/`). Views re
 - **Present a sheet**: `navigator.present(.someRoute)`. To atomically swap the current sheet for another (e.g. Save → ColorPicker), use `replacingTop: true`.
 - **Dismiss a sheet**: `navigator.dismiss()`. Direct state mutation, not the env `dismiss()` round-trip — that's why Done/Cancel feel instant now.
 - **`@Environment(\.dismiss)` is fine** in views that can be either pushed or presented (e.g. `EntryDetailView`) — the system routes it correctly. For dedicated sheet roots, prefer `navigator.dismiss()` for explicitness.
-- **New screens**: add a case to `SheetRoute` (or `PushRoute`) and a dispatch arm in `SheetRouteView`. Update `DeepLink.encode/decode` if the route should be deep-linkable.
+- **New screens**: add a case to `SheetRoute` (or `PushRoute`) and a dispatch arm in `SheetRouteView`. Update `DeepLink.encode/decode` if the route should be deep-linkable. A screen that can stand as a tab also goes in `PinnedScreen` (and `pickable`).
+- **Tabs are the user's.** Any stock tab can be hidden and any tool, insight or the Timeline pinned, so never assume Journal (or any tab) is in the bar. A "take me there" action goes through `navigator.open(_:home:)` (deep links through `apply`), which resolves by `TabRouting`: a pinned tab for that screen, else the home tab if shown, else the current tab. Plain `push` stays on the current tab.
 
-`piru://` URLs route through `DeepLink.decode` → `navigator.snapshot = decoded`. URL scheme is registered in `Piru/Info.plist`.
+`piru://` URLs route through `DeepLink.decode` → `navigator.apply(_:)`. URL scheme is registered in `Piru/Info.plist`.
 
 ## Testing
 

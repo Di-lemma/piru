@@ -264,6 +264,8 @@
             await SubstanceStore.shared.ensureAllLoaded()
             await waitForOwnership()
 
+            // The stock bar in every capture, whatever this device's own layout.
+            TabLayoutStore.shared.setEphemeral(.default)
             let stage = Stage(context: container.mainContext)
             let skinStore = SkinStore.shared
             let originalSkin = skinStore.chosen
@@ -319,6 +321,7 @@
             }
             await wear(originalSkin)
             await stage.reset()
+            TabLayoutStore.shared.setEphemeral(nil)
 
             report.seconds = Date.now.timeIntervalSince(started)
             write(report, to: tourDirectory.appending(path: "done.json"))
@@ -418,17 +421,15 @@
             func reset() async {
                 let hadSheet = !navigator.sheetStack.isEmpty
                 navigator.dismissAll()
-                for tab in AppTab.allCases {
-                    navigator.setPath([], in: tab)
-                }
+                navigator.resetAllPaths()
                 try? await Task.sleep(for: .seconds(hadSheet ? 0.6 : 0.2))
             }
 
-            func tab(_ tab: AppTab) {
+            func tab(_ tab: TabID) {
                 navigator.select(tab)
             }
 
-            func push(_ route: PushRoute, in tab: AppTab) {
+            func push(_ route: PushRoute, in tab: TabID) {
                 navigator.select(tab)
                 navigator.setPath([route], in: tab)
             }

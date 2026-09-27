@@ -11583,6 +11583,7 @@
       }
     },
     "Add a note..." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -11606,6 +11607,34 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "新增備註…"
+          }
+        }
+      }
+    },
+    "Add a Tab…" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Agregar pestaña…"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Agregar pestaña…"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "添加标签页…"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "新增分頁…"
           }
         }
       }
@@ -14560,6 +14589,7 @@
       }
     },
     "All Time" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -16675,6 +16705,34 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "達到中等或以上 · %lld 次大劑量"
+          }
+        }
+      }
+    },
+    "At least one tab besides Search stays in the bar." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Además de Buscar, al menos una pestaña se queda en la barra."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Además de Buscar, al menos una pestaña se queda en la barra."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "除搜索外，标签栏至少保留一个标签页。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "除搜尋外，分頁列至少保留一個分頁。"
           }
         }
       }
@@ -25564,6 +25622,7 @@
       }
     },
     "Couldn't save the report" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -26265,6 +26324,7 @@
       }
     },
     "Current Medications" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -27331,6 +27391,7 @@
       }
     },
     "Date Range" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -39074,6 +39135,7 @@
       }
     },
     "Generate PDF Report" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -43571,6 +43633,34 @@
         }
       }
     },
+    "In the Tab Bar" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En la barra de pestañas"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En la barra de pestañas"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "标签栏中"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "分頁列中"
+          }
+        }
+      }
+    },
     "In use" : {
       "comment" : "Badge on the source currently supplying the dose ladder",
       "localizations" : {
@@ -44472,6 +44562,7 @@
       }
     },
     "Interaction Alerts" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -45826,6 +45917,7 @@
       }
     },
     "Last 7 Days" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -45854,6 +45946,7 @@
       }
     },
     "Last 30 Days" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -45882,6 +45975,7 @@
       }
     },
     "Last 90 Days" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -53376,6 +53470,7 @@
       }
     },
     "Name (for the report header)" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -53404,6 +53499,7 @@
       }
     },
     "Name (Optional)" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -56986,6 +57082,7 @@
       }
     },
     "Notes (Optional)" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -61110,6 +61207,7 @@
       }
     },
     "Period" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -68116,6 +68214,7 @@
       }
     },
     "Report Includes" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -70668,6 +70767,34 @@
         }
       }
     },
+    "Screens" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pantallas"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pantallas"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "页面"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "頁面"
+          }
+        }
+      }
+    },
     "Sealed with AES-256-GCM. Tampering is detected and refused." : {
       "localizations" : {
         "es" : {
@@ -70720,6 +70847,34 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "搜尋"
+          }
+        }
+      }
+    },
+    "Search always sits at the end of the tab bar." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Buscar siempre va al final de la barra de pestañas."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Buscar siempre va al final de la barra de pestañas."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "搜索始终位于标签栏末端。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "搜尋一律位於分頁列末端。"
           }
         }
       }
@@ -79375,6 +79530,34 @@
         }
       }
     },
+    "Tabs" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pestañas"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pestañas"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "标签页"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "分頁"
+          }
+        }
+      }
+    },
     "Tachyphylaxis" : {
       "localizations" : {
         "es" : {
@@ -81796,6 +81979,34 @@
         }
       }
     },
+    "The tab bar is full. Remove a tab to add another." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La barra de pestañas está llena. Quita una para agregar otra."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La barra de pestañas está llena. Quita una para agregar otra."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "标签栏已满。移除一个标签页后才能添加。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "分頁列已滿。移除一個分頁後才能新增。"
+          }
+        }
+      }
+    },
     "The time for your body to clear half of what's left. It takes about five half-lives to clear almost all of it." : {
       "localizations" : {
         "es" : {
@@ -81965,6 +82176,7 @@
       }
     },
     "These notes will appear at the end of the PDF report." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -85938,6 +86150,34 @@
         }
       }
     },
+    "Up to four tabs, plus Search." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hasta cuatro pestañas, más Buscar."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hasta cuatro pestañas, más Buscar."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最多四个标签页，另加搜索。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最多四個分頁，另加搜尋。"
+          }
+        }
+      }
+    },
     "Up to three, shown at the left of the dock." : {
       "localizations" : {
         "es" : {
@@ -86080,6 +86320,7 @@
       }
     },
     "Usage Entries" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {

@@ -31,7 +31,10 @@ extension View {
 /// Identifier-based routes (entries, substances) look up the underlying
 /// model on render — this is what makes routes a pure value type
 /// (Codable, Hashable) without holding a SwiftData object reference.
-private struct PushRouteView: View {
+///
+/// Also the root of a pinned tab (`PinnedTabRoot`), so a screen looks the same
+/// whether it was pushed or pinned.
+struct PushRouteView: View {
     let route: PushRoute
 
     @Environment(\.modelContext) private var modelContext

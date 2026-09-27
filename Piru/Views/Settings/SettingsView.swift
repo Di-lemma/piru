@@ -101,6 +101,11 @@ private struct ScreensSection: View {
                 Label("Journal", systemImage: "book")
             }
             NavigationLink {
+                TabsSettingsView()
+            } label: {
+                Label("Tabs", systemImage: "dock.rectangle")
+            }
+            NavigationLink {
                 YourBodyView()
             } label: {
                 Label("Your Body", systemImage: "figure.stand")

@@ -2,13 +2,180 @@ import Foundation
 
 // MARK: - Tabs
 
-/// The five top-level tabs of the app. Replaces `selectedTab: Int` storage.
+/// The five stock tabs. Also the "home" a destination belongs to — deep links
+/// and `AppNavigator.open(_:home:)` speak it; the bar itself is `[TabID]`.
 nonisolated enum AppTab: String, Hashable, Codable, CaseIterable {
     case journal
     case library
     case tools
     case insights
     case search
+}
+
+/// A screen the user can pin as its own tab (Settings ▸ Tabs). Each maps to
+/// exactly one `PushRoute`, whose destination view doubles as the tab's root.
+nonisolated enum PinnedScreen: Hashable {
+    case tool(Tool)
+    case insight(Insight)
+    case insightGroup(InsightGroup)
+    case myMeds
+    case timeline
+    case dataStorage
+
+    var route: PushRoute {
+        switch self {
+        case let .tool(tool): .tool(tool)
+        case let .insight(insight): .insight(insight)
+        case let .insightGroup(group): .insightGroup(group)
+        case .myMeds: .myMeds
+        case .timeline: .timeline
+        case .dataStorage: .dataStorage
+        }
+    }
+
+    /// The pinnable screen a route shows, or `nil` for routes that are not a
+    /// screen in their own right (a session, a substance). Routes that render
+    /// the same screen collapse onto one pin, so a link to either finds it.
+    init?(route: PushRoute) {
+        switch route {
+        case let .tool(tool): self = .tool(tool)
+        case .comedownGuide: self = .tool(.recovery)
+        case .insight(.inSystem), .insight(.bodyLoad), .insight(.steadyStateProjection):
+            self = .insightGroup(.inYourBody)
+        case let .insight(insight): self = .insight(insight)
+        case let .insightGroup(group): self = .insightGroup(group)
+        case .myMeds: self = .myMeds
+        case .timeline: self = .timeline
+        case .dataStorage: self = .dataStorage
+        default: return nil
+        }
+    }
+
+    /// Every screen the tab picker offers, in picker order. The In Your Body
+    /// insights are offered once, as their group — they share one screen.
+    static let pickable: [PinnedScreen] = {
+        let tools: [Tool] = [
+            .interactions, .inventory, .identify, .calculator, .steadyState, .injectionLevels,
+            .volumetric, .pharma, .benzoEquivalence, .opioidEquivalence, .ceiling,
+            .toleranceInfo, .recovery, .drugClasses,
+        ]
+        let insights: [Insight] = [
+            .adherence, .usage, .tolerance, .receptorLoad, .hormoneLevels, .patterns, .feltPatterns, .reports,
+        ]
+        return tools.map(PinnedScreen.tool) + [.myMeds, .dataStorage]
+            + insights.map(PinnedScreen.insight)
+            + [.insightGroup(.inYourBody), .insightGroup(.toleranceReceptors), .timeline]
+    }()
+
+    /// Screens that already put the app's overflow menu (Help · Skins ·
+    /// Settings) in their own toolbar, so their tab root must not add another.
+    var ownsOverflowMenu: Bool {
+        switch self {
+        case .tool(.benzoEquivalence), .tool(.opioidEquivalence), .tool(.ceiling), .tool(.toleranceInfo): true
+        default: false
+        }
+    }
+
+    /// Stable string identity — what the tab layout persists.
+    var storageKey: String {
+        switch self {
+        case let .tool(tool): "tool.\(tool.rawValue)"
+        case let .insight(insight): "insight.\(insight.rawValue)"
+        case let .insightGroup(group): "insightGroup.\(group.rawValue)"
+        case .myMeds: "myMeds"
+        case .timeline: "timeline"
+        case .dataStorage: "dataStorage"
+        }
+    }
+
+    init?(storageKey: String) {
+        switch storageKey {
+        case "myMeds": self = .myMeds
+        case "timeline": self = .timeline
+        case "dataStorage": self = .dataStorage
+        default:
+            let parts = storageKey.split(separator: ".", maxSplits: 1).map(String.init)
+            guard parts.count == 2 else { return nil }
+            switch parts[0] {
+            case "tool": guard let tool = Tool(rawValue: parts[1]) else { return nil }
+                self = .tool(tool)
+            case "insight": guard let insight = Insight(rawValue: parts[1]) else { return nil }
+                self = .insight(insight)
+            case "insightGroup": guard let group = InsightGroup(rawValue: parts[1]) else { return nil }
+                self = .insightGroup(group)
+            default: return nil
+            }
+        }
+    }
+}
+
+/// One slot in the tab bar: a stock tab or a pinned screen. `AppTab` keeps
+/// meaning "the tab a destination belongs to" (deep links speak it); this is
+/// what the bar, the selection and the per-tab push paths are keyed by.
+///
+/// Codes as a single string (`storageKey`) — a stock tab's key is its
+/// `AppTab` raw value, so a selection persisted before pinning existed still
+/// restores.
+nonisolated enum TabID: Hashable, Codable, CodingKeyRepresentable, Identifiable {
+    case stock(AppTab)
+    case pinned(PinnedScreen)
+
+    static var journal: TabID { .stock(.journal) }
+    static var library: TabID { .stock(.library) }
+    static var tools: TabID { .stock(.tools) }
+    static var insights: TabID { .stock(.insights) }
+    static var search: TabID { .stock(.search) }
+
+    var id: String {
+        storageKey
+    }
+
+    var storageKey: String {
+        switch self {
+        case let .stock(tab): tab.rawValue
+        case let .pinned(screen): screen.storageKey
+        }
+    }
+
+    init?(storageKey: String) {
+        if let tab = AppTab(rawValue: storageKey) {
+            self = .stock(tab)
+        } else if let screen = PinnedScreen(storageKey: storageKey) {
+            self = .pinned(screen)
+        } else {
+            return nil
+        }
+    }
+
+    init(from decoder: any Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        let key = try container.decode(String.self)
+        guard let tab = TabID(storageKey: key) else {
+            throw DecodingError.dataCorruptedError(in: container, debugDescription: "Unknown tab \(key)")
+        }
+        self = tab
+    }
+
+    func encode(to encoder: any Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(storageKey)
+    }
+
+    var codingKey: any CodingKey {
+        AnyCodingKey(storageKey)
+    }
+
+    init?(codingKey: some CodingKey) {
+        self.init(storageKey: codingKey.stringValue)
+    }
+
+    private struct AnyCodingKey: CodingKey {
+        let stringValue: String
+        var intValue: Int? { nil }
+        init(_ string: String) { stringValue = string }
+        init?(stringValue: String) { self.stringValue = stringValue }
+        init?(intValue _: Int) { nil }
+    }
 }
 
 // MARK: - Push Routes
@@ -298,13 +465,13 @@ nonisolated struct InventoryPrefill: Hashable, Codable {
 /// boundary for deep links — `URL` ↔ `NavigatorSnapshot` is the entire deep
 /// link surface.
 nonisolated struct NavigatorSnapshot: Hashable, Codable {
-    var selectedTab: AppTab
-    var paths: [AppTab: [PushRoute]]
+    var selectedTab: TabID
+    var paths: [TabID: [PushRoute]]
     var sheetStack: [SheetRoute]
 
     init(
-        selectedTab: AppTab = .journal,
-        paths: [AppTab: [PushRoute]] = [:],
+        selectedTab: TabID = .journal,
+        paths: [TabID: [PushRoute]] = [:],
         sheetStack: [SheetRoute] = [],
     ) {
         self.selectedTab = selectedTab

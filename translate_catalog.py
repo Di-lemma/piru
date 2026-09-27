@@ -1148,6 +1148,23 @@ T = {
         "最多三个，显示在底栏左侧。",
         "最多三個，顯示在底欄左側。",
     ),
+    "Tabs": ("标签页", "分頁"),
+    "In the Tab Bar": ("标签栏中", "分頁列中"),
+    "Add a Tab…": ("添加标签页…", "新增分頁…"),
+    "Up to four tabs, plus Search.": ("最多四个标签页，另加搜索。", "最多四個分頁，另加搜尋。"),
+    "The tab bar is full. Remove a tab to add another.": (
+        "标签栏已满。移除一个标签页后才能添加。",
+        "分頁列已滿。移除一個分頁後才能新增。",
+    ),
+    "At least one tab besides Search stays in the bar.": (
+        "除搜索外，标签栏至少保留一个标签页。",
+        "除搜尋外，分頁列至少保留一個分頁。",
+    ),
+    "Search always sits at the end of the tab bar.": (
+        "搜索始终位于标签栏末端。",
+        "搜尋一律位於分頁列末端。",
+    ),
+    "Screens": ("页面", "頁面"),
     "“2 due”, or the med’s name when one is due": (
         "“2 项待服”，或仅一项时的药名",
         "「2 項待服」，或僅一項時的藥名",
@@ -8063,6 +8080,14 @@ if __name__ == "__main__":
     # catalog yet. List them here so they get inserted; clear once Xcode has
     # picked them up on a real build (after which they're update-only).
     NEW_KEYS: set[str] = {
+        "Tabs",
+        "In the Tab Bar",
+        "Add a Tab…",
+        "Up to four tabs, plus Search.",
+        "The tab bar is full. Remove a tab to add another.",
+        "At least one tab besides Search stays in the bar.",
+        "Search always sits at the end of the tab bar.",
+        "Screens",
         "English Substance Names",
         "Show substances by their English names instead of the names used in your language. Search finds both.",
         "None of the chosen substances have a modeled curve in this range",

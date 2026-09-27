@@ -35,12 +35,13 @@
             // Let the launch passes settle, so the first step measures the
             // link rather than the launch.
             try? await Task.sleep(for: dwell)
+            // Links land by the bar (`TabRouting`); measure against the stock one.
+            TabLayoutStore.shared.setEphemeral(.default)
+            defer { TabLayoutStore.shared.setEphemeral(nil) }
             for loop in 1 ... loops {
                 for url in urls {
                     navigator.dismissAll()
-                    for tab in AppTab.allCases {
-                        navigator.popToRoot(in: tab)
-                    }
+                    navigator.resetAllPaths()
                     try? await Task.sleep(for: .milliseconds(600))
                     let state = Self.signposter.beginInterval("step", "\(url.absoluteString, privacy: .public)")
                     Logger.routeTour.notice("RouteTour start loop=\(loop) \(url.absoluteString, privacy: .public) t=\(Date.now.timeIntervalSince1970)")

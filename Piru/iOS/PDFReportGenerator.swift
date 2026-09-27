@@ -3,7 +3,7 @@ import UIKit
 
 /// Renders the shareable medical PDF report from pre-snapshotted data.
 ///
-/// The exportable, medical-style report — triggered from Settings ▸ Report —
+/// The exportable, medical-style report — triggered from Insights ▸ Reports —
 /// covering the user's full dose history, not a single session (see
 /// ``SessionReportPDF`` for that).
 ///
@@ -15,7 +15,7 @@ import UIKit
 /// static cache and resolves through the `SubstanceLibrary`/`SubstanceStore`
 /// singleton — is resolved on main at snapshot-build time and carried in
 /// `InteractionSnapshot`, so nothing here re-enters the main actor. See
-/// `ReportView.generateReport()`, which builds the snapshot on main and
+/// `ReportsView`'s PDF export, which builds the snapshot on main and
 /// renders + writes the file from a detached task.
 nonisolated enum PDFReportGenerator {
     // MARK: - Layout

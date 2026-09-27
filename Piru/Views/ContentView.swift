@@ -184,7 +184,7 @@ private struct StoreDiagnosticsModifier: ViewModifier {
 ///
 /// A separate view with no stored inputs, so the root's re-runs on every sheet
 /// present and dismiss (it observes `navigator.sheetStack` to drive them) skip
-/// it. Its body reads only the selected tab. Everything that follows the
+/// it. Its body reads only the selected tab and the tab layout. Everything that follows the
 /// journal's path or the live session — the accessory's face, the first-run
 /// tip, the "viewing the active day" check — is read inside
 /// ``SessionAccessoryHost``, so a push, a pop or a session update re-renders
@@ -198,38 +198,41 @@ private struct MainTabView: View {
 
     var body: some View {
         @Bindable var navigator = navigator
+        let layout = TabLayoutStore.shared.layout
         return TabView(selection: $navigator.selectedTab) {
-            Tab("Journal", systemImage: "book", value: AppTab.journal) {
-                NavigationStack(path: navigator.pathBinding(for: .journal)) {
-                    journalContent
+            ForEach(layout.tabs) { tab in
+                Tab(value: tab) {
+                    NavigationStack(path: navigator.pathBinding(for: tab)) {
+                        TabRootView(
+                            tab: tab,
+                            searchText: $searchText,
+                            librarySearchText: $librarySearchText,
+                        )
                         .withAppDestinations()
+                    }
+                } label: {
+                    Label {
+                        Text(tab.title)
+                    } icon: {
+                        Image(systemName: tab.systemImage)
+                    }
                 }
             }
-            Tab("Library", systemImage: "books.vertical", value: AppTab.library) {
-                NavigationStack(path: navigator.pathBinding(for: .library)) {
-                    libraryContent
+            if layout.showsSearch {
+                Tab(value: TabID.search, role: .search) {
+                    NavigationStack(path: navigator.pathBinding(for: .search)) {
+                        SearchView(
+                            scope: $searchScope,
+                            searchText: $searchText,
+                        )
                         .withAppDestinations()
-                }
-            }
-            Tab("Tools", systemImage: "wrench.and.screwdriver", value: AppTab.tools) {
-                NavigationStack(path: navigator.pathBinding(for: .tools)) {
-                    toolsContent
-                        .withAppDestinations()
-                }
-            }
-            Tab("Insights", systemImage: "chart.line.uptrend.xyaxis", value: AppTab.insights) {
-                NavigationStack(path: navigator.pathBinding(for: .insights)) {
-                    insightsContent
-                        .withAppDestinations()
-                }
-            }
-            Tab("Search", systemImage: "magnifyingglass", value: AppTab.search, role: .search) {
-                NavigationStack(path: navigator.pathBinding(for: .search)) {
-                    SearchView(
-                        scope: $searchScope,
-                        searchText: $searchText,
-                    )
-                    .withAppDestinations()
+                    }
+                } label: {
+                    Label {
+                        Text(TabID.search.title)
+                    } icon: {
+                        Image(systemName: TabID.search.systemImage)
+                    }
                 }
             }
         }
@@ -251,24 +254,29 @@ private struct MainTabView: View {
                 searchText = ""
                 librarySearchText = ""
             }
+            // Settings ▸ Tabs and a backup restore both land here.
+            .onChange(of: layout.visible) { _, visible in
+                navigator.reconcile(visible: visible)
+            }
     }
+}
 
-    // MARK: Tab Content
+/// One tab's root screen: a stock tab's hub, or the screen the user pinned.
+private struct TabRootView: View {
+    let tab: TabID
+    @Binding var searchText: String
+    @Binding var librarySearchText: String
 
-    private var journalContent: some View {
-        EntryListView(searchText: $searchText)
-    }
-
-    private var libraryContent: some View {
-        SubstanceLibraryView(searchText: $librarySearchText)
-    }
-
-    private var toolsContent: some View {
-        ToolsView()
-    }
-
-    private var insightsContent: some View {
-        InsightsView()
+    var body: some View {
+        switch tab {
+        case .stock(.journal): EntryListView(searchText: $searchText)
+        case .stock(.library): SubstanceLibraryView(searchText: $librarySearchText)
+        case .stock(.tools): ToolsView()
+        case .stock(.insights): InsightsView()
+        // Search is its own `role: .search` tab in the bar, never a slot here.
+        case .stock(.search): EmptyView()
+        case let .pinned(screen): PinnedTabRoot(screen: screen)
+        }
     }
 }
 
@@ -447,7 +455,9 @@ private extension View {
         @Environment(\.appNavigator) private var navigator
         @Environment(\.modelContext) private var modelContext
 
-        /// Whether the journal stack's top screen is the active session's detail.
+        /// Whether the selected tab's top screen is the active session's detail —
+        /// with Journal out of the bar, session links land on whatever tab is
+        /// showing.
         /// Computed in `.task(id:)` so the membership `fetch` it needs never runs
         /// during a body pass.
         @State private var viewingActiveSessionDay = false
@@ -455,12 +465,13 @@ private extension View {
         var body: some View {
             BottomAccessoryContent(
                 showSessionPill: sessionAccessoryActive,
-                // The "log a dose" tip may only appear on the Journal root — the
+                // The "log a dose" tip may only appear on the home root (Journal's,
+                // or the first tab's when Journal is out of the bar) — the
                 // accessory it anchors to is otherwise on every tab and every pushed
                 // screen. Attaching the popover only here (rather than gating it with
                 // a TipKit rule) is what dismisses it on navigate-away: TipKit
                 // doesn't retract a shown popover when a rule flips false.
-                showLogTip: onJournalRoot,
+                showLogTip: onHomeRoot,
                 // Plain actions, never sheetStack-reading bindings: a getter that
                 // reads `sheetStack` subscribes this view to every sheet present and
                 // dismiss. Closures read it only when tapped.
@@ -493,34 +504,39 @@ private extension View {
         private var sessionAccessoryActive: Bool {
             ActiveSessionManager.shared.hasActiveSession
                 && !viewingActiveSessionDay
-                && !onJournalRoot
+                && !(onHomeRoot && home == .journal)
         }
 
-        /// The Journal tab's root screen — nothing pushed. Gates the first-run tip
-        /// and, with a live session, stands in for the hero card that already
-        /// carries it (the journal root is never a search surface, so this matches
-        /// `EntryListView`'s own hero condition).
-        private var onJournalRoot: Bool {
-            navigator.selectedTab == .journal && navigator.path(for: .journal).isEmpty
+        /// Where the first-run tip anchors (`TabLayout.accessoryHome`).
+        private var home: TabID {
+            TabLayoutStore.shared.layout.accessoryHome
         }
 
-        /// Identity for the `viewingActiveSessionDay` task: the selected tab, the
-        /// journal's top route and the active doses.
+        /// The home tab's root screen — nothing pushed. Gates the first-run tip
+        /// and, when home is Journal with a live session, stands in for the hero
+        /// card that already carries it (the journal root is never a search
+        /// surface, so this matches `EntryListView`'s own hero condition). No
+        /// other root has that card, so elsewhere the pill stays.
+        private var onHomeRoot: Bool {
+            navigator.selectedTab == home && navigator.path(for: home).isEmpty
+        }
+
+        /// Identity for the `viewingActiveSessionDay` task: the selected tab, its
+        /// top route and the active doses.
         private var activeSessionDayKey: String {
-            let top = navigator.path(for: .journal).last.map { "\($0)" } ?? "none"
+            let top = navigator.path(for: navigator.selectedTab).last.map { "\($0)" } ?? "none"
             let stamps = ActiveSessionManager.shared.activeSubstanceStates
                 .map { "\($0.doseTimestamp.timeIntervalSince1970)" }
                 .joined(separator: ",")
             return "\(navigator.selectedTab)|\(top)|\(stamps)"
         }
 
-        /// True when the journal stack's top screen is the detail for the session
+        /// True when the selected tab's top screen is the detail for the session
         /// the active doses belong to. Matches by membership: the viewed session
         /// holds any active dose — covering the current cluster even when a
         /// separate, overlapping session also has a still-active long-acting dose.
         private func computeViewingActiveSessionDay() -> Bool {
-            guard navigator.selectedTab == .journal,
-                  case let .session(id) = navigator.path(for: .journal).last
+            guard case let .session(id) = navigator.path(for: navigator.selectedTab).last
             else { return false }
             let activeStamps = ActiveSessionManager.shared.activeSubstanceStates.map(\.doseTimestamp)
             guard !activeStamps.isEmpty else { return false }
