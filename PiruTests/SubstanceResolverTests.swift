@@ -133,6 +133,35 @@ struct SubstanceResolverTests {
         #expect(sc?.durationOfAction != nil, "subcutaneous route should carry a duration-of-action window")
     }
 
+    /// Attaching a protocol and a release window re-folds the route; the regime
+    /// its ladder was resolved with must survive, or the card drops the label
+    /// that keeps a recreational figure from reading as a prescribed one.
+    @Test
+    func `Folding a protocol and window onto a route keeps its dose context`() {
+        guard let cjc = SubstanceStore.shared.lookup("CJC-1295") else {
+            Issue.record("CJC-1295 missing from bundled DB")
+            return
+        }
+        let sc = cjc.routes.first { $0.route == .subcutaneous }
+        #expect(sc?.protocolDosing != nil)
+        #expect(sc?.durationOfAction != nil)
+        #expect(sc?.doseContext == .recreational)
+    }
+
+    /// A route with a release window and nothing else — a long-acting depot —
+    /// still becomes a route the substance card presents.
+    @Test
+    func `A window-only depot route is built and presented`() {
+        guard let aripiprazole = SubstanceStore.shared.lookup("Aripiprazole") else {
+            Issue.record("Aripiprazole missing from bundled DB")
+            return
+        }
+        let im = aripiprazole.routes.first { $0.route == .intramuscular }
+        #expect(im?.durationOfAction != nil)
+        #expect(im?.doses.hasAnyValue == false)
+        #expect(im?.duration == nil)
+    }
+
     // MARK: - Both callers agree (set-based batch vs single-id detail)
 
     /// The batch loader (`all`) and the detail path (`lookup`) share the resolver

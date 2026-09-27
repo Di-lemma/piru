@@ -554,12 +554,14 @@ struct SubstanceReadModel {
             guard proto != nil || doa != nil else { return route }
             let variants: [RouteVariant] = if let saltForms = route.saltForms {
                 // `saltForms` is already in curated (rank) order — preserve it by
-                // feeding the index as the rank, and carry the elemental fraction,
-                // so re-folding through makeRoute is order-preserving and lossless.
+                // feeding the index as the rank, and carry the elemental fraction
+                // and the route's dose context (the default form's, which the fold
+                // puts first again), so re-folding through makeRoute is lossless.
                 saltForms.enumerated().map { idx, sv in
                     RouteVariant(
                         salt: sv.saltForm, isomer: sv.isomer, isomerDisplayName: sv.isomerDisplayName,
                         unit: sv.unit, doses: sv.doses, duration: sv.duration,
+                        doseContext: route.doseContext,
                         rank: idx, elementalFraction: sv.elementalFraction,
                     )
                 }
@@ -567,6 +569,7 @@ struct SubstanceReadModel {
                 [RouteVariant(
                     salt: nil, isomer: nil, isomerDisplayName: nil,
                     unit: route.unit, doses: route.doses, duration: route.duration,
+                    doseContext: route.doseContext,
                 )]
             }
             return Self.makeRoute(

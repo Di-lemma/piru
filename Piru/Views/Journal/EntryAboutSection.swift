@@ -15,14 +15,15 @@ struct EntryAboutSection: View {
                 && !(info.displayClass == .otc && info.durationImplausible)
             let doses = showsLadder ? info.doseRange(for: entry.route, saltForm: entry.saltForm) : nil
             let duration = durationVisible ? info.resolveDuration(for: entry.route) : nil
-            if doses?.hasAnyValue == true || duration != nil {
+            let releaseWindow = info.routes.first { $0.route == entry.route }?.durationOfAction?.formattedWindow
+            if doses?.hasAnyValue == true || duration != nil || releaseWindow != nil {
                 Section {
                     RouteDosingCard(
                         route: entry.route,
                         unit: info.unit(for: entry.route, saltForm: entry.saltForm),
                         doses: doses,
                         duration: duration,
-                        releaseWindow: info.routes.first { $0.route == entry.route }?.durationOfAction?.formattedWindow,
+                        releaseWindow: releaseWindow,
                         elementalFraction: info.elementalFraction(for: entry.route, saltForm: entry.saltForm),
                         showsDoseLadder: showsLadder,
                         showsDuration: duration != nil,
