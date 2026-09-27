@@ -324,7 +324,7 @@ struct DeepLinkTests {
     @MainActor
     @Test
     func `Applying a tool outcome replaces the Tools push stack`() {
-        let nav = AppNavigator(selectedTab: .journal, storage: makeIsolatedDefaults())
+        let nav = AppNavigator(selectedTab: .journal, storage: makeIsolatedDefaults(), layout: TabLayoutStore(defaults: makeIsolatedDefaults()))
         nav.apply(DeepLinkOutcome(tab: .tools, path: [.tool(.ceiling)]))
         #expect(nav.selectedTab == .tools)
         #expect(nav.path(for: .tools) == [.tool(.ceiling)])
@@ -352,7 +352,7 @@ struct DeepLinkTests {
     @MainActor
     @Test
     func `Applying a sheet-only outcome does not change the selected tab`() {
-        let nav = AppNavigator(selectedTab: .library, storage: makeIsolatedDefaults())
+        let nav = AppNavigator(selectedTab: .library, storage: makeIsolatedDefaults(), layout: TabLayoutStore(defaults: makeIsolatedDefaults()))
         nav.apply(DeepLinkOutcome(tab: nil, sheet: .quickLog(routine: nil)))
         #expect(nav.selectedTab == .library)
         #expect(nav.sheetStack == [.quickLog(routine: nil)])
@@ -361,7 +361,7 @@ struct DeepLinkTests {
     @MainActor
     @Test
     func `Applying a tab-only outcome does not present a sheet`() {
-        let nav = AppNavigator(selectedTab: .journal, storage: makeIsolatedDefaults())
+        let nav = AppNavigator(selectedTab: .journal, storage: makeIsolatedDefaults(), layout: TabLayoutStore(defaults: makeIsolatedDefaults()))
         nav.apply(DeepLinkOutcome(tab: .insights, sheet: nil))
         #expect(nav.selectedTab == .insights)
         #expect(nav.sheetStack.isEmpty)
@@ -370,7 +370,7 @@ struct DeepLinkTests {
     @MainActor
     @Test
     func `Applying a tab+sheet outcome sets both`() {
-        let nav = AppNavigator(selectedTab: .library, storage: makeIsolatedDefaults())
+        let nav = AppNavigator(selectedTab: .library, storage: makeIsolatedDefaults(), layout: TabLayoutStore(defaults: makeIsolatedDefaults()))
         nav.apply(DeepLinkOutcome(tab: .journal, sheet: .sessionDetail))
         #expect(nav.selectedTab == .journal)
         #expect(nav.sheetStack == [.sessionDetail])

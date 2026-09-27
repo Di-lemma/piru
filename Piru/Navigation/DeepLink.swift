@@ -35,7 +35,10 @@ import Foundation
 /// - `piru://inventory/<uuid>` → present `.inventoryItemForm(id:)` (restock)
 /// - `piru://inventory` → present `.inventoryItemForm(id: nil)` (new item)
 ///
-/// **Push destinations** (replace the target tab's stack):
+/// **Push destinations** (replace the target tab's stack). The tab named here
+/// is the destination's *home*; where it lands depends on the user's bar
+/// (`TabRouting`): a tab the user pinned for that screen wins, and with the
+/// home tab hidden the route is pushed onto the current tab.
 /// - `piru://tool/<name>` → Tools tab, push that tool full-screen. `<name>`
 ///   matches a `Tool` raw value case-insensitively (`tolerance`, `ceiling`,
 ///   `benzoEquivalence`, `pharma`, `calculator`, `volumetric`, `recovery`,
@@ -239,54 +242,61 @@ nonisolated enum DeepLink {
     /// the tab selector. If the top sheet has no canonical URL form (e.g.
     /// `.timeAdjust`), encoding returns `nil`.
     static func encode(_ snapshot: NavigatorSnapshot) -> URL? {
+        // A pinned tab has no URL of its own and emits no `?tab=`: its links
+        // find it again by their route (`TabRouting`).
+        let stockTab: AppTab? = if case let .stock(tab) = snapshot.selectedTab { tab } else { nil }
         if snapshot.sheetStack.isEmpty {
             // No modal: encode the top of the selected tab's push stack if it
-            // has a canonical URL form (tool / session), otherwise just the tab.
+            // has a canonical URL form (tool / session), otherwise just the tab
+            // — for a pinned tab, its root screen's route.
             if let top = snapshot.paths[snapshot.selectedTab]?.last,
-               let url = encode(push: top, tab: snapshot.selectedTab) {
+               let url = encode(push: top, tab: stockTab) {
                 return url
             }
-            return URL(string: "\(scheme)://\(snapshot.selectedTab.rawValue)")
+            switch snapshot.selectedTab {
+            case let .stock(tab): return URL(string: "\(scheme)://\(tab.rawValue)")
+            case let .pinned(screen): return encode(push: screen.route, tab: nil)
+            }
         }
 
         guard let top = snapshot.sheetStack.last else { return nil }
-        return encode(sheet: top, tab: snapshot.selectedTab)
+        return encode(sheet: top, tab: stockTab)
     }
 
     /// Canonical URL for a push route, or `nil` for app-internal pushes that
     /// aren't deep-linkable. Only tools and sessions round-trip.
-    private static func encode(push route: PushRoute, tab: AppTab) -> URL? {
+    private static func encode(push route: PushRoute, tab: AppTab?) -> URL? {
         var components = URLComponents()
         components.scheme = scheme
         switch route {
         case let .tool(tool):
             components.host = "tool"
             components.path = "/\(tool.rawValue)"
-            if tab != .tools {
+            if let tab, tab != .tools {
                 components.queryItems = [URLQueryItem(name: "tab", value: tab.rawValue)]
             }
         case let .session(id):
             components.host = "session"
             components.path = "/\(id.uuidString)"
-            if tab != .journal {
+            if let tab, tab != .journal {
                 components.queryItems = [URLQueryItem(name: "tab", value: tab.rawValue)]
             }
         case let .insight(insight):
             components.host = "insight"
             components.path = "/\(insight.rawValue)"
-            if tab != .insights {
+            if let tab, tab != .insights {
                 components.queryItems = [URLQueryItem(name: "tab", value: tab.rawValue)]
             }
         case let .substance(name):
             components.host = "substance"
             components.path = "/\(name)"
-            if tab != .library {
+            if let tab, tab != .library {
                 components.queryItems = [URLQueryItem(name: "tab", value: tab.rawValue)]
             }
         case let .substanceData(name, section):
             components.host = "substance"
             components.path = "/\(name)/data/\(section.rawValue)"
-            if tab != .library {
+            if let tab, tab != .library {
                 components.queryItems = [URLQueryItem(name: "tab", value: tab.rawValue)]
             }
         // Explicit non-encodable list (matching the sheet encoder below), so
@@ -312,7 +322,7 @@ nonisolated enum DeepLink {
         return components.url
     }
 
-    private static func encode(sheet: SheetRoute, tab: AppTab) -> URL? {
+    private static func encode(sheet: SheetRoute, tab: AppTab?) -> URL? {
         var components = URLComponents()
         components.scheme = scheme
 
@@ -387,7 +397,7 @@ nonisolated enum DeepLink {
 
         // Preserve the tab if it isn't the default (.journal) so the encoded
         // URL round-trips through decode.
-        if tab != .journal {
+        if let tab, tab != .journal {
             var items = components.queryItems ?? []
             items.append(URLQueryItem(name: "tab", value: tab.rawValue))
             components.queryItems = items

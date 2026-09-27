@@ -9,12 +9,12 @@ struct AppNavigatorTests {
     // MARK: - Helpers
 
     /// Builds a navigator backed by an isolated `UserDefaults` so tests don't
-    /// leak the persisted `selectedTab` into one another.
-    private func makeNavigator(selectedTab: AppTab? = nil) -> AppNavigator {
+    /// leak the persisted `selectedTab` (or a tab layout) into one another.
+    private func makeNavigator(selectedTab: TabID? = nil) -> AppNavigator {
         let suite = "AppNavigatorTests-\(UUID().uuidString)"
         let defaults = UserDefaults(suiteName: suite)!
         defaults.removePersistentDomain(forName: suite)
-        return AppNavigator(selectedTab: selectedTab, storage: defaults)
+        return AppNavigator(selectedTab: selectedTab, storage: defaults, layout: TabLayoutStore(defaults: defaults))
     }
 
     // MARK: - Tabs
@@ -31,10 +31,10 @@ struct AppNavigatorTests {
         let defaults = try #require(UserDefaults(suiteName: suite))
         defer { defaults.removePersistentDomain(forName: suite) }
 
-        let nav = AppNavigator(storage: defaults)
+        let nav = AppNavigator(storage: defaults, layout: TabLayoutStore(defaults: defaults))
         nav.select(.library)
 
-        let nav2 = AppNavigator(storage: defaults)
+        let nav2 = AppNavigator(storage: defaults, layout: TabLayoutStore(defaults: defaults))
         #expect(nav2.selectedTab == .library)
     }
 
@@ -45,7 +45,7 @@ struct AppNavigatorTests {
         defer { defaults.removePersistentDomain(forName: suite) }
 
         defaults.set(AppTab.tools.rawValue, forKey: "AppNavigator.selectedTab")
-        let nav = AppNavigator(selectedTab: .insights, storage: defaults)
+        let nav = AppNavigator(selectedTab: .insights, storage: defaults, layout: TabLayoutStore(defaults: defaults))
         #expect(nav.selectedTab == .insights)
     }
 

@@ -283,8 +283,7 @@ struct PiruApp: App {
                             // the cache; wait them out, then warm it.
                             try? await Task.sleep(for: .seconds(1))
                             await SubstanceStore.shared.ensureAllLoaded()
-                            AppNavigator.shared.selectedTab = .tools
-                            AppNavigator.shared.push(.tool(.identify), in: .tools)
+                            AppNavigator.shared.open(.tool(.identify), home: .tools)
                         }
                     }
                     // `-piruScreenshots <dir>` walks every screen for

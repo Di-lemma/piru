@@ -19,14 +19,14 @@ final class AppNavigator {
 
     // MARK: - State
 
-    var selectedTab: AppTab {
+    var selectedTab: TabID {
         didSet {
             guard selectedTab != oldValue else { return }
-            storage.set(selectedTab.rawValue, forKey: Self.selectedTabKey)
+            storage.set(selectedTab.storageKey, forKey: Self.selectedTabKey)
         }
     }
 
-    private(set) var paths: [AppTab: [PushRoute]]
+    private(set) var paths: [TabID: [PushRoute]]
 
     /// Modal stack — top of the stack is what's currently presented. Multiple
     /// entries mean nested modals (e.g. form → color picker), though SwiftUI
@@ -48,22 +48,31 @@ final class AppNavigator {
     @ObservationIgnored
     private static let selectedTabKey = "AppNavigator.selectedTab"
 
+    /// The user's tab bar — what a "land me here" request resolves against.
+    @ObservationIgnored
+    private let layout: TabLayoutStore
+
     // MARK: - Init
 
     init(
-        selectedTab: AppTab? = nil,
-        paths: [AppTab: [PushRoute]] = [:],
+        selectedTab: TabID? = nil,
+        paths: [TabID: [PushRoute]] = [:],
         sheetStack: [SheetRoute] = [],
         storage: UserDefaults = .standard,
+        layout: TabLayoutStore = .shared,
     ) {
         self.storage = storage
+        self.layout = layout
+        let visible = layout.layout.visible
         if let selectedTab {
             self.selectedTab = selectedTab
-        } else if let raw = storage.string(forKey: Self.selectedTabKey),
-                  let tab = AppTab(rawValue: raw) {
+        } else if let key = storage.string(forKey: Self.selectedTabKey),
+                  let tab = TabID(storageKey: key),
+                  visible.contains(tab) {
             self.selectedTab = tab
         } else {
-            self.selectedTab = .journal
+            // Nothing persisted, or a tab the user has since taken out of the bar.
+            self.selectedTab = visible.first ?? .journal
         }
         self.paths = paths
         self.sheetStack = sheetStack
@@ -71,8 +80,39 @@ final class AppNavigator {
 
     // MARK: - Tabs
 
-    func select(_ tab: AppTab) {
+    func select(_ tab: TabID) {
         selectedTab = tab
+    }
+
+    /// Follow a tab-bar edit: a selection that left the bar moves to the first
+    /// tab, and stacks of removed tabs are dropped so re-adding one starts at
+    /// its root.
+    func reconcile(visible: [TabID]) {
+        if !visible.contains(selectedTab), let first = visible.first {
+            selectedTab = first
+        }
+        paths = paths.filter { visible.contains($0.key) }
+    }
+
+    /// Pop every tab to its root.
+    func resetAllPaths() {
+        paths.removeAll()
+    }
+
+    /// Land on `route` — the dock's shortcuts and other "take me there"
+    /// actions. `home` is the tab the route belongs to; where it actually
+    /// lands depends on the user's bar (`TabRouting`).
+    func open(_ route: PushRoute, home: AppTab) {
+        switch TabRouting.target(for: route, home: home, visible: layout.layout.visible) {
+        case let .pinned(tab):
+            selectedTab = tab
+            setPath([], in: tab)
+        case let .home(tab):
+            selectedTab = tab
+            push(route, in: tab)
+        case .current:
+            push(route, in: selectedTab)
+        }
     }
 
     // MARK: - Push
@@ -81,7 +121,7 @@ final class AppNavigator {
     /// route always lands on that tab's stack; otherwise, when a push-capable
     /// sheet is on top (`SheetRoute.supportsPushNavigation`), the route goes
     /// to *that sheet's* path — the visible stack — not the tab behind it.
-    func push(_ route: PushRoute, in tab: AppTab? = nil) {
+    func push(_ route: PushRoute, in tab: TabID? = nil) {
         if tab == nil, let top = sheetStack.last, top.supportsPushNavigation {
             sheetPaths[sheetStack.count - 1, default: []].append(route)
             return
@@ -90,7 +130,7 @@ final class AppNavigator {
         paths[target, default: []].append(route)
     }
 
-    func pop(in tab: AppTab? = nil) {
+    func pop(in tab: TabID? = nil) {
         if tab == nil, let top = sheetStack.last, top.supportsPushNavigation {
             let depth = sheetStack.count - 1
             guard var sheetPath = sheetPaths[depth], !sheetPath.isEmpty else { return }
@@ -104,23 +144,23 @@ final class AppNavigator {
         paths[target] = stack
     }
 
-    func popToRoot(in tab: AppTab? = nil) {
+    func popToRoot(in tab: TabID? = nil) {
         let target = tab ?? selectedTab
         paths[target] = []
     }
 
-    func setPath(_ path: [PushRoute], in tab: AppTab? = nil) {
+    func setPath(_ path: [PushRoute], in tab: TabID? = nil) {
         let target = tab ?? selectedTab
         paths[target] = path
     }
 
-    func path(for tab: AppTab) -> [PushRoute] {
+    func path(for tab: TabID) -> [PushRoute] {
         paths[tab, default: []]
     }
 
     /// Binding into the per-tab path so a `NavigationStack(path:)` can mutate it
     /// directly when the system pops via back button or swipe.
-    func pathBinding(for tab: AppTab) -> Binding<[PushRoute]> {
+    func pathBinding(for tab: TabID) -> Binding<[PushRoute]> {
         Binding(
             get: { [weak self] in self?.paths[tab, default: []] ?? [] },
             set: { [weak self] in self?.paths[tab] = $0 },
@@ -242,7 +282,7 @@ final class AppNavigator {
     /// happened.
     private func revealOpenSession(id: UUID) -> Bool {
         let target = PushRoute.session(id: id)
-        let candidates = [selectedTab] + AppTab.allCases.filter { $0 != selectedTab }
+        let candidates = [selectedTab] + layout.layout.visible.filter { $0 != selectedTab }
         guard let tab = candidates.first(where: { paths[$0, default: []].contains(target) }),
               let index = paths[tab]?.lastIndex(of: target)
         else { return false }
@@ -260,21 +300,16 @@ final class AppNavigator {
     /// link reveal an already-open session screen instead of presenting a
     /// duplicate sheet whose pushes would land on the stack behind it.
     func apply(_ outcome: DeepLinkOutcome, currentSessionID: UUID? = nil) {
-        if let tab = outcome.tab {
-            selectedTab = tab
-        }
-        // A push path replaces the target tab's stack — a deep link to a tool
-        // or session is a "land me here" intent, not an append onto wherever
-        // the user already was. Targets the outcome's tab (falling back to the
-        // now-selected tab) so `piru://tool/tolerance` lands on Tools.
         if let path = outcome.path {
-            setPath(path, in: outcome.tab)
+            land(on: path, home: outcome.tab)
+        } else if let tab = outcome.tab, layout.layout.visible.contains(.stock(tab)) {
+            // A tab-only link to a tab the user took out of the bar changes nothing.
+            selectedTab = .stock(tab)
         }
         if let sheet = outcome.sheet {
             if sheet == .sessionDetail, sheetStack.isEmpty,
                let sessionID = currentSessionID, revealOpenSession(id: sessionID) {
-                // Revealed the existing screen (overriding the outcome's
-                // default `.journal` tab with wherever it actually lives).
+                // Revealed the existing screen wherever it actually lives.
                 return
             }
             // A link targeting the kind of sheet that's already on top is a
@@ -289,6 +324,33 @@ final class AppNavigator {
                 present(sheet)
             }
         }
+    }
+
+    /// A push path is a "land me here" intent, not an append onto wherever
+    /// the user already was: it replaces the stack of the tab it lands on —
+    /// the pinned tab showing its first route (which becomes the root), else
+    /// the home tab. With neither in the bar it goes onto the current tab,
+    /// and there it appends, since that stack is the user's own.
+    private func land(on path: [PushRoute], home: AppTab?) {
+        switch TabRouting.target(for: path.first, home: home, visible: layout.layout.visible) {
+        case let .pinned(tab):
+            selectedTab = tab
+            setPath(Array(path.dropFirst()), in: tab)
+        case let .home(tab):
+            selectedTab = tab
+            setPath(path, in: tab)
+        case .current:
+            let current = self.path(for: selectedTab)
+            if !current.ends(with: path) {
+                setPath(current + path)
+            }
+        }
+    }
+}
+
+private extension Array where Element: Equatable {
+    func ends(with suffix: [Element]) -> Bool {
+        count >= suffix.count && Array(self[(count - suffix.count)...]) == suffix
     }
 }
 
