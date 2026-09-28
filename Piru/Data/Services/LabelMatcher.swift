@@ -29,7 +29,7 @@ struct ResolvedDrug {
     /// substance's reference (common) dose for the route, else 0.
     var stagingAmount: Double {
         strength
-            ?? StagedDose.lookupReferenceDose(substance: substance, route: stagingRoute, unit: stagingUnit)
+            ?? substance.referenceDose(route: stagingRoute, unit: stagingUnit)
             ?? 0
     }
 }

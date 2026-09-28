@@ -1,7 +1,6 @@
 import Foundation
 import os
 import SwiftData
-import SwiftUI
 
 /// The color of one substance the user has met.
 ///
@@ -56,10 +55,6 @@ final class SubstanceColor {
         isLegacy ? LegacyColorImport.p3(fromSRGBHex: hexColor) : P3Color(red: red, green: green, blue: blue)
     }
 
-    var color: Color {
-        tint.color
-    }
-
     /// Stores `tint` and retires any legacy hex.
     func set(_ tint: P3Color, usesDefault: Bool) {
         hexColor = ""
@@ -95,11 +90,6 @@ nonisolated enum LegacyColorImport {
 // MARK: - SubstanceColor Collection Helpers
 
 extension [SubstanceColor] {
-    /// Map of lowercased substance name -> Color
-    var colorMap: [String: Color] {
-        Dictionary(map { ($0.substance.lowercased(), $0.color) }, uniquingKeysWith: { _, last in last })
-    }
-
     /// Map of lowercased substance name -> Display P3 components
     var tintMap: [String: P3Color] {
         Dictionary(map { ($0.substance.lowercased(), $0.tint) }, uniquingKeysWith: { _, last in last })
@@ -135,10 +125,6 @@ nonisolated enum CatalogTints {
 /// the same in every place it appears. Callers pass a precomputed
 /// `colorMap`/`tintMap` to stay cheap in hot paths.
 nonisolated enum SubstancePalette {
-    static func color(for name: String, colorMap: [String: Color]) -> Color {
-        colorMap[name.lowercased()] ?? fallback(for: name).color
-    }
-
     static func tint(for name: String, tintMap: [String: P3Color]) -> P3Color {
         tintMap[name.lowercased()] ?? fallback(for: name)
     }

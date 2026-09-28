@@ -1,4 +1,4 @@
-import SwiftUI
+import Foundation
 
 /// Predicted / forensic physicochemical descriptors, decoded from the
 /// `substances` table's Stage-1 columns. **Not clinical values** — logP/TPSA/

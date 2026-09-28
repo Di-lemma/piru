@@ -1,5 +1,5 @@
 import CryptoKit
-import SwiftUI
+import Foundation
 
 struct Substance: Identifiable {
     let id: UUID

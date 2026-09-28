@@ -268,7 +268,7 @@ struct QuickLogSearchResults: View {
             substance: substance.name,
             route: route,
             unit: unit,
-            amount: StagedDose.lookupReferenceDose(substance: substance, route: route, unit: unit, saltForm: saltForm) ?? 0,
+            amount: substance.referenceDose(route: route, unit: unit, saltForm: saltForm) ?? 0,
             tint: nil,
             librarySubstance: substance,
             productName: productName,

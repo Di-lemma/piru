@@ -1,4 +1,4 @@
-import SwiftUI
+import Foundation
 
 /// JSON-serializable representation of ClosedRange<Double>.
 struct CodableRange: Codable {

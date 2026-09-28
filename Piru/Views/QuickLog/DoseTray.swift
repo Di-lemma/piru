@@ -231,7 +231,7 @@ struct StagedDose: Identifiable, Equatable {
     /// unit — anchors stepper increments and draft prefills to what a person
     /// actually takes (LSD steps in 10 µg, not 0.25 µg).
     var referenceDose: Double? {
-        Self.lookupReferenceDose(substance: librarySubstance, route: route, unit: unit, saltForm: saltForm, isomer: isomer)
+        librarySubstance?.referenceDose(route: route, unit: unit, saltForm: saltForm, isomer: isomer)
     }
 
     /// The PSID FAMILY for the staged substance, snapshotted onto the committed
@@ -296,18 +296,6 @@ struct StagedDose: Identifiable, Equatable {
             return "\(base) \(ester)"
         }
         return base
-    }
-
-    static func lookupReferenceDose(substance: Substance?, route: RouteOfAdministration, unit: String, saltForm: String? = nil, isomer: String? = nil) -> Double? {
-        guard let substance,
-              let doses = substance.doseRange(for: route, saltForm: saltForm, isomer: isomer),
-              substance.unit(for: route, saltForm: saltForm, isomer: isomer) == unit
-        else { return nil }
-        return doses.common?.lowerBound
-            ?? doses.light?.upperBound
-            ?? doses.strong?.lowerBound
-            ?? doses.threshold
-            ?? doses.heavy
     }
 }
 
@@ -667,7 +655,7 @@ final class DoseTrayModel {
         let isByVolume = librarySubstance?.byVolumeDosing.map { unit == $0.canonicalUnit } ?? false
         let seedAmount = isByVolume
             ? 0
-            : (StagedDose.lookupReferenceDose(substance: librarySubstance, route: route, unit: unit, saltForm: saltForm) ?? 0)
+            : (librarySubstance?.referenceDose(route: route, unit: unit, saltForm: saltForm) ?? 0)
         var draft = StagedDose(
             substanceName: substance,
             amount: seedAmount,

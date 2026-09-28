@@ -1,5 +1,4 @@
 import Foundation
-import SwiftUI
 
 /// How much pharmacology the app opens with. Controls the *default* expanded
 /// state of the folding sections on a substance page and the wording of the

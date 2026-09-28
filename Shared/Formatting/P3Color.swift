@@ -1,4 +1,4 @@
-import SwiftUI
+import Foundation
 
 /// A color as encoded Display P3 components, each `0…1` — the numbers an Apple
 /// panel shows and an asset catalog's `display-p3` entry holds. This is the
@@ -12,10 +12,6 @@ nonisolated struct P3Color: Hashable, Sendable {
     /// Shown for a substance no color has been resolved for — a widget
     /// rendering a name the app has yet to mint a row for.
     static let neutral = P3Color(red: 0.62, green: 0.62, blue: 0.65)
-
-    var color: Color {
-        Color(.displayP3, red: red, green: green, blue: blue)
-    }
 }
 
 /// Encodes as `[r, g, b]` at four decimals: a quarter of the keyed form's

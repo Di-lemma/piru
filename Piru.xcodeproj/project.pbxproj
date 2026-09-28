@@ -126,6 +126,7 @@
 			membershipExceptions = (
 				ByVolumeDosing.swift,
 				Formatting/P3Color.swift,
+				"Formatting/P3Color+SwiftUI.swift",
 				WatchSync/QuickLogManifest.swift,
 				WatchSync/WatchDosePayload.swift,
 			);

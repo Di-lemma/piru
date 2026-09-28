@@ -1,4 +1,4 @@
-import SwiftUI
+import Foundation
 
 struct SubjectiveEffect: Codable {
     let name: String

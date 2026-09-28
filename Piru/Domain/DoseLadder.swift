@@ -24,6 +24,20 @@ enum BaseReleaseForm {
 /// pill, the edit readout, journal rows, the quick-log picker and tray, and the
 /// Insights tier breakdown.
 extension Substance {
+    /// The dose a fresh entry pre-fills with and steps from: the ladder's common floor,
+    /// else the nearest tier that exists. `nil` when no ladder describes this route,
+    /// form and unit.
+    func referenceDose(route: RouteOfAdministration, unit: String, saltForm: String? = nil, isomer: String? = nil) -> Double? {
+        guard let doses = doseRange(for: route, saltForm: saltForm, isomer: isomer),
+              self.unit(for: route, saltForm: saltForm, isomer: isomer) == unit
+        else { return nil }
+        return doses.common?.lowerBound
+            ?? doses.light?.upperBound
+            ?? doses.strong?.lowerBound
+            ?? doses.threshold
+            ?? doses.heavy
+    }
+
     /// The ladder a dose in this form is judged against, or `nil` when no ladder
     /// describes it.
     ///
