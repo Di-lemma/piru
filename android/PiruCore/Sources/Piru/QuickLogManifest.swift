@@ -1,0 +1,1 @@
+../../../../Shared/WatchSync/QuickLogManifest.swift

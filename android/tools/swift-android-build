@@ -1,0 +1,11 @@
+#!/bin/zsh
+# `swift build` for Android arm64. Extra arguments pass through (`--product`, `-c release`…).
+# SQLite comes from $PIRU_ANDROID/sqlite (build-sqlite.sh): Android's own libsqlite is
+# private to the platform and absent from the NDK. FoundationMacros comes from Xcode, because
+# the swift.org macOS toolchain ships without the plugin that expands `#Predicate`.
+. "${0:A:h}/env.sh"
+exec swift build --swift-sdks-path "$PIRU_ANDROID/swift-sdks" --swift-sdk "${SWIFT_VERSION_TAG}_android" \
+  --triple aarch64-unknown-linux-android28 --static-swift-stdlib \
+  -Xcc -I"$PIRU_ANDROID/sqlite/include" -Xlinker -L"$PIRU_ANDROID/sqlite/lib" \
+  -Xswiftc -plugin-path -Xswiftc "$(xcode-select -p)/Platforms/MacOSX.platform/Developer/usr/lib/swift/host/plugins" \
+  "$@"
