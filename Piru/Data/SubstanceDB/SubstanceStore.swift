@@ -194,6 +194,9 @@ final class SubstanceStore {
     /// row and the bioavailability it is paired with resolve by source priority), so it is cleared
     /// with the equivalence caches.
     @ObservationIgnored private var zeroOrderKineticsCache: [String: ZeroOrderProfile]?
+    /// `food_effects` in full — a few rows every oral dose logged with a meal consults. Curated from
+    /// one source, so it is never invalidated.
+    @ObservationIgnored private var foodEffectsCache: FoodEffectTable?
     /// `saturable_kinetics` in full — six rows the Ceiling-Effect tool reads on every appearance. Not
     /// source-derived, so it is never invalidated.
     @ObservationIgnored private var saturableKineticsCache: [SaturableKineticsRow]?
@@ -1534,6 +1537,20 @@ final class SubstanceStore {
             bioavailability: profile.bioavailability,
             weightKg: weightKg,
         )
+    }
+
+    /// How a full meal moves an oral dose of `name`: the logged product's own row ("Adderall XR"),
+    /// else a product row the name itself is (a dose logged as "Marinol"), else the substance's
+    /// base-form row, else the generic delay. `nil` only when the table has none of them.
+    func foodEffect(forSubstanceName name: String, product: String?) -> FoodEffect? {
+        if foodEffectsCache == nil { foodEffectsCache = SubstanceReadModel.foodEffects(db: substancesDB) }
+        let table = foodEffectsCache ?? .empty
+        let nameKey = name.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        let productKey = product?.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        return productKey.flatMap { table.byProduct[$0] }
+            ?? table.byProduct[nameKey]
+            ?? table.bySubstance[nameKey]
+            ?? table.generic
     }
 
     /// The curated antidepressant subclass for a substance, from `substances.drug_class`.

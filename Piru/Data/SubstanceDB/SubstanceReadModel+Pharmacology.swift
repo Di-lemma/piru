@@ -31,6 +31,28 @@ nonisolated struct ZeroOrderProfile: Equatable, Sendable {
     let bioavailability: Double
 }
 
+/// How a meal moves an oral dose's absorption: one `food_effects` row. See ``MealState``.
+nonisolated struct FoodEffect: Equatable, Sendable {
+    /// Fed Tmax minus fasted Tmax, minutes, for the study's full meal.
+    let tmaxDelayMinutes: Double
+    /// Fed / fasted peak and total exposure, when the source states them.
+    let cmaxRatio: Double?
+    let aucRatio: Double?
+    /// Whether this is the generic delay standing in for a substance with no row of its own.
+    let isGeneric: Bool
+}
+
+/// The `food_effects` table as the store holds it, all keys lowercased: base-form rows under every
+/// name a dose could carry the substance by, product rows under the product name alone (a brand is
+/// an alias of more than one substance, so the substance can't be part of its key), and the generic row.
+nonisolated struct FoodEffectTable: Equatable, Sendable {
+    let bySubstance: [String: FoodEffect]
+    let byProduct: [String: FoodEffect]
+    let generic: FoodEffect?
+
+    static let empty = FoodEffectTable(bySubstance: [:], byProduct: [:], generic: nil)
+}
+
 /// One representative-per-substance pharmacokinetic projection, built for the Pharma table tool
 /// (`PharmaTableView`). Each substance contributes exactly one row — the preferred route (oral first,
 /// otherwise the row carrying the most PK fields / best confidence) — so the tool renders a flat,
@@ -797,6 +819,55 @@ extension SubstanceReadModel {
             out[alias.lowercased()] = capability
         }
         return out
+    }
+
+    /// The whole `food_effects` table. Curated from a single source, so no priority resolution.
+    nonisolated static func foodEffects(db queue: DatabaseQueue) -> FoodEffectTable {
+        let (rows, aliasRows): ([Row], [Row]) = (try? queue.read { db in
+            let rows = try Row.fetchAll(db, sql: """
+                SELECT f.substance_id AS sid, s.canonical_name AS name, f.product,
+                       f.tmax_delay_min, f.cmax_ratio, f.auc_ratio
+                  FROM food_effects f
+                  LEFT JOIN substances s ON s.id = f.substance_id
+            """)
+            let aliasRows = try Row.fetchAll(db, sql: """
+                SELECT a.substance_id AS sid, a.alias
+                  FROM aliases a
+                 WHERE a.substance_id IN (SELECT substance_id FROM food_effects WHERE product IS NULL)
+            """)
+            return (rows, aliasRows)
+        }) ?? ([], [])
+
+        var aliases: [Int64: [String]] = [:]
+        for row in aliasRows {
+            guard let sid: Int64 = row["sid"], let alias: String = row["alias"] else { continue }
+            aliases[sid, default: []].append(alias)
+        }
+        var bySubstance: [String: FoodEffect] = [:]
+        var byProduct: [String: FoodEffect] = [:]
+        var generic: FoodEffect?
+        for row in rows {
+            guard let delay: Double = row["tmax_delay_min"], delay >= 0 else { continue }
+            let sid: Int64? = row["sid"]
+            let effect = FoodEffect(
+                tmaxDelayMinutes: delay,
+                cmaxRatio: row["cmax_ratio"],
+                aucRatio: row["auc_ratio"],
+                isGeneric: sid == nil,
+            )
+            guard let sid, let name: String = row["name"] else {
+                generic = effect
+                continue
+            }
+            if let product: String = row["product"] {
+                byProduct[product.lowercased()] = effect
+                continue
+            }
+            for key in ([name] + (aliases[sid] ?? [])).map({ $0.lowercased() }) {
+                bySubstance[key] = effect
+            }
+        }
+        return FoodEffectTable(bySubstance: bySubstance, byProduct: byProduct, generic: generic)
     }
 
     /// The whole `zero_order_kinetics` table, as canonical name → the substance's saturable

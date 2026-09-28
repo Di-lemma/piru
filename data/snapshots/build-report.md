@@ -1,6 +1,6 @@
 # Piru SQLite build report
 
-Built 2026-09-27.2 → `Piru/Data/piru-substances.sqlite` (18,067,456 bytes, sha256 `c1fab7ade8480cb07e51ac9ee526924c2ec4c78b3880d6d39be32dae15cebbee`)
+Built 2026-09-28.0 → `Piru/Data/piru-substances.sqlite` (18,087,936 bytes, sha256 `254d1c981146d914bb9721a11b2550d135847bafe3e74d5f31a30d61b88922de`)
 
 ## Row counts
 
@@ -10,7 +10,7 @@ Built 2026-09-27.2 → `Piru/Data/piru-substances.sqlite` (18,067,456 bytes, sha
 | aliases | 5,727 |
 | sources | 18 |
 | source_field_priority | 2 |
-| citations | 2,464 |
+| citations | 2,478 |
 | categories | 1,558 |
 | tags | 7,049 |
 | dose_ranges | 2,738 |
@@ -58,6 +58,7 @@ Built 2026-09-27.2 → `Piru/Data/piru-substances.sqlite` (18,067,456 bytes, sha
 | by_volume_dosing | 2 |
 | drink_presets | 4 |
 | zero_order_kinetics | 1 |
+| food_effects | 14 |
 | saturable_kinetics | 6 |
 | bioavailability_by_dose | 10 |
 | attenuation_bands | 1 |

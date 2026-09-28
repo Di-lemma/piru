@@ -205,13 +205,24 @@ struct SubstanceCardView: View, Equatable {
 
     private func routeSection(_ group: SubstanceGroup) -> some View {
         VStack(alignment: .leading, spacing: Spacing.sm) {
-            Text(group.route.localizedName)
-                .font(.subheadline.weight(.medium))
-                .foregroundStyle(Theme.secondaryLabel)
-                .padding(.top, Spacing.xs)
+            if showsRouteLabel(group) {
+                Text(group.route.localizedName)
+                    .font(.subheadline.weight(.medium))
+                    .foregroundStyle(Theme.secondaryLabel)
+                    .padding(.top, Spacing.xs)
+            }
 
             doseChips(for: group)
         }
+    }
+
+    /// The route earns its line only when it tells the reader something: the
+    /// card holds more than one route, or its one route isn't the substance's
+    /// usual one. "Oral" over every alcohol and supplement card said nothing and
+    /// cost a line per favorite.
+    private func showsRouteLabel(_ group: SubstanceGroup) -> Bool {
+        guard card.routes.count == 1, let substance = group.librarySubstance else { return true }
+        return group.route != substance.defaultRoute
     }
 
     private func doseChips(for group: SubstanceGroup) -> some View {
@@ -237,9 +248,11 @@ struct SubstanceCardView: View, Equatable {
                     )
                 }
             } label: {
-                // `Text(Image)`, so the symbol takes the dose chips' text line
+                // The symbol inside `Text`, so it takes the dose chips' text line
                 // box and the pill comes out the same height as its neighbors.
-                Text(Image(systemName: "slider.horizontal.3"))
+                // Worded, because every chip is editable once staged: this is
+                // the one that stages an amount of your own.
+                Text("\(Image(systemName: "pencil")) Custom")
                     .font(OneRowChipMetrics.font)
                     .padding(.horizontal, OneRowChipMetrics.horizontalPadding)
                     .padding(.vertical, OneRowChipMetrics.verticalPadding)

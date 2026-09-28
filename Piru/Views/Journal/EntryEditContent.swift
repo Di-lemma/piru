@@ -111,6 +111,14 @@ struct EntryEditContent: View {
                     }
                 }
             DatePicker("Date & Time", selection: $draft.timestamp)
+            if draft.route == .oral {
+                Picker("Stomach", selection: $draft.meal) {
+                    Text("Not recorded").tag(MealState?.none)
+                    ForEach(MealState.allCases, id: \.self) { meal in
+                        Text(meal.label).tag(Optional(meal))
+                    }
+                }
+            }
             Button {
                 showColorPicker = true
             } label: {

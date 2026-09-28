@@ -16,6 +16,7 @@ final class EntryDraft {
     var notes = ""
     var tags: [String] = []
     var location: PickedLocation?
+    var meal: MealState?
     /// The amount is an estimate, not a measured figure — carried onto the entry
     /// and shown as a `~` prefix.
     var isApproximate = false
@@ -94,6 +95,7 @@ final class EntryDraft {
         isApproximate = entry.isApproximate
         isUnknownDose = entry.isUnknownDose
         if entry.isUnknownDose { amount = "" }
+        meal = entry.meal
         if let name = entry.locationName, let lat = entry.latitude, let lng = entry.longitude {
             location = PickedLocation(name: name, latitude: lat, longitude: lng)
         } else {

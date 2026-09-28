@@ -1,20 +1,23 @@
 import MapKit
 import SwiftUI
 
-/// The user's own words and place, merged into one card — notes, tags, and
-/// location were three separate one-row sections before.
+/// The user's own words and circumstances in one card: notes, tags, what was
+/// eaten, and where.
 struct EntryContextSection: View {
     let entry: DoseEntry
 
     var body: some View {
         let notes = entry.notes ?? ""
-        if !notes.isEmpty || !entry.tags.isEmpty || entry.locationName != nil {
+        if !notes.isEmpty || !entry.tags.isEmpty || entry.locationName != nil || entry.meal != nil {
             Section("Your Notes") {
                 if !notes.isEmpty {
                     Text(notes)
                 }
                 if !entry.tags.isEmpty {
                     TagChipsView(tags: entry.tags)
+                }
+                if let meal = entry.meal {
+                    Label(meal.label, systemImage: meal.systemImage)
                 }
                 if let locationName = entry.locationName {
                     if let coordinate = entry.coordinate {

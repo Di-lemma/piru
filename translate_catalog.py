@@ -7801,6 +7801,40 @@ T = {
     "Interval presets": ("常用间隔", "常用間隔"),
     "Ki ceiling": ("Ki 上限", "Ki 上限"),
     "New tag": ("新标签", "新標籤"),
+    # Quick-log meal chip
+    "^[%lld dose](inflect: true)": ("%lld 份剂量", "%lld 份劑量"),
+    "^[%lld staged dose](inflect: true)": ("已暂存 %lld 份剂量", "已暫存 %lld 份劑量"),
+    "Shows the staged doses": ("显示已暂存的剂量", "顯示已暫存的劑量"),
+    "Typical estimate": ("一般估计", "一般估計"),
+    "A meal delays **%@** by %@": ("正餐会让 **%@** 起效推迟 %@", "正餐會讓 **%@** 起效延後 %@"),
+    "A snack delays **%@** by %@": (
+        "少量进食会让 **%@** 起效推迟 %@",
+        "少量進食會讓 **%@** 起效延後 %@",
+    ),
+    "A typical delay for oral doses. No food study has measured **%@** itself.": (
+        "口服剂量的一般推迟时间。还没有食物研究专门测量过 **%@**。",
+        "口服劑量的一般延後時間。還沒有食物研究專門測量過 **%@**。",
+    ),
+    "%@ Custom": ("%@ 自定义", "%@ 自訂"),
+    "Food doesn't delay **%@**": ("进食不会推迟 **%@** 起效", "進食不會延後 **%@** 起效"),
+    "Food doesn't delay these doses": ("进食不会推迟这些剂量起效", "進食不會延後這些劑量起效"),
+    "A meal delays ^[%lld dose](inflect: true) by up to ~%@": (
+        "正餐会让 %lld 份剂量起效最多推迟约 %@",
+        "正餐會讓 %lld 份劑量起效最多延後約 %@",
+    ),
+    "A snack delays ^[%lld dose](inflect: true) by up to ~%@": (
+        "少量进食会让 %lld 份剂量起效最多推迟约 %@",
+        "少量進食會讓 %lld 份劑量起效最多延後約 %@",
+    ),
+    "Empty stomach": ("空腹", "空腹"),
+    "Light snack": ("少量进食", "少量進食"),
+    "Full meal": ("吃过正餐", "吃過正餐"),
+    "Fasted": ("空腹", "空腹"),
+    "Snack": ("少量", "少量"),
+    "Meal": ("正餐", "正餐"),
+    "Stomach": ("进食状态", "進食狀態"),
+    "Stomach: %@": ("进食状态：%@", "進食狀態：%@"),
+    "Food": ("食物", "食物"),
 }
 
 # Widget translations
@@ -8080,6 +8114,27 @@ if __name__ == "__main__":
     # catalog yet. List them here so they get inserted; clear once Xcode has
     # picked them up on a real build (after which they're update-only).
     NEW_KEYS: set[str] = {
+        "^[%lld dose](inflect: true)",
+        "^[%lld staged dose](inflect: true)",
+        "Shows the staged doses",
+        "Typical estimate",
+        "A meal delays **%@** by %@",
+        "A snack delays **%@** by %@",
+        "A typical delay for oral doses. No food study has measured **%@** itself.",
+        "%@ Custom",
+        "Food doesn't delay **%@**",
+        "Food doesn't delay these doses",
+        "A meal delays ^[%lld dose](inflect: true) by up to ~%@",
+        "A snack delays ^[%lld dose](inflect: true) by up to ~%@",
+        "Empty stomach",
+        "Light snack",
+        "Full meal",
+        "Fasted",
+        "Snack",
+        "Meal",
+        "Stomach",
+        "Stomach: %@",
+        "Food",
         "Tabs",
         "In the Tab Bar",
         "Add a Tab…",

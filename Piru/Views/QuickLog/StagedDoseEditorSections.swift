@@ -2,72 +2,57 @@ import SwiftUI
 
 // MARK: - Header
 
-/// The editor's title row: name, recognition subtitle, the disclosure chevron
-/// that collapses it, and the trash.
+/// The editor's title row: name, recognition subtitle, and the disclosure
+/// chevron that collapses it. No remove button: the row swipes left to delete
+/// and long-presses to a Remove item, like any iOS list row, and a trash beside
+/// the chevron read as the collapse control's neighbor action.
 struct StagedDoseEditorHeader: View {
     let title: String
     let subtitle: String?
     let morphID: UUID
     let namespace: Namespace.ID
     let onCollapse: () -> Void
-    let onRemove: () -> Void
 
     var body: some View {
         // 8pt chevron→text gap, matching the collapsed row exactly so the
-        // matched-geometry morph doesn't shift the leading column.
+        // matched-geometry morph doesn't shift the leading column. The title +
+        // chevron are one element carrying the "Collapses the editor" hint.
         HStack(spacing: Spacing.md) {
-            // The title + chevron are the collapse target — merged into ONE
-            // element carrying the "Collapses the editor" hint. Keeping the
-            // trash a separate sibling stops that hint from bleeding onto it
-            // (it used to read "trash … Collapses the editor").
-            HStack(spacing: Spacing.md) {
-                VStack(alignment: .leading, spacing: 1) {
-                    // No "recognized" seal beside the name: it fired only when
-                    // the typed alias resolved to a different canonical entry,
-                    // which the subtitle underneath already says in words, and
-                    // a green seal against a substance name reads as a claim
-                    // about how much to trust it. A custom substance got no
-                    // seal at all, the opposite of how testers read it.
-                    Text(title)
-                        .font(.body.weight(.semibold))
-                        .trayMorph(id: "title-\(morphID)", in: namespace, isSource: false)
-                    if let subtitle {
-                        Text(subtitle)
-                            .captionSecondary()
-                            .lineLimit(1)
-                    }
+            VStack(alignment: .leading, spacing: 1) {
+                // No "recognized" seal beside the name: it fired only when
+                // the typed alias resolved to a different canonical entry,
+                // which the subtitle underneath already says in words, and
+                // a green seal against a substance name reads as a claim
+                // about how much to trust it. A custom substance got no
+                // seal at all, the opposite of how testers read it.
+                Text(title)
+                    .font(.body.weight(.semibold))
+                    .trayMorph(id: "title-\(morphID)", in: namespace, isSource: false)
+                if let subtitle {
+                    Text(subtitle)
+                        .captionSecondary()
+                        .lineLimit(1)
                 }
-                Spacer()
-                // Same glyph as the collapsed row, rotated to point down
-                // (expanded, per Apple's disclosure convention) — trailing,
-                // where the row's chevron now lives, so the matched-geometry
-                // swap morphs it in place like a rotation.
-                Image(systemName: "chevron.right")
-                    .font(.footnote.weight(.semibold))
-                    .foregroundStyle(Theme.tertiaryLabel)
-                    .rotationEffect(.degrees(90))
-                    .frame(width: 16)
-                    .trayMorph(id: "chevron-\(morphID)", in: namespace, isSource: false)
-                    .accessibilityHidden(true)
             }
-            .contentShape(Rectangle())
-            .onTapGesture(perform: onCollapse)
-            .accessibilityElement(children: .combine)
-            .accessibilityAddTraits(.isButton)
-            .accessibilityHint("Collapses the editor")
-
-            // 42pt — the stepper-button size, so the trash sits on the same
-            // vertical line as the + button below it.
-            Button(action: onRemove) {
-                Image(systemName: "trash")
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(.red)
-                    .frame(width: 42, height: 42)
-                    .contentShape(Rectangle())
-            }
-            .buttonStyle(.plain)
-            .accessibilityLabel("Remove entry")
+            Spacer()
+            // Same glyph as the collapsed row, rotated to point down
+            // (expanded, per Apple's disclosure convention) — trailing,
+            // where the row's chevron now lives, so the matched-geometry
+            // swap morphs it in place like a rotation.
+            Image(systemName: "chevron.right")
+                .font(.footnote.weight(.semibold))
+                .foregroundStyle(Theme.tertiaryLabel)
+                .rotationEffect(.degrees(90))
+                .frame(width: 16)
+                .trayMorph(id: "chevron-\(morphID)", in: namespace, isSource: false)
+                .accessibilityHidden(true)
         }
+        .frame(minHeight: 42)
+        .contentShape(Rectangle())
+        .onTapGesture(perform: onCollapse)
+        .accessibilityElement(children: .combine)
+        .accessibilityAddTraits(.isButton)
+        .accessibilityHint("Collapses the editor")
     }
 }
 
@@ -409,7 +394,7 @@ struct StagedDoseVolumeUnitMenu: View {
 
 /// The pill-entry surface: strength chips (mirroring the drink-preset chips),
 /// then a tablet-count stepper — or the plain mg stepper when the user drops to
-/// free-form via the "mg…" chip.
+/// free-form via the Custom chip.
 struct StagedDosePillBlock: View {
     @Binding var item: StagedDose
     let model: StagedDoseEditorModel
@@ -459,22 +444,21 @@ struct StagedDoseStrengthChip: View {
     let action: () -> Void
 
     var body: some View {
+        // The bare number: every chip in the row is the same unit, and the
+        // readout under the stepper names it ("= 36 mg").
         Button(action: action) {
-            HStack(spacing: Spacing.xxs) {
-                Text(mg.doseFormatted)
-                    .sectionLabel()
-                Text(verbatim: "mg")
-                    .font(.caption2)
-                    .foregroundStyle(selected ? AnyShapeStyle(Theme.accent.legibleOpacity(0.85)) : AnyShapeStyle(Theme.secondaryLabel))
-            }
-            .padding(.horizontal, 13)
-            .frame(height: pillHeight)
-            .background(
-                selected ? AnyShapeStyle(Theme.accent.opacity(Theme.Opacity.tint)) : AnyShapeStyle(Color.platformSecondarySystemFill),
-                in: skinChipShape(),
-            )
-            .foregroundStyle(selected ? AnyShapeStyle(Theme.accent) : AnyShapeStyle(.primary))
-            .overlay(skinChipShape().stroke(selected ? Theme.accent : .clear, lineWidth: 1.5))
+            Text(mg.doseFormatted)
+                .sectionLabel()
+                .monospacedDigit()
+                .frame(minWidth: 26)
+                .padding(.horizontal, 13)
+                .frame(height: pillHeight)
+                .background(
+                    selected ? AnyShapeStyle(Theme.accent.opacity(Theme.Opacity.tint)) : AnyShapeStyle(Color.platformSecondarySystemFill),
+                    in: skinChipShape(),
+                )
+                .foregroundStyle(selected ? AnyShapeStyle(Theme.accent) : AnyShapeStyle(.primary))
+                .overlay(skinChipShape().stroke(selected ? Theme.accent : .clear, lineWidth: 1.5))
         }
         .buttonStyle(.plain)
         .accessibilityLabel(Text("\(mg.doseFormatted) mg"))
@@ -489,7 +473,8 @@ struct StagedDoseFreeFormChip: View {
 
     var body: some View {
         Button(action: action) {
-            Text(verbatim: "mg…")
+            Label("Custom", systemImage: "pencil")
+                .labelStyle(.titleAndIcon)
                 .font(.subheadline.weight(.medium))
                 .padding(.horizontal, 13)
                 .frame(height: pillHeight)

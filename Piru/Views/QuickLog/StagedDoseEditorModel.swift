@@ -30,7 +30,7 @@ final class StagedDoseEditorModel {
     // MARK: Pill picker (branded fixed-strength meds)
 
     /// The chosen per-unit strength, or `nil` when the user dropped to free-form
-    /// mg via the "mg…" chip.
+    /// mg via the Custom chip.
     var pillStrength: Double?
     var pillCount = 1
     /// Guards the one-time seed of pill state from the staged amount on appear.
@@ -275,7 +275,7 @@ final class StagedDoseEditorModel {
         stepTick += 1
     }
 
-    /// Drop to free-form mg (the "mg…" chip): keep the current amount and seed the
+    /// Drop to free-form mg (the Custom chip): keep the current amount and seed the
     /// stepper's text field so it opens populated rather than blank.
     func selectFreeForm(item: StagedDose) {
         pillStrength = nil

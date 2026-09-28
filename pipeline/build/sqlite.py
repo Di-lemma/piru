@@ -2671,6 +2671,33 @@ CREATE TABLE zero_order_kinetics (
     PRIMARY KEY (substance_id, source_id)
 );
 
+-- How a meal moves an ORAL dose's absorption: the fed-vs-fasted Tmax delay a
+-- food-effect study measured. The app shifts the curve's onset by this delay,
+-- scaled by what the user logged (a full meal is the study's meal; a light snack
+-- is half of it). A row with `substance_id` NULL is the generic delay applied to
+-- any oral dose without a substance row, and is labeled as an estimate in the
+-- app. A substance row with delay 0 is a real answer, since the study found that
+-- food leaves its Tmax where it was.
+CREATE TABLE food_effects (
+    substance_id    INTEGER REFERENCES substances(id),
+    -- Lowercased product name when the study measured one formulation
+    -- ("adderall xr"); NULL for the substance's base/immediate-release form.
+    product         TEXT,
+    source_id       INTEGER NOT NULL REFERENCES sources(id),
+    -- Fed Tmax minus fasted Tmax, MINUTES. What the app applies.
+    tmax_delay_min  REAL NOT NULL,
+    tmax_fasted_min REAL,
+    tmax_fed_min    REAL,
+    -- Fed / fasted exposure ratios, NULL when the source does not state them.
+    cmax_ratio      REAL,
+    auc_ratio       REAL,
+    -- The test meal, as the source describes it.
+    meal            TEXT,
+    citation_id     INTEGER REFERENCES citations(id),
+    notes           TEXT
+);
+CREATE UNIQUE INDEX uq_food_effects ON food_effects(IFNULL(substance_id, 0), IFNULL(product, ''));
+
 -- Capacity-limited (Michaelis-Menten) kinetics: the substances whose dose does
 -- NOT map proportionally onto exposure, and which step runs out of capacity.
 -- `mechanism` is elimination (the clearing enzyme saturates, exposure runs away
@@ -11759,6 +11786,69 @@ class Build:
             stats["inserted"] += 1
         return stats
 
+    def ingest_food_effects(self) -> dict[str, int]:
+        """Fill `food_effects` from curated JSON. Resolved by name OR alias.
+
+        Only rows with a measured delay are stored: a source that says only "food
+        delays absorption" leaves the substance on the generic delay rather than
+        having a number invented for it. A negative delay is refused, since a meal
+        cannot make the stomach empty sooner, so a negative figure is a transcription
+        error rather than a finding."""
+        path = CURATED_DIR.parent / "food-effects.json"
+        stats = {"inserted": 0, "unmatched": 0, "rejected": 0, "generic": 0}
+        if not path.exists():
+            return stats
+        payload = json.loads(path.read_text())
+        index = self._alias_index()
+        source_id = self.source_ids[payload.get("source", "piru-curated")]
+
+        def insert(sid: int | None, entry: dict) -> None:
+            product = entry.get("product")
+            self.cur.execute(
+                "INSERT OR REPLACE INTO food_effects"
+                "(substance_id, product, source_id, tmax_delay_min, tmax_fasted_min,"
+                " tmax_fed_min, cmax_ratio, auc_ratio, meal, citation_id, notes)"
+                " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                (
+                    sid,
+                    product.strip().lower() if product else None,
+                    source_id,
+                    entry["tmaxDelayMin"],
+                    entry.get("tmaxFastedMin"),
+                    entry.get("tmaxFedMin"),
+                    entry.get("cmaxRatio"),
+                    entry.get("aucRatio"),
+                    entry.get("meal"),
+                    self.cite(entry.get("citation")),
+                    entry.get("notes"),
+                ),
+            )
+
+        generic = payload.get("generic")
+        if generic and generic.get("tmaxDelayMin", 0) > 0 and generic.get("citation"):
+            insert(None, generic)
+            stats["generic"] = 1
+        for entry in payload.get("substances", []):
+            delay = entry.get("tmaxDelayMin")
+            if delay is None:
+                continue
+            sid = index.get(normalise(entry["substance"]))
+            if sid is None:
+                stats["unmatched"] += 1
+                print(f"  food_effects: no substance {entry['substance']!r}", file=sys.stderr)
+                continue
+            if delay < 0 or not entry.get("citation"):
+                print(
+                    f"  food_effects: refusing {entry['substance']!r} — "
+                    "negative delay or no citation",
+                    file=sys.stderr,
+                )
+                stats["rejected"] += 1
+                continue
+            insert(sid, entry)
+            stats["inserted"] += 1
+        return stats
+
     def populate_regional_names(self) -> dict[str, int]:
         """Fill `regional_names` from curated JSON. `alternateRegions` is either a
         literal list of ISO region codes or the name of a group declared in
@@ -15342,6 +15432,9 @@ def main() -> int:
     zero_order = build.ingest_zero_order_kinetics()
     print(f"Zero-order kinetics: {zero_order}", file=sys.stderr)
 
+    food = build.ingest_food_effects()
+    print(f"Food effects: {food}", file=sys.stderr)
+
     saturable = build.ingest_saturable_kinetics()
     print(f"Saturable kinetics: {saturable}", file=sys.stderr)
 
@@ -15594,6 +15687,7 @@ def main() -> int:
         "by_volume_dosing",
         "drink_presets",
         "zero_order_kinetics",
+        "food_effects",
         "saturable_kinetics",
         "bioavailability_by_dose",
         "attenuation_bands",

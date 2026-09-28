@@ -71,6 +71,25 @@ struct DurationProfile: Codable, Hashable {
         )
     }
 
+    /// The same profile with its onset `minutes` later. The delay is a lag: the dose
+    /// sits in the stomach before any of it absorbs, so it lengthens the onset and
+    /// leaves every later phase as long as it was. `total` grows by the same amount
+    /// so the dose is not reported over while its shifted curve is still up.
+    func delayingOnset(by minutes: Double) -> DurationProfile {
+        guard minutes > 0 else { return self }
+        func shifted(_ range: DurationRange) -> DurationRange {
+            DurationRange(min: range.min + minutes, max: range.max + minutes)
+        }
+        return DurationProfile(
+            onset: shifted(onset ?? DurationRange(min: 0, max: 0)),
+            comeup: comeup,
+            peak: peak,
+            offset: offset,
+            afterglow: afterglow,
+            total: total.map(shifted),
+        )
+    }
+
     /// Fill in missing come-up/peak/offset phases when the data carries a real
     /// `total` but not the intermediate phases that shape the curve between
     /// onset and total (endpoint-only data from a single source). Without this,

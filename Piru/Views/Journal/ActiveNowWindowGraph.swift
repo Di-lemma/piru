@@ -50,6 +50,7 @@ struct ActiveNowWindowGraph: View {
             hasher.combine(entry.unit)
             hasher.combine(entry.route)
             hasher.combine(entry.isBackgroundMed)
+            hasher.combine(entry.mealRaw)
         }
         for color in colors {
             hasher.combine(color.substance)

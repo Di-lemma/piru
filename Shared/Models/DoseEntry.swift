@@ -151,6 +151,17 @@ final class DoseEntry {
     /// every other dose, which keeps the migration additive and lightweight.
     var hadGrapefruit: Bool?
 
+    /// What was in the stomach when this dose was taken, as ``MealState``'s raw
+    /// value — `nil` when it wasn't recorded, which draws the curve unshifted.
+    /// Only oral doses read it (see `DoseEntry.applyingMeal(to:)`); stored raw so
+    /// the field-add stays a lightweight migration.
+    var mealRaw: String?
+
+    var meal: MealState? {
+        get { mealRaw.flatMap(MealState.init(rawValue:)) }
+        set { mealRaw = newValue?.rawValue }
+    }
+
     /// Whether the ``amount`` is the user's *estimate* rather than a measured
     /// figure — "about half a tab", "a bump", a split capsule eyeballed. Renders
     /// the amount with a leading `~` so a guess never reads as a precise
@@ -240,6 +251,7 @@ final class DoseEntry {
         latitude: Double? = nil,
         longitude: Double? = nil,
         hadGrapefruit: Bool? = nil,
+        meal: MealState? = nil,
         isApproximate: Bool = false,
         isUnknownDose: Bool = false,
         volumeML: Double? = nil,
@@ -264,6 +276,7 @@ final class DoseEntry {
         self.latitude = latitude
         self.longitude = longitude
         self.hadGrapefruit = hadGrapefruit
+        self.mealRaw = meal?.rawValue
         self.isApproximate = isApproximate && !isUnknownDose
         self.isUnknownDose = isUnknownDose
         self.volumeML = volumeML

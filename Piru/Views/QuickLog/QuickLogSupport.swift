@@ -26,6 +26,7 @@ struct DockSheetHost: View {
     var tray: DoseTrayModel
     var content: QuickLogContentModel
     var containerHeight: CGFloat
+    let geometry: DockSheetGeometry
     @Binding var searchText: String
     @Binding var searchActive: Bool
     /// Owned by `QuickLogView` (its body hides the cover content from
@@ -52,6 +53,7 @@ struct DockSheetHost: View {
             tray: tray,
             content: content,
             containerHeight: containerHeight,
+            geometry: geometry,
             searchText: $searchText,
             searchActive: $searchActive,
             detent: $detent,
@@ -89,8 +91,11 @@ struct DockSheetHost: View {
         // the cover's only presentation slot, so they can't present there.
         .hostsNestedNavigatorSheets(navigator)
         .presentationDetents(detents, selection: $detent)
-        .presentationBackgroundInteraction(.enabled(upThrough: .medium))
-        .presentationContentInteraction(.resizes)
+        // At every height, never `upThrough: .medium`: a tall staged stack sets
+        // its compact detent above medium, and past that threshold the sheet
+        // turns modal, dimming and locking the cards the user is tapping.
+        .presentationBackgroundInteraction(.enabled)
+        .presentationContentInteraction(geometry.compactOverflows ? .scrolls : .resizes)
         .presentationBackground { Color.clear }
         .interactiveDismissDisabled()
     }

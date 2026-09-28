@@ -36,12 +36,17 @@ struct TrayStagedListCard: View {
                             if model.expandedItemIDs.contains(item.id) {
                                 StagedDoseEditor(item: $item, namespace: morphNamespace) {
                                     withAnimation(.snappy) { _ = model.expandedItemIDs.remove(item.id) }
-                                } onRemove: {
-                                    withAnimation(.snappy) { model.remove(item) }
                                 }
                                 .padding(.vertical, Spacing.md)
                             } else {
+                                // Long-press only on the collapsed row: the open
+                                // editor holds a text field whose own long-press
+                                // (cursor, paste) a context menu would take over.
                                 TrayRow(dose: item, model: model, namespace: morphNamespace)
+                                    .contentShape(.contextMenuPreview, Rectangle())
+                                    .contextMenu {
+                                        TrayRowContextMenu(model: model, item: item)
+                                    }
                             }
                         }
                         .padding(.horizontal, Spacing.xxl)
@@ -123,9 +128,9 @@ struct TrayCommitBar: View {
 
 // MARK: - Warnings
 
-/// Interactions and the late-dose sleep clause share one element: both are
-/// consequences of what the Log button is about to record, stated before it is
-/// pressed rather than discovered after.
+/// Interactions, the meal's onset delay and the late-dose sleep clause share one
+/// element: all are consequences of what the Log button is about to record,
+/// stated before it is pressed rather than discovered after.
 struct TrayWarningBanner: View {
     let model: DoseTrayModel
 
@@ -161,9 +166,10 @@ struct TrayWarningBanner: View {
     /// check would never fire.
     private var banner: some View {
         let shown = interactions.admitted(.notable)
+        let mealLines = TrayMealConsequence.lines(staged: model.staged, meal: model.meal)
         return VStack(spacing: 0) {
             Color.clear.frame(height: 0)
-            if !shown.isEmpty || !sleepWarnings.isEmpty {
+            if !shown.isEmpty || !sleepWarnings.isEmpty || !mealLines.isEmpty {
                 VStack(alignment: .leading, spacing: Spacing.sm) {
                     ForEach(Array(shown.prefix(3).enumerated()), id: \.offset) { _, warning in
                         warningRow(
@@ -174,9 +180,15 @@ struct TrayWarningBanner: View {
                             Text(warning.leadClause)
                         }
                     }
-                    ForEach(sleepWarnings.prefix(2)) { warning in
+                    ForEach(Array(mealLines.enumerated()), id: \.offset) { _, line in
+                        TrayMealLineRow(line: line)
+                    }
+                    // One line however many run late, naming them all against the
+                    // latest end, so a morning stack doesn't stack sleep notes.
+                    if let latest = sleepWarnings.map(\.end).max() {
+                        let names = sleepWarnings.map(\.name).formatted(.list(type: .and))
                         warningRow(symbol: DosePhaseGlyph.sleep, color: Color.Semantic.Caution.text) {
-                            Text("\(warning.name) modeled active until ~\(Self.clock(warning.end))")
+                            Text("\(names) modeled active until ~\(Self.clock(latest))")
                         }
                     }
                 }
@@ -220,278 +232,6 @@ struct TrayWarningBanner: View {
                 at: time,
             ) else { return nil }
             return SleepWarning(name: dose.productName ?? dose.substanceName, end: end)
-        }
-    }
-}
-
-// MARK: - Meta Chips
-
-/// The tray-wide When/Tags/Location chips with their anchored presentations.
-/// Rendered inside ``TrayCommitBar`` normally; at accessibility sizes the
-/// dock hosts them in the scroll content (see ``TrayCommitBar``).
-struct TrayMetaChips: View {
-    @Bindable var model: DoseTrayModel
-    /// Source of the tag suggestions and recent locations. A stable reference
-    /// — and this body reads its caches only inside the popover/menu/sheet
-    /// closures, which resolve at presentation time — so neither a dock body
-    /// pass nor a cache rebuild re-renders the chips at all.
-    let content: QuickLogContentModel
-
-    /// The user's configured "When" presets (minutes), edited in Settings › Journal.
-    @AppStorage(DoseTimeDefaults.choicesKey, store: UserDefaults(suiteName: DoseTimeDefaults.suite))
-    private var doseTimeChoicesRaw = DoseTimeDefaults.defaultRaw
-
-    @State private var showLocationPicker = false
-    /// Anchored presentations off the chips — Apple's idiom for quick options
-    /// (menus/popovers) instead of the old inline floating panels.
-    @State private var showTagsPopover = false
-    @State private var showDatePopover = false
-    @State private var showLocationDeniedAlert = false
-    /// Owns current-location requests for the location menu; the chip shows a
-    /// spinner while a request is in flight.
-    @State private var locationModel = LocationSearchModel()
-    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
-
-    /// Chips side by side normally; stacked at accessibility sizes, where
-    /// three capsules can't share the row — squeezed, their labels wrapped
-    /// character-per-line into vertical columns.
-    private var chipLayout: AnyLayout {
-        dynamicTypeSize.isAccessibilitySize
-            ? AnyLayout(VStackLayout(alignment: .leading, spacing: Spacing.md))
-            : AnyLayout(HStackLayout(spacing: Spacing.md))
-    }
-
-    var body: some View {
-        chipLayout {
-            whenChip
-            tagsChip
-            locationChip
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .sensoryFeedback(.selection, trigger: model.time)
-        .sheet(isPresented: $showLocationPicker) {
-            LocationPickerView(recents: content.cachedRecentLocations) { picked in
-                model.location = picked
-            }
-        }
-        .alert("Location access is off", isPresented: $showLocationDeniedAlert) {
-            Button("Open Settings") {
-                openPlatformSettings()
-            }
-            Button("Cancel", role: .cancel) {}
-        } message: {
-            Text("Turn on location access in Settings to use your current location.")
-        }
-    }
-
-    // MARK: Shared controls
-
-    /// The visible chip is plain SwiftUI with the Menu overlaid as an invisible
-    /// tap target. As a `Menu` *label* the chip's width was sized by the
-    /// UIKit-backed menu button, which applies the new size outside the SwiftUI
-    /// transaction — the color crossfaded at the old width, then the frame
-    /// snapped. Decoupled, the whole chip animates in one `.snappy` pass.
-    private var whenChip: some View {
-        HStack(spacing: 5) {
-            Image(systemName: "clock")
-                .imageScale(.small)
-            Text(model.time.chipLabel)
-                .lineLimit(1)
-            Image(systemName: "chevron.down")
-                .font(.caption2.weight(.semibold))
-        }
-        .sectionLabel()
-        // Pin the label to its ideal width so the new string isn't clipped to
-        // the interpolating frame (which flashed truncated text mid-animation).
-        .fixedSize(horizontal: true, vertical: false)
-        .padding(.horizontal, 14)
-        .padding(.vertical, Spacing.lg)
-        .background(
-            model.time.isNow
-                ? AnyShapeStyle(Color.platformSecondarySystemFill)
-                : AnyShapeStyle(Color.cautionAccent.opacity(Theme.Opacity.tintActive)),
-            in: Capsule(),
-        )
-        .foregroundStyle(model.time.isNow ? AnyShapeStyle(.primary) : AnyShapeStyle(Color.cautionText))
-        .animation(.snappy, value: model.time)
-        // The overlay Menu is the accessible element — expose only it, or
-        // VoiceOver stops on the decorative chip content too.
-        .accessibilityHidden(true)
-        .overlay {
-            Menu {
-                whenMenuItems
-            } label: {
-                Color.clear.contentShape(Capsule())
-            }
-            .accessibilityLabel(Text("Dose time: \(model.time.chipLabel)"))
-            .accessibilityInputLabels([Text("Dose time"), Text("Time")])
-        }
-        .popover(isPresented: $showDatePopover, arrowEdge: .bottom) {
-            DatePicker(
-                "When",
-                selection: Binding(
-                    get: {
-                        if case let .custom(date) = model.time { date } else { model.time.resolved }
-                    },
-                    set: { model.time = .custom($0) },
-                ),
-            )
-            .datePickerStyle(.graphical)
-            .frame(width: 320)
-            .padding(Spacing.xl)
-            .presentationCompactAdaptation(.popover)
-        }
-    }
-
-    @ViewBuilder
-    private var whenMenuItems: some View {
-        Button {
-            withAnimation(.snappy) { model.time = .now }
-        } label: {
-            if model.time.isNow {
-                Label("Now", systemImage: "checkmark")
-            } else {
-                Text("Now")
-            }
-        }
-        ForEach(DoseTimeDefaults.parse(doseTimeChoicesRaw), id: \.self) { minutes in
-            Button {
-                withAnimation(.snappy) { model.time = .offset(minutes: minutes) }
-            } label: {
-                if model.time == .offset(minutes: minutes) {
-                    Label(TrayTime.offsetLabel(minutes: minutes), systemImage: "checkmark")
-                } else {
-                    Text(TrayTime.offsetLabel(minutes: minutes))
-                }
-            }
-        }
-        Button {
-            withAnimation(.snappy) { model.time = .custom(model.time.resolved) }
-            // Presenting while the menu is still tearing down races UIKit's
-            // presentation slot — defer one runloop turn.
-            Task { @MainActor in showDatePopover = true }
-        } label: {
-            Label("Pick date & time…", systemImage: "calendar")
-        }
-    }
-
-    /// Tag toggles live in an anchored popover (Apple's quick-options idiom),
-    /// not an inline panel that reflows the whole bar.
-    private var tagsChip: some View {
-        Button {
-            showTagsPopover = true
-        } label: {
-            HStack(spacing: 5) {
-                Image(systemName: "tag")
-                    .imageScale(.small)
-                    .accessibilityHidden(true)
-                if model.tags.isEmpty {
-                    Text("Tags")
-                        .lineLimit(1)
-                } else {
-                    Text(verbatim: "\(model.tags.count)")
-                }
-            }
-            .sectionLabel()
-            .padding(.horizontal, 14)
-            .padding(.vertical, Spacing.lg)
-            .background(
-                model.tags.isEmpty ? AnyShapeStyle(Color.platformSecondarySystemFill) : AnyShapeStyle(Theme.accent.opacity(Theme.Opacity.tint)),
-                in: Capsule(),
-            )
-            .foregroundStyle(model.tags.isEmpty ? AnyShapeStyle(.primary) : AnyShapeStyle(Theme.accent))
-        }
-        .buttonStyle(.plain)
-        // Otherwise once tags exist the chip reads as a bare number with no
-        // "Tags" word; keep the noun as the label and put the count in a value.
-        .accessibilityLabel("Tags")
-        .accessibilityValue(model.tags.isEmpty ? Text("None") : Text("^[\(model.tags.count) tag](inflect: true)"))
-        .popover(isPresented: $showTagsPopover, arrowEdge: .bottom) {
-            TrayTagsPopover(model: model, tagSuggestions: content.cachedTagSuggestions)
-                .presentationCompactAdaptation(.popover)
-        }
-    }
-
-    /// A native Menu — current location, recent places, the full search, and
-    /// remove — with the same decoupled chip visual as the when chip (the
-    /// label resizes when a place is picked).
-    private var locationChip: some View {
-        HStack(spacing: 5) {
-            if locationModel.isLocating {
-                ProgressView()
-                    .controlSize(.mini)
-            } else {
-                Image(systemName: model.location == nil ? "mappin.and.ellipse" : "mappin.circle.fill")
-                    .imageScale(.small)
-            }
-            if let location = model.location {
-                Text(location.name)
-                    .lineLimit(1)
-            } else {
-                Text("Location")
-                    .lineLimit(1)
-            }
-        }
-        .sectionLabel()
-        .padding(.horizontal, 14)
-        .padding(.vertical, Spacing.lg)
-        .background(
-            model.location == nil ? AnyShapeStyle(Color.platformSecondarySystemFill) : AnyShapeStyle(Theme.accent.opacity(Theme.Opacity.tint)),
-            in: Capsule(),
-        )
-        .foregroundStyle(model.location == nil ? AnyShapeStyle(.primary) : AnyShapeStyle(Theme.accent))
-        .frame(maxWidth: 180, alignment: .leading)
-        .animation(.snappy, value: model.location)
-        // The overlay Menu is the accessible element — expose only it, or
-        // VoiceOver stops on the decorative chip content too.
-        .accessibilityHidden(true)
-        .overlay(alignment: .leading) {
-            Menu {
-                locationMenuItems
-            } label: {
-                Color.clear.contentShape(Capsule())
-            }
-            .accessibilityLabel(model.location.map { Text("Location: \($0.name)") } ?? Text("Location"))
-            .accessibilityInputLabels([Text("Location")])
-        }
-    }
-
-    @ViewBuilder
-    private var locationMenuItems: some View {
-        Button {
-            Task {
-                guard let picked = await locationModel.requestCurrentLocation() else {
-                    if locationModel.authDenied { showLocationDeniedAlert = true }
-                    return
-                }
-                withAnimation(.snappy) { model.location = picked }
-            }
-        } label: {
-            Label("Current Location", systemImage: "location.fill")
-        }
-        ForEach(Array(content.cachedRecentLocations.prefix(3)), id: \.name) { place in
-            Button {
-                withAnimation(.snappy) { model.location = place }
-            } label: {
-                if model.location == place {
-                    Label(place.name, systemImage: "checkmark")
-                } else {
-                    Label(place.name, systemImage: "mappin.circle.fill")
-                }
-            }
-        }
-        Button {
-            showLocationPicker = true
-        } label: {
-            Label("Find a Place…", systemImage: "magnifyingglass")
-        }
-        if model.location != nil {
-            Divider()
-            Button(role: .destructive) {
-                withAnimation(.snappy) { model.location = nil }
-            } label: {
-                Label("Remove location", systemImage: "xmark")
-            }
         }
     }
 }
@@ -542,6 +282,26 @@ struct TrayTagsPopover: View {
 /// same leftward swipe reveals the delete capsule (full swipe removes). The
 /// content stays fully interactive at rest; while the delete strip is
 /// revealed, the first tap anywhere on the row closes it again.
+/// The long-press actions on a collapsed staged dose: open it, or remove it —
+/// the same Remove the swipe reveals.
+struct TrayRowContextMenu: View {
+    let model: DoseTrayModel
+    let item: StagedDose
+
+    var body: some View {
+        Button {
+            withAnimation(.snappy) { _ = model.expandedItemIDs.insert(item.id) }
+        } label: {
+            Label("Edit", systemImage: "slider.horizontal.3")
+        }
+        Button(role: .destructive) {
+            withAnimation(.snappy) { model.remove(item) }
+        } label: {
+            Label("Remove", systemImage: "trash")
+        }
+    }
+}
+
 struct TraySwipeRow<Content: View>: View {
     let onDelete: () -> Void
     @ViewBuilder var content: Content
@@ -589,7 +349,14 @@ struct TraySwipeRow<Content: View>: View {
                 }
         }
         .clipped()
-        .gesture(swipeGesture)
+        #if os(iOS)
+            // A UIKit pan that begins only on a sideways drag: a SwiftUI
+            // DragGesture claimed vertical drags too, so a tall staged stack
+            // couldn't be scrolled from its rows.
+            .gesture(HorizontalSwipePan(onChanged: swipeChanged, onEnded: swipeEnded))
+        #else
+            .gesture(swipeGesture)
+        #endif
     }
 
     /// The revealed action: a compact red capsule pill, vertically centered —
@@ -621,17 +388,31 @@ struct TraySwipeRow<Content: View>: View {
         DragGesture(minimumDistance: 20)
             .onChanged { value in
                 guard abs(value.translation.width) > abs(value.translation.height) else { return }
-                offset = min(0, value.translation.width)
+                swipeChanged(value.translation.width)
             }
             .onEnded { value in
-                if offset < -Self.fullSwipeThreshold || value.predictedEndTranslation.width < -Self.fullSwipeThreshold * 1.5 {
-                    onDelete()
-                } else if offset < -Self.revealWidth / 2 {
-                    withAnimation(.snappy) { offset = -Self.revealWidth }
-                } else {
-                    withAnimation(.snappy) { offset = 0 }
-                }
+                swipeSettled(projected: value.predictedEndTranslation.width)
             }
+    }
+
+    private func swipeChanged(_ translation: CGFloat) {
+        offset = min(0, translation)
+    }
+
+    /// `velocity` in points per second; a quarter second of it approximates
+    /// SwiftUI's predicted end translation.
+    private func swipeEnded(_ translation: CGFloat, _ velocity: CGFloat) {
+        swipeSettled(projected: translation + velocity * 0.25)
+    }
+
+    private func swipeSettled(projected: CGFloat) {
+        if offset < -Self.fullSwipeThreshold || projected < -Self.fullSwipeThreshold * 1.5 {
+            onDelete()
+        } else if offset < -Self.revealWidth / 2 {
+            withAnimation(.snappy) { offset = -Self.revealWidth }
+        } else {
+            withAnimation(.snappy) { offset = 0 }
+        }
     }
 }
 

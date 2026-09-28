@@ -110,7 +110,7 @@ enum ActiveSubstanceCalculator {
             // proportional to its (long) `ke`, giving a slow-rise, slow-fall shape.
             let (ke, ka) = PKResolver.rateConstants(
                 halfLifeMinutes: halfLife,
-                duration: isDepot ? nil : (productDuration ?? substance?.resolveDuration(
+                duration: isDepot ? nil : entry.applyingMeal(to: productDuration ?? substance?.resolveDuration(
                     for: entry.route, saltForm: entry.saltForm, isomer: entry.isomer,
                 )),
             )
@@ -278,9 +278,9 @@ extension ActiveSubstanceState {
         let weightKg = UserProfileStore.shared.effectiveWeightKg
         // Prefer the product envelope; else the form actually logged — a D-isomer
         // dose must not be drawn with the racemic curve the detail card wouldn't show.
-        if let duration = productDuration ?? substance.timelineDuration(
+        if let duration = entry.applyingMeal(to: productDuration ?? substance.timelineDuration(
             for: entry.route, saltForm: entry.saltForm, isomer: entry.isomer,
-        ) {
+        )) {
             return ActiveSubstanceState(
                 // Canonical common name, so a dose logged under an alias (e.g. "Lysergic Acid
                 // Diethylamide") labels its curve "LSD" like the rest of the app.

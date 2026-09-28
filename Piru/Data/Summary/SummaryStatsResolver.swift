@@ -146,7 +146,9 @@ enum SummaryStatsResolver {
         if productDuration == nil, entry.namesUnmodeledForm { return (nil, nil) }
         guard let params = PKResolver.params(
             substance: substance,
-            duration: productDuration ?? substance?.resolveDuration(for: entry.route, saltForm: entry.saltForm, isomer: entry.isomer),
+            duration: entry.applyingMeal(
+                to: productDuration ?? substance?.resolveDuration(for: entry.route, saltForm: entry.saltForm, isomer: entry.isomer),
+            ),
         ) else { return (nil, nil) }
         return (params.ke, params.ka)
     }

@@ -55,7 +55,7 @@ extension BodyLevelsManager {
                 guard let halfLife = PKResolver.halfLifeMinutes(for: entry, substance: substance) else { continue }
                 let (ke, ka) = PKResolver.rateConstants(
                     halfLifeMinutes: halfLife,
-                    duration: isDepot ? nil : (productDuration ?? substance?.resolveDuration(
+                    duration: isDepot ? nil : entry.applyingMeal(to: productDuration ?? substance?.resolveDuration(
                         for: entry.route, saltForm: entry.saltForm, isomer: entry.isomer,
                     )),
                 )

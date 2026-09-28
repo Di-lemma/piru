@@ -217,6 +217,8 @@ nonisolated struct PiruDoseData: Codable {
     /// The grapefruit flag and a by-volume drink's detail. Optional on both
     /// sides: omitted for an ordinary dose, absent from older files.
     var hadGrapefruit: Bool?
+    /// ``MealState`` raw value; absent when no meal was recorded.
+    var meal: String?
     var volumeML: Double?
     var abv: Double?
     var drinkName: String?
@@ -337,7 +339,7 @@ extension DataExportImport {
                 isBackgroundMed: e.isBackgroundMed,
                 locationName: e.locationName, latitude: e.latitude, longitude: e.longitude,
                 isApproximate: e.isApproximate, isUnknownDose: e.isUnknownDose,
-                hadGrapefruit: e.hadGrapefruit,
+                hadGrapefruit: e.hadGrapefruit, meal: e.mealRaw,
                 volumeML: e.volumeML, abv: e.abv, drinkName: e.drinkName,
             )
         }
@@ -488,6 +490,7 @@ extension DataExportImport {
                 timestamp: timestamp, notes: d.notes, tags: d.tags, isBackgroundMed: d.isBackgroundMed,
                 locationName: d.locationName, latitude: d.latitude, longitude: d.longitude,
                 hadGrapefruit: d.hadGrapefruit,
+                meal: d.meal.flatMap(MealState.init(rawValue:)),
                 isApproximate: d.isApproximate ?? false, isUnknownDose: d.isUnknownDose ?? false,
                 volumeML: d.volumeML, abv: d.abv, drinkName: d.drinkName,
             )

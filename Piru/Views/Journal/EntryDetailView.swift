@@ -225,6 +225,7 @@ struct EntryDetailView: View {
 
         let previousTimestamp = entry.timestamp
         let previousSubstanceName = entry.substance
+        let previousMeal = entry.meal
 
         entry.amount = storedAmount
         entry.unit = storedUnit
@@ -251,6 +252,7 @@ struct EntryDetailView: View {
         entry.locationName = draft.location?.name
         entry.latitude = draft.location?.latitude
         entry.longitude = draft.location?.longitude
+        entry.meal = draft.route == .oral ? draft.meal : nil
 
         // The session accessory & Live Activity read ActiveSessionManager's
         // snapshot, not SwiftData — sync it so they reflect the edit immediately.
@@ -266,7 +268,9 @@ struct EntryDetailView: View {
 
         // Pending reminders are keyed to the old timestamp — a moved dose must
         // drop them and reschedule from its new time.
-        DoseNotificationManager.doseRescheduled(entry: entry, previousTimestamp: previousTimestamp)
+        DoseNotificationManager.doseRescheduled(
+            entry: entry, previousTimestamp: previousTimestamp, mealChanged: previousMeal != entry.meal,
+        )
 
         // The tick every derived surface keys its rebuild on — the timeline
         // strip lays a moved dose out at its new time only after this.

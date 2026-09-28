@@ -155,6 +155,7 @@ enum SessionResolveModel {
             hasher.combine(entry.isomer)
             hasher.combine(entry.releaseForm)
             hasher.combine(entry.productName)
+            hasher.combine(entry.mealRaw)
         }
         hasher.combine(colorSignature)
         hasher.combine(startDate)

@@ -1,0 +1,222 @@
+{
+  "_comment": "How a meal moves an ORAL dose's absorption: the fed-minus-fasted Tmax delay from a food-effect study (an FDA label's Clinical Pharmacology section or a fed/fasted crossover). The app lengthens the curve's onset by tmaxDelayMin for a logged full meal and by half of it for a light snack (Piru's interpolation; studies only compare fasted with one high-fat meal). `product` names one formulation (matched against the logged product or brand name, case-insensitive) and wins over the substance's base row; null is the base/IR form. A row with tmaxDelayMin null records a search that found no number: the ingest skips it and the substance takes `generic`. A delay of 0 is a finding, since the study saw no later Tmax, and it overrides the generic. Never store a delay a source did not print.",
+  "source": "piru-curated",
+  "generic": {
+    "tmaxDelayMin": 57,
+    "tmaxDelayRangeMin": [
+      40,
+      114
+    ],
+    "meal": "standard FDA high-fat, high-calorie meal (~800-1000 kcal, ~50% fat) or the closest meal each source used",
+    "citation": "Koziolek M, Grimm M, Garbacz G, Kuhn JP, Weitschies W. Intragastric volume changes after intake of a high-caloric, high-fat standard breakfast in healthy human subjects investigated by MRI. Mol Pharm. 2014;11(5):1632-1639. doi:10.1021/mp500022u",
+    "notes": "PIRU'S OWN ESTIMATE, shown in the app as a typical estimate. No meta-analysis of fed-vs-fasted Tmax shifts was found, so the figure is the median of the measured non-extended-release delays in this file (methylphenidate IR 0, caffeine 40, zolpidem 48, lisdexamfetamine 54, modafinil ~60, pregabalin ~90, MDMA 114, dronabinol 232 min). The citation is the physiology it has to agree with: after the FDA standard breakfast, gastric volume stays flat through a 50-90 min lag phase before emptying begins (MRI, n=12)."
+  },
+  "substances": [
+    {
+      "substance": "Amphetamine",
+      "product": "Adderall XR",
+      "tmaxFastedMin": 312,
+      "tmaxFedMin": 462,
+      "tmaxDelayMin": 150,
+      "cmaxRatio": null,
+      "aucRatio": null,
+      "meal": "high-fat meal (label does not give kcal)",
+      "citation": "Adderall XR (mixed amphetamine salts ER capsules) FDA label, section 12.3; DailyMed setid aff45863-ffe1-4d4f-8acf-c7081512a6c0",
+      "notes": "Label: 'Food does not affect the extent of absorption of d-amphetamine and l-amphetamine, but prolongs Tmax by 2.5 hours (from 5.2 hours at fasted state to 7.7 hours after a high-fat meal) for d-amphetamine and 2.7 hours (from 5.6 hours at fasted state to 8.3 hours after a high-fat meal) for l-amphetamine after administration of ADDERALL XR 30 mg.' Row values are d-amphetamine; l-amphetamine 336 -> 498 min (delay 162). No Cmax ratio stated; AUC stated unaffected but no ratio given, so both ratios null."
+    },
+    {
+      "substance": "Amphetamine",
+      "product": null,
+      "tmaxFastedMin": 180,
+      "tmaxFedMin": null,
+      "tmaxDelayMin": null,
+      "cmaxRatio": null,
+      "aucRatio": null,
+      "meal": null,
+      "citation": "Adderall (IR mixed amphetamine salts tablets) FDA label, Clinical Pharmacology; DailyMed setid f22635fe-821d-4cde-aa12-419f8b53db81",
+      "notes": "Label: fasted Tmax 'approximately 3 hours' (10 or 30 mg) and 'The effect of food on the bioavailability of Adderall has not been studied.' Searched: Adderall, Evekeo (no PK section), Zenzedi/ProCentra/Dexedrine labels (food data only for the Spansule SR capsule: 'rate and extent ... similar ... fed (58 to 75 gm fat) and fasted'), PubMed. No IR amphetamine fed/fasted Tmax found."
+    },
+    {
+      "substance": "Lisdexamfetamine",
+      "product": null,
+      "tmaxFastedMin": 228,
+      "tmaxFedMin": 282,
+      "tmaxDelayMin": 54,
+      "cmaxRatio": null,
+      "aucRatio": null,
+      "meal": "high-fat meal (70 mg capsule, healthy adults; kcal not given in label)",
+      "citation": "Vyvanse FDA label, section 12.3; DailyMed setid 704e4378-ca83-445c-8b45-3cfa51c1ecad",
+      "notes": "Vyvanse capsule, the form lisdexamfetamine is logged as. Tmax is for dextroamphetamine. Label: 'Neither food (a high fat meal or yogurt) nor orange juice affects the observed AUC and Cmax of dextroamphetamine ... Food prolongs Tmax by approximately 1 hour (from 3.8 hours at fasted state to 4.7 hours after a high fat meal or to 4.2 hours with yogurt).' Yogurt: 252 min (delay 24). Ratios not given numerically, so null (stated as no effect)."
+    },
+    {
+      "substance": "Methylphenidate",
+      "product": null,
+      "tmaxFastedMin": 120,
+      "tmaxFedMin": 120,
+      "tmaxDelayMin": 0,
+      "cmaxRatio": null,
+      "aucRatio": null,
+      "meal": "FDA standard high-fat, high-calorie meal (~800-1000 kcal, ~50% of calories from fat); first IR dose given 30 min after starting breakfast",
+      "citation": "Katzman MA, Mattingly G, Klassen LJ, Cataldo MJ, Donnelly GAE. Randomized controlled crossover trials of the pharmacokinetics of PRC-063, a novel multilayer extended-release formulation of methylphenidate, in healthy adults. J Clin Psychopharmacol. 2020;40(6):579-587. doi:10.1097/JCP.0000000000001277; PMID 33009228",
+      "notes": "IR methylphenidate (Ritalin) 20 mg TID comparator arm, Study I, n=28 crossover. First-dose window Tmax0-4 median (range): fasted 2.0 h (1.0-3.0), fed 2.0 h (1.0-4.0) -> no median delay; wider range when fed. Cmax0-4 arithmetic means 9.29 fasted vs 11.18 ng/mL fed (a fed/fasted ratio of ~1.20 is computed from reported means, not reported by the authors, so cmaxRatio is null). AUC is over the TID day, not single-dose, so aucRatio null. Corroboration: Ritalin label (setid d6fb2750-cdab-4749-ba0d-7534840a5892) says only 'Ingestion with food has no relevant effect on absorption of Ritalin' (no numbers). Chan 1983 (5 boys, cited secondhand in Modi 2000, not read) reported a SHORTER fed Tmax (1.6 fasted vs 1.0 h fed)."
+    },
+    {
+      "substance": "Methylphenidate",
+      "product": "Concerta",
+      "tmaxFastedMin": 390,
+      "tmaxFedMin": 444,
+      "tmaxDelayMin": 54,
+      "cmaxRatio": 1.121,
+      "aucRatio": 1.198,
+      "meal": "high-fat breakfast (2 eggs fried in butter, 2 bacon strips, 2 toast with butter, 4 oz hash browns, 8 oz whole milk; 500-600 kcal fat + 250 carb + 150 protein), dose within 30 min of the meal",
+      "citation": "Modi NB, Wang B, Hu WT, Gupta SK. Effect of food on the pharmacokinetics of osmotic controlled-release methylphenidate HCl in healthy subjects. Biopharm Drug Dispos. 2000;21(1):23-31. doi:10.1002/1099-081x(200001)21:1<23::aid-bdd212>3.0.co;2-v; PMID 11038435",
+      "notes": "Row = 36 mg study (n=31): mean Tmax 6.5 h fasted vs 7.4 h fed; LS-mean ratios Cmax 112.1% (90% CI 105.4-119.3), AUCinf 119.8% (115.1-124.6). 18 mg study (n=24): Tmax 6.1 -> 7.2 h (delay 66 min), Cmax 130.0%, AUC 120.0%. Fed profiles lose the ~1 h initial local maximum from the IR overcoat. Concerta label (setid 1a88218c-5b18-4220-8f56-526de1a276cd) states only 'no differences in either the pharmacokinetics or the pharmacodynamic performance ... after a high-fat breakfast'."
+    },
+    {
+      "substance": "MDMA",
+      "product": null,
+      "tmaxFastedMin": 126,
+      "tmaxFedMin": 240,
+      "tmaxDelayMin": 114,
+      "cmaxRatio": 0.97,
+      "aucRatio": 0.99,
+      "meal": "high-fat/high-calorie meal (FDA-style; kcal not restated in paper body)",
+      "citation": "Huestis MA, Smith WB, Leonowens C, Blanchard R, Viaccoz A, Spargo E, Miner NB, Yazar-Klosinski B. MDMA pharmacokinetics: a population and physiologically based pharmacokinetics model-informed analysis. CPT Pharmacometrics Syst Pharmacol. 2025. doi:10.1002/psp4.13282; PMID 39592887",
+      "notes": "MPKF study, single 120 mg MDMA HCl, 2-period crossover, fed n=14 / fasted n=15. Median Tmax 4.0 h [2.0-6.0] fed vs 2.1 h [2.0-8.0] fasted; 'not tested for statistical significance'. GLSM ratios Cmax 0.97 (0.92-1.01), AUCinf 0.99 (0.94-1.04). MDA Tmax 7.0 vs 6.0 h. PopPK: ka 49% slower fed vs light-breakfast reference. Sponsor-authored (MAPS/Lykos)."
+    },
+    {
+      "substance": "Psilocybin",
+      "product": null,
+      "tmaxFastedMin": null,
+      "tmaxFedMin": null,
+      "tmaxDelayMin": null,
+      "cmaxRatio": null,
+      "aucRatio": null,
+      "meal": null,
+      "citation": "Otto ME, van der Heijden KV, Schoones JW, van Esdonk MJ, Borghans LGJM, Jacobs GE, van Hasselt JGC. Clinical pharmacokinetics of psilocin after psilocybin administration: a systematic review and post-hoc analysis. Clin Pharmacokinet. 2025. doi:10.1007/s40262-024-01454-4; PMID 39812743",
+      "notes": "Systematic review (19 publications, 12 datasets): 'Whether the bioavailability is impacted by food is still unknown' and a dedicated food-effect PK study is required; cross-study comparison showed 'no clear sign' of a food effect on dose-normalized exposure. No fed/fasted Tmax exists. PubMed searched for psilocybin + food/fed/fasted/meal."
+    },
+    {
+      "substance": "LSD",
+      "product": null,
+      "tmaxFastedMin": null,
+      "tmaxFedMin": null,
+      "tmaxDelayMin": null,
+      "cmaxRatio": null,
+      "aucRatio": null,
+      "meal": null,
+      "citation": null,
+      "notes": "No fed/fasted PK study found. PubMed: '\"lysergic acid diethylamide\"[Title] AND (food OR fasting) AND pharmacokinetic*' = 0 hits; broader psychedelic + food search returned only lurasidone papers abbreviated 'LSD'. No FDA label exists."
+    },
+    {
+      "substance": "THC",
+      "product": "Marinol",
+      "tmaxFastedMin": 104,
+      "tmaxFedMin": 335,
+      "tmaxDelayMin": 232,
+      "cmaxRatio": 1.067,
+      "aucRatio": 2.888,
+      "meal": "FDA standard high-fat, high-calorie meal started 30 min pre-dose, finished within 5 min of dosing",
+      "citation": "Oh DA, Parikh N, Khurana V, Cognata Smith C, Vetticaden S. Effect of food on the pharmacokinetics of dronabinol oral solution versus dronabinol capsules in healthy volunteers. Clin Pharmacol. 2017;9:9-17. doi:10.2147/CPAA.S119676; PMID 28138268. Corroborated by Marinol FDA label 12.3, DailyMed setid 628f9609-6583-49be-be77-b64cfbc46fd7",
+      "notes": "Dronabinol 5 mg capsule, n=54 crossover. Mean (SD) Tmax 1.73 (1.74) h fasted vs 5.59 (3.24) h fed. GLSM fed/fasted: Cmax 106.73% (91.36-124.69), AUC0-t 246.43%, AUCinf 288.78%. Label: 'high-fat (59 grams of fat ...), high calorie meal (approximately 950 calories) ... 4-hour delay in mean Tmax and 2.9-fold increase in total exposure (AUCinf), but Cmax was not significantly changed.' 11-OH-THC Tmax 1.91 -> 5.95 h. Sesame-oil capsule; lipid-formulation effect, not generalizable."
+    },
+    {
+      "substance": "THC",
+      "product": "Syndros",
+      "tmaxFastedMin": null,
+      "tmaxFedMin": null,
+      "tmaxDelayMin": 300,
+      "cmaxRatio": null,
+      "aucRatio": null,
+      "meal": "high-fat (59 g fat, ~50% of calories), high-calorie (~950 kcal) meal",
+      "citation": "Syndros FDA label, section 12.3; DailyMed setid 3cdcb4f5-5af9-4ff7-b535-2a5cf4c6da89",
+      "notes": "Label: 'food resulted in approximately a 2.5-fold increase in total exposure (AUCinf) and approximately a 5 hour delay in median Tmax. Food also decreased Cmax by approximately 20%.' Stated approximately, so ratios left null (≈0.8 Cmax, ≈2.5 AUC). The label's fasted median Tmax of 1.0 h [0.5-4.0] comes from a separate replicate-dose study, so it is not paired here. Oh 2017 reports a fed oral-solution mean Tmax of 7.67 h but had no fasted solution arm."
+    },
+    {
+      "substance": "Gabapentin",
+      "product": null,
+      "tmaxFastedMin": 234,
+      "tmaxFedMin": 168,
+      "tmaxDelayMin": 0,
+      "cmaxRatio": 1.36,
+      "aucRatio": 1.11,
+      "meal": "high-protein meal: 80 g protein (4.1 g Phe, 8.2 g Leu, 4.2 g Ile), 52 g carbohydrate, 9 g fat; NOT the FDA high-fat meal",
+      "citation": "Gidal BE, Maly MM, Budde J, Lensmeyer GL, Pitterle ME, Jones JC. Effect of a high-protein meal on gabapentin pharmacokinetics. Epilepsy Res. 1996;23(1):71-76. doi:10.1016/0920-1211(95)00051-8; PMID 8925804. Also Neurontin FDA label 12.3, DailyMed setid 97935fd9-1d4a-43b6-a5d9-de994591187b",
+      "notes": "Stored as 0, not the measured -66: the one fed/fasted Tmax points earlier, not significantly (P=0.10), after a high-protein meal rather than the FDA high-fat one, so the defensible statement is that food does not delay it. Full text CLOSED (papers cache); values from abstract only. 600 mg single dose, n=10. 'Tmax tended to be shorter (3.9 +/- 1.8 vs 2.8 +/- .35 h, P = 0.10)'; Cmax +36% (P=0.002); AUC +11% (NS). Attributed to amino-acid trans-stimulation of System-L transport, so it may not transfer to a fat-heavy meal. Neurontin label: 'Food has only a slight effect on the rate and extent of absorption of gabapentin (14% increase in AUC and Cmax)' with no Tmax. Recommend applying NO onset shift for gabapentin: the only Tmax number points earlier, non-significantly."
+    },
+    {
+      "substance": "Pregabalin",
+      "product": null,
+      "tmaxFastedMin": 90,
+      "tmaxFedMin": 180,
+      "tmaxDelayMin": 90,
+      "cmaxRatio": null,
+      "aucRatio": null,
+      "meal": "unspecified 'food' (label does not describe the meal)",
+      "citation": "Lyrica FDA label, section 12.3; DailyMed setid 60185c88-ecfd-46f9-adb9-b97c6b00a553",
+      "notes": "Label: fasting 'peak plasma concentrations occur within 1.5 hours'; with food 'a decrease in Cmax of approximately 25% to 30% and an increase in Tmax to approximately 3 hours ... no clinically relevant effect on the total absorption'. The 90 min fasted figure is the label's upper bound ('within'), so the 90 min delay is approximate. Cmax ratio given only as a 25-30% range, so null."
+    },
+    {
+      "substance": "Zolpidem",
+      "product": null,
+      "tmaxFastedMin": 84,
+      "tmaxFedMin": 132,
+      "tmaxDelayMin": 48,
+      "cmaxRatio": 0.75,
+      "aucRatio": 0.85,
+      "meal": "dose 20 min after a meal (meal composition not stated)",
+      "citation": "Ambien (zolpidem tartrate IR) FDA label, section 12.3; DailyMed setid 747949c5-2c91-4909-8a07-71b6826f8e97",
+      "notes": "10 mg, 30 healthy males. Label: 'with food, mean AUC and Cmax were decreased by 15% and 25%, respectively, while mean Tmax was prolonged by 60% (from 1.4 to 2.2 hr).' Ratios are 1 minus the stated decreases."
+    },
+    {
+      "substance": "Zolpidem",
+      "product": "Ambien CR",
+      "tmaxFastedMin": 120,
+      "tmaxFedMin": 240,
+      "tmaxDelayMin": 120,
+      "cmaxRatio": 0.7,
+      "aucRatio": 0.77,
+      "meal": "dose within 30 min after a meal (composition not stated)",
+      "citation": "Ambien CR FDA label, section 12.3; DailyMed setid 2d934da3-bd77-4470-e063-6294a90a64f5",
+      "notes": "12.5 mg, 45 healthy subjects. Label: 'with food, mean AUC and Cmax were decreased by 23% and 30%, respectively, while median Tmax was increased from 2 hours to 4 hours.'"
+    },
+    {
+      "substance": "Modafinil",
+      "product": null,
+      "tmaxFastedMin": null,
+      "tmaxFedMin": null,
+      "tmaxDelayMin": 60,
+      "cmaxRatio": null,
+      "aucRatio": null,
+      "meal": "unspecified 'food'",
+      "citation": "Provigil FDA label, section 12.3; DailyMed setid 0391f182-1958-9fef-a944-53b229ce99e7",
+      "notes": "Label: 'peak plasma concentrations occurring at 2-4 hours'; 'Food has no effect on overall PROVIGIL bioavailability; however, time to reach peak concentration (tmax) may be delayed by approximately one hour if taken with food.' Fasted Tmax is a 2-4 h range, so tmaxFastedMin/tmaxFedMin null. No paired fed/fasted Tmax or Cmax ratio published (PubMed 'modafinil food pharmacokinetics fed fasted' = 0 hits)."
+    },
+    {
+      "substance": "Alcohol",
+      "product": null,
+      "tmaxFastedMin": null,
+      "tmaxFedMin": null,
+      "tmaxDelayMin": null,
+      "cmaxRatio": null,
+      "aucRatio": null,
+      "meal": "standard breakfast (DiPadova et al. data; composition not restated by Levitt)",
+      "citation": "Levitt DG. PKQuest: measurement of intestinal absorption and first pass metabolism - application to human ethanol pharmacokinetics. BMC Clin Pharmacol. 2002;2:4. doi:10.1186/1472-6904-2-4",
+      "notes": "Carries no delay: alcohol is drawn by the zero-order curve, which the app leaves unshifted by a meal (its absorption rate is fitted to the fasted arm; see zero-order-kinetics.json). Kept for the fed/fasted half-times. Verified from full text. Absorption fitted as a Hill function A*t^H/(t^H+T^H), not first-order ka. At the SAME dose (0.3 g/kg, drunk over 20 min): fasted half-time 26.84 min (Hill 2.6), fed 48.28 min (Hill 1.87). At 0.15 g/kg with breakfast (drunk over 10 min): fed half-time 34 min; there is no fasted arm at 0.15 g/kg, so 26.8 vs 34 is a cross-dose comparison. Fasted: 'almost completely absorbed within 50 minutes'; fed: '3 or more hours for complete absorption'. First-pass metabolism (bioavailability = 1 - FPM): fasted 0.3 g/kg ~0 (FPM 'close to zero'); fed 0.3 g/kg 7% (PA ~480 of 520 mmol); fed 0.15 g/kg 38% (PA 160 of 260 mmol). Model: a meal lowers peak BAC ~4-fold at one-beer intake. No Tmax values given numerically. Data are re-analysis of DiPadova et al. (not read directly).",
+      "fedAbsHalfTimeMin": 48.28,
+      "fastedAbsHalfTimeMin": 26.84
+    },
+    {
+      "substance": "Caffeine",
+      "product": null,
+      "tmaxFastedMin": 29,
+      "tmaxFedMin": 69,
+      "tmaxDelayMin": 40,
+      "cmaxRatio": null,
+      "aucRatio": null,
+      "meal": "FDA high-fat, high-calorie breakfast (~1000 kcal); light meal (~500 kcal) arm also run",
+      "citation": "Wildgrube T, Link NA, Ritucci B, Grimm M, Engeli S, Weitschies W, Schick P. Applicability of methylliberine as a salivary marker under postprandial conditions. Int J Pharm X. 2026;12:100584. doi:10.1016/j.ijpx.2026.100584; PMID 42370028",
+      "notes": "SALIVARY caffeine, 25 mg in a rapidly disintegrating compression-coated tablet, n=12 3-way crossover. Mean Tmax 29 +/- 12 min fasted, 65 +/- 35 light meal, 69 +/- 46 high-fat (significant). Mean Cmax 842 fasted vs 534 ng/mL high-fat; AUC0-24h 6952 vs 5954 (not significant). Ratios not reported by authors (computed from means would be ~0.63 and ~0.86), so null. A tablet, not a beverage; coffee drunk with a meal may behave differently."
+    }
+  ]
+}

@@ -104,6 +104,8 @@ struct QuickLogView: View {
 
     /// Measured height of the cover — bounds the dock's compact detent.
     @State private var containerHeight: CGFloat = 0
+    /// The dock's live height, which the cards scroll clear of.
+    @State private var dockGeometry = DockSheetGeometry()
 
     /// Every derived dataset the screen renders lives on this `@Observable`
     /// model, not inline on the view struct. Storing the (array-of-`Substance`)
@@ -156,9 +158,6 @@ struct QuickLogView: View {
                 QuickLogCardList(content: content, tray: tray)
                     .padding(.horizontal)
                     .padding(.top, Spacing.xs)
-                    // Clear the dock sheet's peek detent so the last cards can
-                    // scroll above it.
-                    .padding(.bottom, QuickLogDockMetrics.peekHeight + 20)
                     // With a dose editor open in the dock, hide the cards behind it
                     // from assistive tech so VoiceOver/Voice Control focus the
                     // editor's controls instead of interleaving the dimmed list.
@@ -167,6 +166,10 @@ struct QuickLogView: View {
             // Staging haptics live in a leaf, not this body: reading the tick
             // counters here would re-run the whole `QuickLogView.body` on
             // every stage/increment.
+            .modifier(DockClearance(geometry: dockGeometry))
+            .onScrollPhaseChange { _, phase in
+                if phase == .interacting { dockGeometry.requestMinimize() }
+            }
             .background(StagingHaptics(tray: tray))
             #if canImport(UIKit)
                 .background(CoverAccessibilityUnmasker())
@@ -323,6 +326,7 @@ struct QuickLogView: View {
                 tray: tray,
                 content: content,
                 containerHeight: containerHeight,
+                geometry: dockGeometry,
                 searchText: $searchText,
                 searchActive: $searchActive,
                 showCustomForm: $showCustomForm,
@@ -452,6 +456,7 @@ struct QuickLogView: View {
         let sharedTime = tray.time.resolved
         let tags = Array(tray.tags)
         let location = tray.location
+        let meal = tray.meal
         let fixedOrder = quickLogFixedOrder
         let context = modelContext
         let recentEntries = Array(allEntries)
@@ -493,6 +498,7 @@ struct QuickLogView: View {
                     latitude: location?.latitude,
                     longitude: location?.longitude,
                     hadGrapefruit: item.hadGrapefruit ? true : nil,
+                    meal: item.route == .oral ? meal : nil,
                     isUnknownDose: item.isUnknownAmount,
                     volumeML: item.isUnknownAmount ? nil : item.volumeML,
                     abv: item.isUnknownAmount ? nil : item.abv,

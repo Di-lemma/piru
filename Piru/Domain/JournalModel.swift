@@ -191,6 +191,7 @@ final class JournalModel {
         hasher.combine(entry.isomer ?? "")
         hasher.combine(entry.releaseForm ?? "")
         hasher.combine(entry.displayNameSnapshot ?? "")
+        hasher.combine(entry.mealRaw ?? "")
         return hasher.finalize()
     }
 

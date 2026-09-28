@@ -14,7 +14,6 @@ struct StagedDoseEditor: View {
     @Binding var item: StagedDose
     let namespace: Namespace.ID
     let onCollapse: () -> Void
-    let onRemove: () -> Void
 
     @State private var model = StagedDoseEditorModel()
 
@@ -69,7 +68,6 @@ struct StagedDoseEditor: View {
                 morphID: item.id,
                 namespace: namespace,
                 onCollapse: onCollapse,
-                onRemove: onRemove,
             )
 
             inputBlock
@@ -410,21 +408,15 @@ private struct DrinkPresetMenu: View {
     var body: some View {
         Menu {
             ForEach(presets) { preset in
-                Button {
-                    onSelect(preset)
-                } label: {
-                    // Details ride in the title: pull-down menus don't render
-                    // subtitles (UIMenuElement.subtitle is context-menu-only),
-                    // so a second Text is silently dropped here.
-                    if selectedName?.caseInsensitiveCompare(preset.name) == .orderedSame {
-                        Label {
-                            Text(verbatim: "\(preset.emoji) \(preset.name) · \(preset.detailLabel)")
-                        } icon: {
-                            Image(systemName: "checkmark")
-                        }
-                    } else {
-                        Text(verbatim: "\(preset.emoji) \(preset.name) · \(preset.detailLabel)")
-                    }
+                // A Toggle, so the menu draws the selection in its own checkmark
+                // column; name as the title and the details as a subtitle, so a
+                // long "Beer · 330 mL · 5%" doesn't wrap mid-detail.
+                Toggle(isOn: Binding(
+                    get: { selectedName?.caseInsensitiveCompare(preset.name) == .orderedSame },
+                    set: { _ in onSelect(preset) },
+                )) {
+                    Text(verbatim: "\(preset.emoji) \(preset.name)")
+                    Text(verbatim: preset.detailLabel)
                 }
             }
             Divider()

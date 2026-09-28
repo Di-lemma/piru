@@ -174,6 +174,12 @@ enum SubstanceLibrary {
         SubstanceStore.shared.productDuration(forProduct: name)
     }
 
+    /// How a full meal moves an oral dose of `nameOrAlias` — see
+    /// ``SubstanceStore/foodEffect(forSubstanceName:product:)``.
+    static func foodEffect(for nameOrAlias: String, product: String?) -> FoodEffect? {
+        SubstanceStore.shared.foodEffect(forSubstanceName: nameOrAlias, product: product)
+    }
+
     /// ``formTitle(for:)`` with the facets a logged dose recorded, rather than the
     /// ones its name implies — see ``SubstanceStore/formTitle(forNameOrAlias:isomer:release:)``.
     static func formTitle(for nameOrAlias: String, isomer: String?, release: String?) -> String? {

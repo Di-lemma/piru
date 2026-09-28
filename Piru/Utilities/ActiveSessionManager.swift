@@ -376,8 +376,10 @@ final class ActiveSessionManager {
         if PKResolver.isDepot(entry: entry) { return nil }
         // A named ER product (Concerta, Adderall XR) opens its active-session window
         // from its own authored envelope rather than getting no window at all.
-        if let productDuration = entry.productDuration { return productDuration }
-        return resolveDuration(substance: substance, route: entry.route, namesUnmodeledForm: entry.namesUnmodeledForm)
+        if let productDuration = entry.productDuration { return entry.applyingMeal(to: productDuration) }
+        return entry.applyingMeal(
+            to: resolveDuration(substance: substance, route: entry.route, namesUnmodeledForm: entry.namesUnmodeledForm),
+        )
     }
 
     static func resolveDuration(

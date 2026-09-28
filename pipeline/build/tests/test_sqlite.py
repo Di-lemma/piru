@@ -3984,6 +3984,34 @@ class TestSignatureGates(unittest.TestCase):
                 self.assertEqual(vmax, 95)
                 self.assertEqual(reference_weight, 60)
 
+    def test_food_effects_are_cited_and_carry_one_generic(self):
+        """Every row moves a curve the user sees, so every row is cited and none is
+        negative (a meal cannot empty the stomach sooner). Exactly one generic row
+        (NULL substance) stands in for everything unstudied.
+
+        Adderall XR: Tmax 5.2 h fasted -> 7.7 h after a high-fat meal for
+        d-amphetamine (Adderall XR label 12.3, DailyMed setid
+        aff45863-ffe1-4d4f-8acf-c7081512a6c0). Methylphenidate IR: median Tmax
+        2.0 h fed and fasted (Katzman 2020, doi:10.1097/JCP.0000000000001277), the
+        row that proves a 0 overrides the generic delay.
+        """
+        rows = self.db.execute(
+            "SELECT s.canonical_name, f.product, f.tmax_delay_min, f.citation_id"
+            "  FROM food_effects f LEFT JOIN substances s ON s.id = f.substance_id"
+        ).fetchall()
+        generic = [r for r in rows if r[0] is None]
+        self.assertEqual(len(generic), 1, f"expected one generic food-effect row: {generic}")
+        for name, product, delay, citation_id in rows:
+            label = f"{name or 'generic'}/{product or 'base'}"
+            self.assertGreaterEqual(delay, 0, f"{label}: negative delay")
+            self.assertIsNotNone(citation_id, f"{label}: uncited food effect")
+        by_key = {(r[0], r[1]): r[2] for r in rows}
+        self.assertEqual(by_key.get(("Amphetamine", "adderall xr")), 150)
+        self.assertEqual(by_key.get(("Methylphenidate", None)), 0)
+        self.assertNotIn(
+            ("Alcohol", None), by_key, "alcohol's curve is zero-order and takes no onset delay"
+        )
+
     def test_zero_order_bioavailability_is_not_duplicated(self):
         """F lives in `pk_routes` like every other PK field, and the app pairs it with
         these rows at read time. A bioavailability column here would be a second answer

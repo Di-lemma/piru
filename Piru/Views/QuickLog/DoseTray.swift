@@ -427,6 +427,9 @@ final class DoseTrayModel {
     var time: TrayTime = .now
     var tags: Set<String> = []
     var location: PickedLocation?
+    /// What was eaten before this dose. Tray-wide like the location, but committed
+    /// only onto oral doses: it is the stomach an oral dose waits in.
+    var meal: MealState?
     /// Every staged dose the user has opened inline — multiple can stay
     /// expanded at once, so a complex stack can be composed in one pass.
     var expandedItemIDs: Set<UUID> = []

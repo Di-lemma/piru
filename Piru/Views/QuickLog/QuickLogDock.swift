@@ -41,14 +41,26 @@ enum QuickLogDockMetrics {
         .height(peekHeight)
     }
     /// Detents while nothing is staged: the floating bar, browse height, and
-    /// full height for search. `.medium` must stay a member of *every* detent
-    /// set — `presentationBackgroundInteraction(.enabled(upThrough: .medium))`
-    /// resolves against the set, and without the member the system falls back
-    /// to a fully modal (dimmed, touch-blocking) presentation. The
-    /// fit-to-content compact detent joins once the tray holds doses (see
-    /// ``QuickLogDock/refreshDetents()``).
+    /// full height for search. The fit-to-content compact detent joins once the
+    /// tray holds doses (see ``QuickLogDock/refreshDetents()``).
     static var emptyDetents: Set<PresentationDetent> {
         [peekDetent, .medium, .large]
+    }
+}
+
+// MARK: - Clearance
+
+/// Bottom margin on the cards behind the dock, tracking the dock's height, so
+/// the last card can always scroll above it; a fixed peek-height margin left
+/// cards under a staged dock unreachable. Its own modifier so only this reads
+/// the live height, and stepped to 16 pt so a detent drag doesn't re-lay the
+/// list out every frame.
+struct DockClearance: ViewModifier {
+    let geometry: DockSheetGeometry
+
+    func body(content: Content) -> some View {
+        let dock = max(geometry.height, QuickLogDockMetrics.peekHeight)
+        content.contentMargins(.bottom, (dock / 16).rounded(.up) * 16 + 20, for: .scrollContent)
     }
 }
 
@@ -61,17 +73,29 @@ enum DockDetentPolicy {
     /// member of the staged set and not the compact detent being re-minted;
     /// otherwise the dock lands on `compact` — unless a row is open for
     /// editing, in which case it lands on `.medium`, because compact fits
-    /// collapsed rows only (landing there is what collapses them).
+    /// collapsed rows only (landing there is what collapses them). A stack tall
+    /// enough that compact already outgrows `.medium` opens its row at `.large`
+    /// instead, since `.medium` would be a shrink.
+    ///
+    /// The peek height doubles as the *summary* stop once doses are staged
+    /// (``DockSummaryBar``). A dock resting there stays there as more doses are
+    /// staged (`keepsSummary`), so a long list of favorites can be tapped
+    /// through without the tray covering it; the first dose staged from the
+    /// bare pill still grows the dock to compact, to show where it went.
     static func stagedSelection(
         current: PresentationDetent,
         wasCompact: Bool,
         compact: PresentationDetent,
         hasExpandedRows: Bool,
+        compactOutgrowsMedium: Bool = false,
+        keepsSummary: Bool = false,
     ) -> PresentationDetent {
+        let atSummary = current == QuickLogDockMetrics.peekDetent
         let staged: Set<PresentationDetent> = [compact, .medium, .large]
-        let needsMove = wasCompact || !staged.contains(current)
+        let needsMove = wasCompact || atSummary || !staged.contains(current)
         guard needsMove else { return current }
-        return hasExpandedRows ? .medium : compact
+        if hasExpandedRows { return compactOutgrowsMedium ? .large : .medium }
+        return atSummary && keepsSummary ? current : compact
     }
 }
 
@@ -93,6 +117,25 @@ final class DockSheetGeometry {
     /// Combined with the tray's emptiness at the read sites: the bare face
     /// only exists for an empty tray (see ``QuickLogDock/isBare``).
     private(set) var isHeightBare = true
+
+    /// Whether the staged stack is taller than the compact detent may grow. The
+    /// dock's content then scrolls, and the sheet lets a swipe inside it scroll
+    /// rather than resize (the grabber, search bar and chips still resize).
+    private(set) var compactOverflows = false
+
+    func setCompactOverflows(_ overflows: Bool) {
+        guard compactOverflows != overflows else { return }
+        compactOverflows = overflows
+        Logger.dockGeometry.debug("compactOverflows=\(overflows, privacy: .public)")
+    }
+
+    /// Bumped by the cards behind when the user starts scrolling them; the dock
+    /// answers by folding to its summary (``QuickLogDock``).
+    private(set) var minimizeRequests = 0
+
+    func requestMinimize() {
+        minimizeRequests &+= 1
+    }
 
     func update(height: CGFloat) {
         if self.height != height { self.height = height }
@@ -131,6 +174,8 @@ struct QuickLogDock: View {
     /// Height of the quick-log cover — caps the compact detent so a tall
     /// stack never pushes it past medium.
     var containerHeight: CGFloat
+    /// Owned by the cover, which clears the cards behind the dock by its height.
+    let geometry: DockSheetGeometry
     @Binding var searchText: String
     @Binding var searchActive: Bool
     @Binding var detent: PresentationDetent
@@ -154,9 +199,8 @@ struct QuickLogDock: View {
         tray.isEmpty && geometry.isHeightBare
     }
 
-    /// Live sheet geometry — an `@Observable` box so per-frame drag updates
-    /// don't re-evaluate this whole body (see ``DockSheetGeometry``).
-    @State private var geometry = DockSheetGeometry()
+    // Live sheet geometry — an `@Observable` box so per-frame drag updates
+    // don't re-evaluate this whole body (see ``DockSheetGeometry``).
 
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
@@ -250,6 +294,7 @@ struct QuickLogDock: View {
             // the commit bar (panels opening), and staging changes all funnel
             // into this one value.
             .onChange(of: compactHeightValue) { handleCompactHeightChanged() }
+            .onChange(of: geometry.minimizeRequests) { minimizeToSummary() }
             // Re-apply the detent set on return to the foreground.
             //
             // Belt to ``SheetHostBox``'s braces: that fix makes the controller
@@ -318,7 +363,9 @@ struct QuickLogDock: View {
             // content scrolls only at the tallest detent. At accessibility
             // sizes a staged card can outgrow the compact detent, so the
             // content scrolls there too rather than sit under the commit bar.
-            .scrollDisabled(detent != .large && !dynamicTypeSize.isAccessibilitySize)
+            // A stack taller than the compact cap scrolls in place too, or its
+            // last rows sit under the warnings until the dock is dragged full.
+            .scrollDisabled(detent != .large && !dynamicTypeSize.isAccessibilitySize && !geometry.compactOverflows)
             .scrollDismissesKeyboard(.interactively)
             // The commit bar lives in the scroll's bottom safe-area bar with
             // the soft edge effect — content passes beneath it instead of
@@ -361,6 +408,21 @@ struct QuickLogDock: View {
         // height → flag → layout → height — and the two frames then top-aligned
         // to the same place anyway, so the branch bought nothing but the loop.
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        // The summary replaces the whole face at the peek height with doses
+        // staged, drawn where the search pill sits; the face underneath keeps
+        // its layout, so the swap moves nothing.
+        .opacity(isSummary ? 0 : 1)
+        .allowsHitTesting(!isSummary)
+        .accessibilityHidden(isSummary)
+        .overlay(alignment: .top) {
+            if isSummary {
+                DockSummaryBar(tray: tray, onExpand: expandFromSummary, onCommit: onCommit)
+                    .padding(.horizontal, Spacing.xxl)
+                    .padding(.top, Spacing.xxl)
+                    .transition(.opacity)
+            }
+        }
+        .animation(.snappy, value: isSummary)
         // At the small detents the sheet is barely taller than the
         // home-indicator inset, so the content claims it rather than being
         // squeezed above it. Keyed on the tray being empty, not on ``isBare``:
@@ -414,6 +476,26 @@ struct QuickLogDock: View {
         // root — attached in here it competes with the nested `.sheet`/
         // `.fullScreenCover` wrappers layered on top of this view. The
         // onChange/onAppear behavior handlers live on `dockContent`.
+    }
+
+    /// Doses staged and the sheet down at the peek height: the summary face.
+    private var isSummary: Bool {
+        !tray.isEmpty && geometry.isHeightBare
+    }
+
+    private func expandFromSummary() {
+        guard let compactDetent = bookkeeping.compactDetent else { return }
+        moveDetent(to: compactDetent, height: bookkeeping.compactValue)
+    }
+
+    /// Scrolling the cards behind a resting compact tray folds it to the
+    /// summary, the way Safari's toolbar minimizes, so the cards it covered
+    /// come into reach. An open editor or search keeps the dock where it is.
+    private func minimizeToSummary() {
+        guard !tray.isEmpty, !searchActive, tray.expandedItemIDs.isEmpty,
+              let compactDetent = bookkeeping.compactDetent, detent == compactDetent
+        else { return }
+        moveDetent(to: QuickLogDockMetrics.peekDetent)
     }
 
     private func handleSearchFocusChanged() {
@@ -485,10 +567,16 @@ struct QuickLogDock: View {
     }
 
     /// The fit-to-content compact height: search block + collapsed staged
-    /// card + commit bar, capped below medium so a tall stack degrades
-    /// gracefully. `.height` detents measure *above* the home-indicator
+    /// card + commit bar (whose measured height includes the warning lines),
+    /// capped so a tall stack scrolls instead of covering the screen. `.height` detents measure *above* the home-indicator
     /// inset (the system adds it below), so the inset is not budgeted here.
     private func compactHeight(stagedCard: CGFloat) -> CGFloat {
+        let (raw, cap) = compactHeightBudget(stagedCard: stagedCard)
+        return min(raw, cap).rounded()
+    }
+
+    /// The compact height the content wants, and the most it may have.
+    private func compactHeightBudget(stagedCard: CGFloat) -> (raw: CGFloat, cap: CGFloat) {
         // Scroll-content vertical padding around the staged card (8 top + 12 bottom).
         let contentPadding: CGFloat = 20
         // Chips row (12 + chip) + Log button (14 + control) until the bar has
@@ -506,11 +594,12 @@ struct QuickLogDock: View {
         var raw = QuickLogDockMetrics.searchBlockHeight + contentPadding
         raw += stagedCard
         raw += bar
-        // At accessibility sizes the card and bar need most of the screen;
-        // held to half, the bar covered the card's own controls.
-        let share: CGFloat = dynamicTypeSize.isAccessibilitySize ? 0.85 : 0.5
+        // Held to half, three staged rows with their meal and sleep lines
+        // scrolled under the bar's edge blur; at accessibility sizes the card
+        // and bar need most of the screen.
+        let share: CGFloat = dynamicTypeSize.isAccessibilitySize ? 0.85 : 0.72
         let cap: CGFloat = containerHeight > 0 ? containerHeight * share - 40 : 420
-        return min(raw, cap).rounded()
+        return (raw, cap)
     }
 
     /// Swap the detent set for the tray's current shape, keeping the
@@ -526,6 +615,7 @@ struct QuickLogDock: View {
     /// individual handlers.
     private func refreshDetents(onSettled: (() -> Void)? = nil) {
         if tray.isEmpty {
+            geometry.setCompactOverflows(false)
             bookkeeping.compactDetent = nil
             bookkeeping.compactValue = 0
             let target = QuickLogDockMetrics.emptyDetents
@@ -545,18 +635,23 @@ struct QuickLogDock: View {
             // run before the observer's callback has delivered the estimate
             // for the mutation that triggered it (e.g. staging at peek), and
             // minting from the stale mirror would step the sheet twice.
-            let newValue = compactHeight(
+            let budget = compactHeightBudget(
                 stagedCard: TrayDerivedObserver.estimatedStagedCardHeight(count: tray.staged.count),
             )
+            let newValue = min(budget.raw, budget.cap).rounded()
+            geometry.setCompactOverflows(budget.raw > budget.cap)
             let newCompact = PresentationDetent.height(newValue)
             bookkeeping.compactDetent = newCompact
             bookkeeping.compactValue = newValue
-            let target: Set<PresentationDetent> = [newCompact, .medium, .large]
+            let target: Set<PresentationDetent> = [QuickLogDockMetrics.peekDetent, newCompact, .medium, .large]
             let selection = DockDetentPolicy.stagedSelection(
                 current: detent,
                 wasCompact: wasCompact,
                 compact: newCompact,
                 hasExpandedRows: !tray.expandedItemIDs.isEmpty,
+                // `.medium` is about half the container.
+                compactOutgrowsMedium: containerHeight > 0 && newValue > containerHeight * 0.5,
+                keepsSummary: tray.staged.count > 1,
             )
             applyDetents(
                 target,
@@ -802,6 +897,13 @@ struct QuickLogDock: View {
             }
         }
         guard let compactDetent = bookkeeping.compactDetent else { return }
+        if newValue == QuickLogDockMetrics.peekDetent, !tray.isEmpty, !tray.expandedItemIDs.isEmpty {
+            Task { @MainActor in
+                // The summary shows no rows at all.
+                withAnimation(.snappy) { tray.expandedItemIDs.removeAll() }
+            }
+            return
+        }
         // The expansion side effects run a turn later: mutating the sheet's
         // content inside the same transaction as the detent change cancels
         // the sheet's settle animation — the selection lands on the new

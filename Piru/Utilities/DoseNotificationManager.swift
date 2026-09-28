@@ -154,17 +154,18 @@ enum DoseNotificationManager {
         return (substance, duration, displayName)
     }
 
-    /// The dose moved in time (edit, retime, move-to-session): wellness and
-    /// phase reminders are keyed to the old timestamp, so cancel those and
-    /// reschedule from the new time. A dose moved into the past schedules
+    /// The dose moved in time (edit, retime, move-to-session), or its logged meal
+    /// changed and moved its phases: wellness and phase reminders are keyed to the
+    /// old timestamp, so cancel those and reschedule from the new time. A dose moved into the past schedules
     /// nothing — which is the fix for a backdated dose still pinging
     /// "Stay hydrated" at its original fire times.
     static func doseRescheduled(
         entry: DoseEntry,
         previousTimestamp: Date,
+        mealChanged: Bool = false,
         recentEntries: [DoseEntry] = [],
     ) {
-        guard previousTimestamp != entry.timestamp else { return }
+        guard previousTimestamp != entry.timestamp || mealChanged else { return }
         cancelDoseNotifications(entryID: entry.id, timestamp: previousTimestamp)
         scheduleTimingReminders(for: entry, recentEntries: recentEntries)
     }

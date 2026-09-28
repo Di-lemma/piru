@@ -33,7 +33,7 @@ private enum Fields {
         field("timestamp", \.timestamp), field("notes", \.notes), field("tagsRaw", \.tagsRaw),
         field("session") { $0.session?.id == $1.session?.id },
         field("isBackgroundMed", \.isBackgroundMed), field("locationName", \.locationName),
-        field("latitude", \.latitude), field("longitude", \.longitude), field("hadGrapefruit", \.hadGrapefruit),
+        field("latitude", \.latitude), field("longitude", \.longitude), field("hadGrapefruit", \.hadGrapefruit), field("mealRaw", \.mealRaw),
         field("isApproximate", \.isApproximate), field("isUnknownDose", \.isUnknownDose),
         field("volumeML", \.volumeML), field("abv", \.abv), field("drinkName", \.drinkName),
     ]
@@ -411,7 +411,7 @@ struct ExportRoundTripTests {
             substance: "Alcohol", amount: 13, unit: "g", route: .insufflation, saltForm: "HCl", isomer: "d",
             releaseForm: "XR", productName: "Brand", substanceUID: "uid-alcohol", displayNameSnapshot: "Snapshot",
             timestamp: t0, notes: "dose notes", tags: ["a", "b"], isBackgroundMed: true,
-            locationName: "Park", latitude: 51.5, longitude: -0.12, hadGrapefruit: true, isApproximate: true,
+            locationName: "Park", latitude: 51.5, longitude: -0.12, hadGrapefruit: true, meal: .light, isApproximate: true,
             volumeML: 330, abv: 5, drinkName: "IPA",
         )
         drink.session = session

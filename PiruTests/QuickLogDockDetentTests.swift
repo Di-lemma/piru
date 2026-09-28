@@ -41,6 +41,36 @@ struct QuickLogDockDetentTests {
         #expect(selection == .medium)
     }
 
+    /// Compact can outgrow `.medium` once a tall stack carries its warning
+    /// lines; opening a row then goes up to `.large`, never down to medium.
+    @Test
+    func `an expanded draft past a compact taller than medium lands on large`() {
+        let selection = DockDetentPolicy.stagedSelection(
+            current: compact, wasCompact: true, compact: .height(520), hasExpandedRows: true,
+            compactOutgrowsMedium: true,
+        )
+        #expect(selection == .large)
+    }
+
+    /// At the summary, staging more doses keeps the dock folded so the cards
+    /// behind stay reachable.
+    @Test
+    func `staging at the summary stays at the summary`() {
+        let selection = DockDetentPolicy.stagedSelection(
+            current: peek, wasCompact: false, compact: compact, hasExpandedRows: false, keepsSummary: true,
+        )
+        #expect(selection == peek)
+    }
+
+    /// Opening a row for editing leaves the summary for the editor's height.
+    @Test
+    func `an expanded draft at the summary lands on medium`() {
+        let selection = DockDetentPolicy.stagedSelection(
+            current: peek, wasCompact: false, compact: compact, hasExpandedRows: true, keepsSummary: true,
+        )
+        #expect(selection == .medium)
+    }
+
     @Test
     func `a taller stack at compact re-mints compact`() {
         let taller = PresentationDetent.height(300)
