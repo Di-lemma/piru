@@ -1,9 +1,3 @@
-// Piru/Utilities/PlatformCompat.swift for Android, where the upstream file's #if branches
-// (UIKit, else AppKit) have no case. It follows the file's iOS branches wherever SkipFuseUI
-// provides the same API, which it does for most of UIKit's pasteboard, color and image
-// surface. exclude.txt drops the upstream file; a shim added there fails this build until
-// it is added here.
-
 import SwiftUI
 
 typealias PlatformImage = UIImage
@@ -26,9 +20,9 @@ enum PlatformPasteboard {
     }
 
     /// SkipFuseUI's pasteboard carries text only; an image or a file has no clipboard path here.
-    static func copy(image: UIImage) {}
+    static func copy(image _: UIImage) {}
 
-    static func copy(data: Data, type: String) {}
+    static func copy(data _: Data, type _: String) {}
 }
 
 enum PlatformHaptics {
@@ -102,6 +96,11 @@ extension View {
     }
 
     func readableWidth() -> some View {
+        self
+    }
+
+    /// Compose draws no context-menu preview, so there is no shape to lift.
+    func contextMenuPreviewShape(_: some Shape) -> some View {
         self
     }
 }

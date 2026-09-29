@@ -1,4 +1,8 @@
 # sf_symbol	material_symbol	fill
+1.circle.fill	counter_1	1
+2.circle.fill	counter_2	1
+3.circle.fill	counter_3	1
+4.circle.fill	counter_4	1
 allergens.fill	allergy	1
 applewatch	watch	0
 archivebox	inventory_2	0
@@ -87,6 +91,7 @@ chevron.left.forwardslash.chevron.right	code	0
 chevron.right	chevron_right	0
 chevron.up	expand_less	0
 circle	circle	0
+circle.bottomhalf.filled	radio_button_partial	0
 circle.dashed	motion_photos_off	0
 circle.dotted	radio_button_unchecked	0
 circle.fill	circle	1
