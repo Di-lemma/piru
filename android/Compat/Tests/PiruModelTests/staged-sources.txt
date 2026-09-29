@@ -1,0 +1,27 @@
+# The app's @Model types and the value types they store, compiled with the Android stage's
+# substitutions. Paths are relative to the repository root.
+Shared/Models/CustomDrinkPreset.swift
+Shared/Models/CustomSubstanceRecord.swift
+Shared/Models/CustomUnitPreset.swift
+Shared/Models/DailyDoseItem.swift
+Shared/Models/DoseEntry.swift
+Shared/Models/FavoriteSubstance.swift
+Shared/Models/InventoryItem.swift
+Shared/Models/LabMeasurement.swift
+Shared/Models/NotificationPreferences.swift
+Shared/Models/PiruSchema.swift
+Shared/Models/QuickLogDose.swift
+Shared/Models/RoutineOccurrence.swift
+Shared/Models/Session.swift
+Shared/Models/SessionNote.swift
+Shared/Models/SubstanceColor.swift
+Shared/Models/ToleranceState.swift
+Shared/Models/UserProfileRecord.swift
+Shared/RouteOfAdministration.swift
+Shared/CheckInOffsets.swift
+Shared/MealState.swift
+Shared/ByVolumeDosing.swift
+Shared/Formatting/P3Color.swift
+Shared/Formatting/Oklch.swift
+Shared/Formatting/Oklch+DisplayP3.swift
+Shared/Formatting/DoseFormatting.swift

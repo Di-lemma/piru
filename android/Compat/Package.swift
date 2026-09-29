@@ -68,5 +68,21 @@ let package = Package(
             ],
         ),
         .testTarget(name: "PortableDataTests", dependencies: ["PortableData"]),
+        // The persistence contract (android/README.md), tested against the app's own models as the
+        // Android stage compiles them: StageSources copies each file named in staged-sources.txt
+        // with android/substitutions.txt applied. The settings are the app's, as in PiruCore.
+        .testTarget(
+            name: "PiruModelTests",
+            dependencies: ["PortableData", "os", "CoreLocation", .product(name: "GRDB", package: "GRDB.swift")],
+            exclude: ["staged-sources.txt", "stage_file.py"],
+            swiftSettings: [
+                .defaultIsolation(MainActor.self),
+                .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
+                .enableUpcomingFeature("InferIsolatedConformances"),
+                .enableUpcomingFeature("MemberImportVisibility"),
+            ],
+            plugins: ["StageSources"],
+        ),
+        .plugin(name: "StageSources", capability: .buildTool()),
     ],
 )
