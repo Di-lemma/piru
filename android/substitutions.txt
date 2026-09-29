@@ -125,3 +125,10 @@
 \.buttonStyle\(\.glass\)	.buttonStyle(.bordered)
 \.listStyle\(\.insetGrouped\)	.listStyle(.automatic)
 \.menuStyle\(\.button\)	
+
+# Android's main bundle has neither the Info dictionary nor the resources: the Info values are
+# generated from Piru/Info.plist (Generated/InfoPlist.swift), the resources are copied out of
+# the APK assets (Android/Platform/Resources+Android.swift).
+Bundle\.main\.object\(forInfoDictionaryKey:	AndroidInfoPlist.object(forInfoDictionaryKey:
+Bundle\.main\.infoDictionary	AndroidInfoPlist.infoDictionary
+Bundle\.main\.url\(forResource:	AndroidResources.url(forResource:

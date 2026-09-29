@@ -26,6 +26,7 @@ let package = Package(
         .package(url: "https://github.com/groue/GRDB.swift.git", exact: "7.10.0"),
         .package(url: "https://github.com/apple/swift-crypto.git", exact: "4.5.2"),
         .package(url: "https://github.com/apple/swift-async-algorithms.git", exact: "1.1.4"),
+        .package(url: "https://github.com/skiptools/swift-android-native.git", exact: "1.5.3"),
         .package(path: "@COMPAT_PATH@"),
     ],
     targets: [
@@ -34,6 +35,11 @@ let package = Package(
             dependencies: [
                 .product(name: "SkipFuseUI", package: "skip-fuse-ui"),
                 .product(name: "GRDB", package: "GRDB.swift"),
+                // AndroidResources reads the module's APK assets through it.
+                .product(
+                    name: "AndroidAssetManager", package: "swift-android-native",
+                    condition: .when(platforms: [.android])
+                ),
                 // android/substitutions.txt rewrites `import SwiftData` and `import CryptoKit`
                 // to these.
                 .product(name: "PortableData", package: "Compat"),
