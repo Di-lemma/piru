@@ -1,4 +1,4 @@
-Android ships without skins for now: no Skins menu entries, and every screen wears the piru skin
+Android ships without skins for now: no Skins menu entries, and every screen wears the piru skin; onboarding leaves out the skins step
 
 diff --git a/Piru/Data/Services/SkinStore.swift b/Piru/Data/Services/SkinStore.swift
 index a23d4c9e..eec598f1 100644
@@ -38,7 +38,7 @@ index 99c27f7d..fc03c837 100644
                      Label("Settings", systemImage: "gearshape")
                  }
 diff --git a/Piru/Views/Journal/JournalMenus.swift b/Piru/Views/Journal/JournalMenus.swift
-index 6662d5ed..e538b190 100644
+index d04d496f..7bbe848c 100644
 --- a/Piru/Views/Journal/JournalMenus.swift
 +++ b/Piru/Views/Journal/JournalMenus.swift
 @@ -111,7 +111,9 @@ struct JournalOptionsMenu: View {
@@ -52,3 +52,19 @@ index 6662d5ed..e538b190 100644
                  actionRow(.settings, title: Text("Settings"), systemImage: "gearshape")
              }
              .padding(.bottom, Spacing.md)
+diff --git a/Piru/Views/Onboarding/OnboardingView.swift b/Piru/Views/Onboarding/OnboardingView.swift
+index d9582b92..369388de 100644
+--- a/Piru/Views/Onboarding/OnboardingView.swift
++++ b/Piru/Views/Onboarding/OnboardingView.swift
+@@ -129,7 +129,11 @@ enum OnboardingStep: Int, CaseIterable {
+     }
+ 
+     /// This device's flow.
++    #if os(Android)
++        static let deviceFlow = flow(healthAvailable: HealthKitBodyMass.shared.isAvailable).filter { $0 != .skins }
++    #else
+     static let deviceFlow = flow(healthAvailable: HealthKitBodyMass.shared.isAvailable)
++    #endif
+ 
+     /// The step after this one in `flow`, or `nil` at the end.
+     func next(in flow: [OnboardingStep] = deviceFlow) -> OnboardingStep? {

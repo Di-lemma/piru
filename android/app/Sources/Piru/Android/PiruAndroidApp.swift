@@ -1,7 +1,7 @@
 // The Android entry point, standing in for Piru/PiruApp.swift (excluded: its `@main App`
 // is Darwin-only). Skip's generated MainActivity shows `PiruRootView` and forwards the
-// activity lifecycle to `PiruAppDelegate`. The launch work is PiruApp's, minus what Android
-// has no counterpart for: widgets, Live Activities, the watch, background tasks, HealthKit.
+// activity lifecycle to `PiruAppDelegate`. Launch and lifecycle policy is AppLaunch's, the
+// same calls PiruApp makes; this host adds only what Android owns.
 
 import Foundation
 import SkipFuse
@@ -15,7 +15,8 @@ import SwiftUI
         ContentView()
             .modelContainer(PiruAndroidLaunch.container)
             .task {
-                await PiruAndroidLaunch.afterFirstFrame()
+                await AppLaunch.finishLaunching(container: PiruAndroidLaunch.container)
+                PiruAndroidLaunch.finishedLaunching = true
             }
     }
 }
@@ -36,8 +37,19 @@ import SwiftUI
     }
 
     /* SKIP @bridge */ public func onLaunch() {}
-    /* SKIP @bridge */ public func onResume() {}
-    /* SKIP @bridge */ public func onPause() {}
+
+    /// A return to the foreground. The activity also resumes as it launches, which on iOS is
+    /// the launch task's work, so a resume counts only once the launch passes have run.
+    /* SKIP @bridge */ public func onResume() {
+        guard PiruAndroidLaunch.finishedLaunching else { return }
+        AppLaunch.becameActive(container: PiruAndroidLaunch.container)
+    }
+
+    /* SKIP @bridge */ public func onPause() {
+        guard PiruAndroidLaunch.finishedLaunching else { return }
+        Task { await AppLaunch.enteredBackground(container: PiruAndroidLaunch.container) }
+    }
+
     /* SKIP @bridge */ public func onStop() {}
     /* SKIP @bridge */ public func onDestroy() {}
     /* SKIP @bridge */ public func onLowMemory() {}
@@ -45,6 +57,8 @@ import SwiftUI
 
 @MainActor
 enum PiruAndroidLaunch {
+    static var finishedLaunching = false
+
     static let container: ModelContainer = {
         // iOS creates an app's Documents folder with its sandbox; Android's files/Documents
         // exists only once made, and the stores inside it cannot open without it.
@@ -53,43 +67,6 @@ enum PiruAndroidLaunch {
                 try? FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
             }
         }
-        let storeURL = StoreRecovery.canonicalStoreURL()
-        let container: ModelContainer
-        do {
-            container = try ModelContainer(
-                for: Schema(PiruSchema.models),
-                configurations: ModelConfiguration(url: storeURL, cloudKitDatabase: .none),
-            )
-        } catch {
-            fatalError("Failed to open the journal store: \(error)")
-        }
-        UserProfileStore.shared.configure(container: container)
-        ToleranceStore.shared.configure(container: container)
-        BodyLevelsManager.shared.configure(container: container)
-        CustomSubstanceStore.shared.configure(container: container)
-        CustomUnitStore.shared.configure(container: container)
-        NotificationPreferencesStore.shared.configure(container: container)
-        DoseNotificationManager.modelContainer = container
-        SkinStore.activate()
-        return container
+        return AppLaunch.openStore()
     }()
-
-    /// PiruApp's launch `.task`, for the parts with an Android counterpart.
-    static func afterFirstFrame() async {
-        _ = SubstanceStore.shared.count
-        await SubstanceStore.shared.ensureAllLoaded()
-        SubstanceColorStore.installCatalogTints()
-        SubstanceColorStore.refreshDefaults(in: container.mainContext)
-        _ = SearchHistoryStore.shared.recent
-        SessionService.ensureSessionsPopulated(in: container.mainContext)
-        // Folded routines first, then the reminder horizon rolled forward, as PiruApp does.
-        MedsMigrator.foldRoutinesIfNeeded(context: container.mainContext)
-        await DoseNotificationManager.syncMedRemindersIfNeeded(container: container)
-        #if DEBUG
-            if !DemoData.insertImportFileData(container: container),
-               !DemoData.insertPersonaData(container: container) {
-                DemoData.insertDefaultData(container: container)
-            }
-        #endif
-    }
 }
