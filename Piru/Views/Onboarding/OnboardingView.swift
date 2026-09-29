@@ -1,7 +1,8 @@
 import SwiftUI
 
 /// First-run onboarding — a paged, progressive-commitment flow (welcome → privacy → feature
-/// tour → personalize depth → Apple Health → reminders → import → done).
+/// tour → personalize depth → Apple Health → reminders → import → skins → done). The Apple
+/// Health step appears only where Health data is available; see ``OnboardingStep/deviceFlow``.
 ///
 /// The design follows the health/wellness-app pattern: the earliest screens ask for *nothing*
 /// (value prop, privacy reassurance, a feature tour) so the user is invested before any
@@ -58,7 +59,7 @@ struct OnboardingView: View {
 
     private func advance() {
         let current = path.last ?? .welcome
-        if let next = current.next { path.append(next) } else { finish() }
+        if let next = current.next() { path.append(next) } else { finish() }
     }
 
     private func finish() {
@@ -80,6 +81,7 @@ struct OnboardingView: View {
 private struct OnboardingStepChrome: ViewModifier {
     @Environment(\.onboardingNav) private var nav
     let step: OnboardingStep
+    private let progressSteps = OnboardingStep.progressSteps()
 
     func body(content: Content) -> some View {
         content
@@ -90,13 +92,10 @@ private struct OnboardingStepChrome: ViewModifier {
             .toolbarBackground(.hidden, for: .navigationBar)
         #endif
             .toolbar {
-                if OnboardingStep.progressSteps.contains(step) {
+                if let index = progressSteps.firstIndex(of: step) {
                     ToolbarItem(placement: .principal) {
-                        OnboardingProgressBar(
-                            current: (OnboardingStep.progressSteps.firstIndex(of: step) ?? -1) + 1,
-                            total: OnboardingStep.progressSteps.count,
-                        )
-                        .frame(width: 210)
+                        OnboardingProgressBar(current: index + 1, total: progressSteps.count)
+                            .frame(width: 210)
                     }
                 }
                 // A bail-out on the welcome screen for people who just want in.
@@ -123,13 +122,26 @@ enum OnboardingStep: Int, CaseIterable {
     case skins
     case done
 
-    var next: OnboardingStep? {
-        OnboardingStep(rawValue: rawValue + 1)
+    /// The steps a device walks, in order. Apple Health is offered only where Health data is
+    /// available, so an iPad without Health, a Mac, or Android goes from depth to reminders.
+    static func flow(healthAvailable: Bool) -> [OnboardingStep] {
+        allCases.filter { $0 != .health || healthAvailable }
+    }
+
+    /// This device's flow.
+    static let deviceFlow = flow(healthAvailable: HealthKitBodyMass.shared.isAvailable)
+
+    /// The step after this one in `flow`, or `nil` at the end.
+    func next(in flow: [OnboardingStep] = deviceFlow) -> OnboardingStep? {
+        guard let index = flow.firstIndex(of: self), flow.indices.contains(index + 1) else { return nil }
+        return flow[index + 1]
     }
 
     /// Steps that show the progress bar + back affordance. The bookend welcome/done screens are
     /// deliberately chromeless for a cleaner first and last impression.
-    static let progressSteps: [OnboardingStep] = [.privacy, .tour, .depth, .health, .reminders, .importData, .skins]
+    static func progressSteps(in flow: [OnboardingStep] = deviceFlow) -> [OnboardingStep] {
+        flow.filter { $0 != .welcome && $0 != .done }
+    }
 }
 
 // MARK: - Navigation environment

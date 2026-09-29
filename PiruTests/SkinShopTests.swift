@@ -163,8 +163,11 @@ struct SkinShopTests {
 
     @Test
     func `Onboarding offers skins last, just before it ends`() {
-        #expect(OnboardingStep.skins.next == .done)
-        #expect(OnboardingStep.progressSteps.last == .skins)
+        for healthAvailable in [true, false] {
+            let flow = OnboardingStep.flow(healthAvailable: healthAvailable)
+            #expect(OnboardingStep.skins.next(in: flow) == .done)
+            #expect(OnboardingStep.progressSteps(in: flow).last == .skins)
+        }
     }
 
     // MARK: - The StoreKit test catalog
