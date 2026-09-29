@@ -615,6 +615,7 @@ struct QuickLogDock: View {
     /// individual handlers.
     private func refreshDetents(onSettled: (() -> Void)? = nil) {
         if tray.isEmpty {
+            bookkeeping.summaryHeld = false
             geometry.setCompactOverflows(false)
             bookkeeping.compactDetent = nil
             bookkeeping.compactValue = 0
@@ -651,7 +652,10 @@ struct QuickLogDock: View {
                 hasExpandedRows: !tray.expandedItemIDs.isEmpty,
                 // `.medium` is about half the container.
                 compactOutgrowsMedium: containerHeight > 0 && newValue > containerHeight * 0.5,
-                keepsSummary: tray.staged.count > 1,
+                // Only a dock that *arrived* at the summary with doses in it
+                // stays folded; a first staging (one dose, or a whole routine
+                // at once) from the bare pill opens the tray.
+                keepsSummary: bookkeeping.summaryHeld,
             )
             applyDetents(
                 target,
@@ -711,6 +715,17 @@ struct QuickLogDock: View {
                     detents = target
                     settle()
                     return
+                }
+                // Wait for the new member to actually reach UIKit. One runloop
+                // turn usually suffices, but a menu dismissing (the Food and
+                // When chips) delays SwiftUI's push past it; the late push then
+                // replaced the ramp's detent mid-move, UIKit fell back to the
+                // smallest member, and the dock dipped to the pill and back.
+                if let height {
+                    for _ in 0 ..< Self.memberWaitFrames where !sheetHasMember(height: height, in: sheet) {
+                        try? await Task.sleep(for: .milliseconds(16))
+                        guard generation == bookkeeping.generation else { return }
+                    }
                 }
                 animateSelection(selection, height: height, in: sheet) {
                     guard generation == bookkeeping.generation else { return }
@@ -848,8 +863,21 @@ struct QuickLogDock: View {
                 sheet.invalidateDetents()
             } completion: {
                 bookkeeping.rampLogicalTarget = nil
+                handOffRamp(in: sheet, at: toLogical)
                 onSettled()
             }
+        }
+
+        /// Moves UIKit's selection from the ramp's detent onto the real member at
+        /// the landing height and drops the ramp detent, before SwiftUI's own
+        /// update arrives. Left to SwiftUI, the new detent list could land ahead
+        /// of the new selection (a dismissing menu reorders them): the sheet then
+        /// had no valid selection for a frame, fell to the smallest member, and
+        /// the dock dipped to the pill and sprang back.
+        private func handOffRamp(in sheet: UISheetPresentationController, at height: CGFloat) {
+            guard let identifier = memberIdentifier(height: height, in: sheet) else { return }
+            sheet.selectedDetentIdentifier = identifier
+            sheet.detents.removeAll { $0.identifier == MutableSheetDetent.identifier }
         }
 
         /// Ensures the mutable ramp detent is a member of the sheet's detents and
@@ -861,6 +889,35 @@ struct QuickLogDock: View {
             if sheet.selectedDetentIdentifier != MutableSheetDetent.identifier {
                 sheet.selectedDetentIdentifier = MutableSheetDetent.identifier
             }
+        }
+
+        /// About half a second at 60 Hz: long enough for a presentation update
+        /// delayed by a dismissing menu, short enough that a lost one can't stall
+        /// the move.
+        private static let memberWaitFrames = 30
+
+        /// Whether the sheet's own detents already hold one at `height`.
+        private func sheetHasMember(height: CGFloat, in sheet: UISheetPresentationController) -> Bool {
+            memberIdentifier(height: height, in: sheet) != nil
+        }
+
+        /// The identifier of the sheet's own `.height` member at `height`, if any.
+        private func memberIdentifier(
+            height: CGFloat,
+            in sheet: UISheetPresentationController,
+        ) -> UISheetPresentationController.Detent.Identifier? {
+            let context = SheetDetentResolutionContext(
+                containerTraitCollection: sheet.traitCollection,
+                maximumDetentValue: maximumDetentValue(of: sheet),
+            )
+            // Only custom `.height` members: the system medium/large detents
+            // raise an NSException when resolved outside the sheet's own pass.
+            return sheet.detents.first { candidate in
+                guard candidate.identifier != .medium, candidate.identifier != .large,
+                      candidate.identifier != MutableSheetDetent.identifier,
+                      let resolved = candidate.resolvedValue(in: context) else { return false }
+                return abs(resolved - height) < 1
+            }?.identifier
         }
 
         /// The container height `.height` detents resolve against — only needs to
@@ -885,6 +942,7 @@ struct QuickLogDock: View {
         } else {
             bookkeeping.restingLogicalHeight = nil
         }
+        bookkeeping.summaryHeld = newValue == QuickLogDockMetrics.peekDetent && !tray.isEmpty
         // Any move that isn't headed to the bare pill revives the suggestions
         // (the user grabbed the sheet mid-shrink).
         if newValue != QuickLogDockMetrics.peekDetent { awaitingBareCollapse = false }

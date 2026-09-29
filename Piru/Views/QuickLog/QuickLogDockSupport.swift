@@ -22,6 +22,9 @@ final class DockDetentBookkeeping {
     /// sub-6pt drift so transient re-measures (the commit bar animating a
     /// panel open, geometry settling) don't re-mint the detent mid-gesture.
     var compactValue: CGFloat = 0
+    /// The dock arrived at the summary (the peek height) with doses staged, so
+    /// staging more keeps it folded. Cleared by leaving it or emptying the tray.
+    var summaryHeld = false
     /// Invalidates deferred detent work (the UIKit selection hand-off and the
     /// member prune in `applyDetents`) when a newer change supersedes it.
     /// Settle callbacks are never invalidated with it — they wait in
