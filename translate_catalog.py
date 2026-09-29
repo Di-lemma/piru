@@ -7842,6 +7842,37 @@ T = {
     "Stomach": ("进食状态", "進食狀態"),
     "Stomach: %@": ("进食状态：%@", "進食狀態：%@"),
     "Food": ("食物", "食物"),
+    # Android-only strings (android/app/Sources): the document stand-in and About's Android licenses.
+    "Nothing to Share": ("没有可分享的内容", "沒有可分享的內容"),
+    "The file picker could not be opened.": ("无法打开文件选择器。", "無法開啟檔案選擇器。"),
+    "The Swift runtime, Foundation and Dispatch, which run Piru on Android.": (
+        "Swift 运行时、Foundation 和 Dispatch，在 Android 上运行 Piru。",
+        "Swift 執行環境、Foundation 與 Dispatch，在 Android 上執行 Piru。",
+    ),
+    "Skip, which runs Piru's Swift code on Android. Piru's changes to it are in android/vendor in its repository.": (
+        "Skip，在 Android 上运行 Piru 的 Swift 代码。Piru 对它的修改位于其代码库的 android/vendor 中。",
+        "Skip，在 Android 上執行 Piru 的 Swift 程式碼。Piru 對它的修改位於其程式庫的 android/vendor 中。",
+    ),
+    "Kotlin, AndroidX, Jetpack Compose, Coil, Material Symbols, swift-crypto, swift-asn1, swift-jni and swift-android-native.": (
+        "Kotlin、AndroidX、Jetpack Compose、Coil、Material Symbols、swift-crypto、swift-asn1、swift-jni 和 swift-android-native。",
+        "Kotlin、AndroidX、Jetpack Compose、Coil、Material Symbols、swift-crypto、swift-asn1、swift-jni 與 swift-android-native。",
+    ),
+    "ICU, the Unicode data behind dates, numbers and text on Android.": (
+        "ICU，Android 上日期、数字和文本所依赖的 Unicode 数据。",
+        "ICU，Android 上日期、數字與文字所依賴的 Unicode 資料。",
+    ),
+    "curl, part of Foundation's networking on Android.": (
+        "curl，Android 上 Foundation 网络功能的一部分。",
+        "curl，Android 上 Foundation 網路功能的一部分。",
+    ),
+    "BoringSSL, part of Foundation's networking on Android.": (
+        "BoringSSL，Android 上 Foundation 网络功能的一部分。",
+        "BoringSSL，Android 上 Foundation 網路功能的一部分。",
+    ),
+    "commonmark-java. Copyright © Robin Stocker.": (
+        "commonmark-java。版权所有 © Robin Stocker。",
+        "commonmark-java。版權所有 © Robin Stocker。",
+    ),
 }
 
 # Widget translations
@@ -8121,6 +8152,15 @@ if __name__ == "__main__":
     # catalog yet. List them here so they get inserted; clear once Xcode has
     # picked them up on a real build (after which they're update-only).
     NEW_KEYS: set[str] = {
+        "Nothing to Share",
+        "The file picker could not be opened.",
+        "The Swift runtime, Foundation and Dispatch, which run Piru on Android.",
+        "Skip, which runs Piru's Swift code on Android. Piru's changes to it are in android/vendor in its repository.",
+        "Kotlin, AndroidX, Jetpack Compose, Coil, Material Symbols, swift-crypto, swift-asn1, swift-jni and swift-android-native.",
+        "ICU, the Unicode data behind dates, numbers and text on Android.",
+        "curl, part of Foundation's networking on Android.",
+        "BoringSSL, part of Foundation's networking on Android.",
+        "commonmark-java. Copyright © Robin Stocker.",
         "Curve Scale",
         "Dose Strength",
         "Largest Dose, 7 Days",

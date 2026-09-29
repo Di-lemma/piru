@@ -3314,4 +3314,13 @@ ES_ES = {
     "Stomach": "Estómago",
     "Stomach: %@": "Estómago: %@",
     "Food": "Comida",
+    "Nothing to Share": "Nada que compartir",
+    "The file picker could not be opened.": "No se pudo abrir el selector de archivos.",
+    "The Swift runtime, Foundation and Dispatch, which run Piru on Android.": "El entorno de ejecución de Swift, Foundation y Dispatch, que ejecutan Piru en Android.",
+    "Skip, which runs Piru's Swift code on Android. Piru's changes to it are in android/vendor in its repository.": "Skip, que ejecuta el código Swift de Piru en Android. Los cambios de Piru están en android/vendor de su repositorio.",
+    "Kotlin, AndroidX, Jetpack Compose, Coil, Material Symbols, swift-crypto, swift-asn1, swift-jni and swift-android-native.": "Kotlin, AndroidX, Jetpack Compose, Coil, Material Symbols, swift-crypto, swift-asn1, swift-jni y swift-android-native.",
+    "ICU, the Unicode data behind dates, numbers and text on Android.": "ICU, los datos Unicode detrás de fechas, números y texto en Android.",
+    "curl, part of Foundation's networking on Android.": "curl, parte de las funciones de red de Foundation en Android.",
+    "BoringSSL, part of Foundation's networking on Android.": "BoringSSL, parte de las funciones de red de Foundation en Android.",
+    "commonmark-java. Copyright © Robin Stocker.": "commonmark-java. Copyright © Robin Stocker.",
 }
