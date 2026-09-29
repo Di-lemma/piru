@@ -1,0 +1,14 @@
+diff --git a/Sources/SkipSwiftUI/System/Accessibility.swift b/Sources/SkipSwiftUI/System/Accessibility.swift
+--- a/Sources/SkipSwiftUI/System/Accessibility.swift
++++ b/Sources/SkipSwiftUI/System/Accessibility.swift
+@@ -896,7 +896,9 @@ public struct AccessibilityTraits : SetAlgebra, OptionSet /* Added OptionSet conformance */, Sendable {
+     }
+ 
+     public init() {
+-        self = []
++        // Never `self = []`: that is init(arrayLiteral:), which SetAlgebra implements
++        // through init(), so an empty traits value recurses until the stack overflows.
++        self.init(rawValue: 0)
+     }
+ 
+     public static let isButton = AccessibilityTraits(rawValue: 1 << 0) // For bridging
