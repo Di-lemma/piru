@@ -59,4 +59,29 @@ struct ArcadeSnakeTests {
         }
         #expect(crashes < 40)
     }
+
+    @Test
+    func `The marked spot is where the next fruit lands, and never on the one already out`() throws {
+        var snake = ArcadeSnake(cols: 32, rows: 64, skyRows: 30)
+        var rng = SeededRNG(seed: 0xF00D)
+        snake.placeFood(&rng)
+        for _ in 0 ..< 200 {
+            let marked = try #require(snake.nextFood)
+            let out = try #require(snake.food)
+            #expect(!(marked == out))
+            snake.placeFood(&rng)
+            #expect(try #require(snake.food) == marked)
+        }
+    }
+
+    @Test
+    func `A marked spot the body has since covered is rolled again`() throws {
+        var snake = ArcadeSnake(cols: 32, rows: 64, skyRows: 30)
+        var rng = SeededRNG(seed: 7)
+        snake.placeFood(&rng)
+        try snake.body.insert(#require(snake.nextFood), at: 0)
+        snake.placeFood(&rng)
+        let food = try #require(snake.food)
+        #expect(!snake.body.contains { $0 == food })
+    }
 }

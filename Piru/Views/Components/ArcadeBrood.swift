@@ -203,6 +203,7 @@ nonisolated extension ArcadeDraw {
 
         let paths = BroodKind.paths[kind]![frame]
         let at = CGAffineTransform(translationX: j.p.x, y: j.p.y)
+        for p in paths.values { context.stroke(p.applying(at), with: .color(ArcadeDraw.outline), lineWidth: 2) }
         if let p = paths["1"] { context.fill(p.applying(at), with: .color(j.flash > 0 ? .white : body)) }
         if let p = paths["3"] { context.fill(p.applying(at), with: .color(BroodPalette.top.opacity(kind == .saucer ? 0.7 : 0.85))) }
         if let p = paths["2"] { context.fill(p.applying(at), with: .color(light)) }

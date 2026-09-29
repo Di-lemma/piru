@@ -45,6 +45,9 @@ final class ArcadeGame {
     private var wingmen = 0
     /// A second Wingmen pickup shields them: each shield takes a hit first.
     private var shields = 0
+    /// The ship's own bubble, in layers: each takes a hit that would have
+    /// cost a life, and the power-ups with it.
+    private var shield = 0
     private var laserUntil = -1.0
     private var laserTick = 0.0
     private var charmedUntil = -1.0
@@ -85,6 +88,8 @@ final class ArcadeGame {
     /// and the red running down the snake all time from it.
     private var egg: (at: Double, p: CGPoint)?
     private var snakeClock = 0.0
+    /// When the fruit on the board was served; it ripens from then.
+    private var foodAt = 0.0
 
     // The pilot.
     private var velocity = CGVector.zero
@@ -109,6 +114,11 @@ final class ArcadeGame {
         let cell = ArcadeSnake.cell
         snake = ArcadeSnake(cols: Int(size.width / cell), rows: Int(size.height / cell), skyRows: Int(size.height * 0.52 * 0.9 / cell))
         snake.placeFood(&rng)
+    }
+
+    private func serveFood() {
+        snake.placeFood(&rng)
+        foodAt = clock
     }
 
     /// The idle round becomes yours, from exactly where it was.
@@ -148,6 +158,8 @@ final class ArcadeGame {
             PlatformHaptics.impact()
         }
         rollStart = clock
+        // Rolling inside a bubble thickens it.
+        if shield > 0 { shield = min(3, shield + 1) }
     }
 
     private var rolling: Bool { clock - rollStart < 1.0 }
@@ -191,21 +203,30 @@ final class ArcadeGame {
         Array([CGPoint(x: ship.x - 26, y: ship.y + 8), CGPoint(x: ship.x + 26, y: ship.y + 8)].prefix(wingmen))
     }
 
+    /// Every muzzle in the flight: the nose, then each wingman's. Wingmen fly
+    /// your gun, so whatever the ship fires, they fire too.
+    private var guns: [CGPoint] {
+        [CGPoint(x: ship.x, y: ship.y - 10)] + wingmanSpots.map { CGPoint(x: $0.x, y: $0.y - 6) }
+    }
+
+    /// How much wider Wide makes the laser, on each side.
+    private var beamReach: CGFloat { CGFloat(wideLevel) * 8 }
+
     private func fire(_ dt: Double) {
         cooldown -= dt
-        guard cooldown <= 0, !rolling, shots.count < 64 else { return }
+        // Five-way from three guns is fifteen a volley: room for eight in the air.
+        guard cooldown <= 0, !rolling, shots.count < 160 else { return }
         cooldown = idle ? 0.32 : 0.2
-        // The laser replaces the main gun while it lasts; wingmen keep firing.
-        if !laserOn {
-            let nose = CGPoint(x: ship.x, y: ship.y - 10)
-            let spread: [CGFloat] = switch wideLevel {
-            case 0: [0]
-            case 1: [-120, 0, 120]
-            default: [-200, -100, 0, 100, 200]
-            }
-            for vx in spread { shots.append(Shot(p: nose, vx: vx)) }
+        // The laser replaces the guns while it lasts.
+        guard !laserOn else { return }
+        let spread: [CGFloat] = switch wideLevel {
+        case 0: [0]
+        case 1: [-120, 0, 120]
+        default: [-200, -100, 0, 100, 200]
         }
-        for w in wingmanSpots { shots.append(Shot(p: CGPoint(x: w.x, y: w.y - 6), vx: 0)) }
+        for gun in guns {
+            for vx in spread { shots.append(Shot(p: gun, vx: vx)) }
+        }
     }
 
     private func moveFormation(_ dt: Double) {
@@ -273,7 +294,20 @@ final class ArcadeGame {
         )
         let enter = min(1, t / 2.5)
         b.p = CGPoint(x: home.x, y: -80 + (home.y + 80) * enter)
-        if t > 2.5 {
+        // Come at it with everything and it takes it personally.
+        let furious = !idle && wideLevel == 2 && wingmen == 2
+        if furious, !b.furious {
+            bursts.append(Burst(p: b.p, age: 0, life: 0.8, color: arcade.raider, reach: 90))
+            buzz()
+        }
+        b.furious = furious
+        if t > 2.5, b.furious {
+            danmaku(&b, t: t)
+            if clock >= b.summonAt {
+                b.summonAt = clock + 3.5
+                summon(from: CGPoint(x: b.p.x, y: b.p.y + 36), enraged: true)
+            }
+        } else if t > 2.5 {
             // Past half its health it presses harder: denser rings, faster shots.
             let enraged = b.hp * 2 < b.maxHP
             let origin = CGPoint(x: b.p.x, y: b.p.y + 10)
@@ -314,6 +348,44 @@ final class ArcadeGame {
             }
         }
         boss = b
+    }
+
+    /// Furious: Touhou-thick. Two rings a beat curling opposite ways, two
+    /// five-armed flowers turning against each other, and a seven-way fan at
+    /// the ship. The ship is hit only at its core meanwhile (see `collide`).
+    private func danmaku(_ b: inout ArcadeBoss, t: Double) {
+        guard bombs.count < 700 else { return }
+        let enraged = b.hp * 2 < b.maxHP
+        let origin = CGPoint(x: b.p.x, y: b.p.y + 10)
+        func orb(_ from: CGPoint, angle a: Double, speed v: Double, curl: Double = 0) {
+            bombs.append(Bomb(p: from, v: CGVector(dx: cos(a) * v, dy: sin(a) * v), orb: true, curl: curl))
+        }
+        let beat = Int(t / ArcadeBoss.beatPeriod)
+        if beat != b.beat {
+            b.beat = beat
+            let n = enraged ? 48 : 36
+            for k in 0 ..< n {
+                let a = Double(k) / Double(n) * 2 * .pi + Double(beat) * 0.26
+                orb(origin, angle: a, speed: 125, curl: 0.35)
+                orb(origin, angle: a + .pi / Double(n), speed: 90, curl: -0.35)
+            }
+        }
+        if clock - b.spiralAt > (enraged ? 0.07 : 0.09) {
+            b.spiralAt = clock
+            for arm in 0 ..< 5 {
+                let step = Double(arm) / 5 * 2 * .pi
+                orb(origin, angle: t * 1.9 + step, speed: 145, curl: 0.5)
+                orb(origin, angle: -t * 1.3 + step, speed: 115, curl: -0.5)
+            }
+        }
+        if clock - b.aimedAt > 0.7 {
+            b.aimedAt = clock
+            let from = CGPoint(x: b.p.x, y: b.p.y + 30)
+            let aim = atan2(ship.y - from.y, ship.x - from.x)
+            for k in -3 ... 3 {
+                orb(from, angle: aim + Double(k) * 0.14, speed: 230)
+            }
+        }
     }
 
     private func summon(from at: CGPoint, enraged: Bool) {
@@ -464,6 +536,10 @@ final class ArcadeGame {
         }
         shots.removeAll { $0.p.y < -10 || $0.p.x < -10 || $0.p.x > size.width + 10 }
         for i in bombs.indices {
+            if bombs[i].curl != 0 {
+                let a = bombs[i].curl * dt, v = bombs[i].v
+                bombs[i].v = CGVector(dx: v.dx * cos(a) - v.dy * sin(a), dy: v.dx * sin(a) + v.dy * cos(a))
+            }
             bombs[i].p.x += bombs[i].v.dx * dt
             bombs[i].p.y += bombs[i].v.dy * dt
         }
@@ -575,7 +651,10 @@ final class ArcadeGame {
 
     private func stepSnake(_ dt: Double) {
         snakeClock += dt
-        let interval = hunting ? 0.11 : 0.16
+        // Set on you, it winds up to its hunting pace over three seconds
+        // rather than lunging from the first step.
+        let windUp = egg.map { min(1, (clock - $0.at) / 3) } ?? 1
+        let interval = hunting ? 0.19 - 0.05 * windUp : 0.19
         while snakeClock >= interval {
             snakeClock -= interval
             let cell = ArcadeSnake.cell
@@ -588,7 +667,7 @@ final class ArcadeGame {
             }
             switch snake.step(toward: goal, rng: &rng) {
             case .moved: break
-            case .ate: snake.placeFood(&rng)
+            case .ate: serveFood()
             case let .crashed(at):
                 // It ran into itself: a burst where the head was, and a new
                 // snake drops in at the top.
@@ -664,7 +743,8 @@ final class ArcadeGame {
         }
         if b.hp <= 0 {
             b.dyingAt = clock
-            score += 5_000
+            // Beating it furious pays double.
+            score += b.furious ? 10_000 : 5_000
             bombs.removeAll { $0.orb }
             buzz(true)
         }
@@ -753,9 +833,10 @@ final class ArcadeGame {
         buzz(true)
     }
 
-    /// The fruit is the player's egg: in the idle round, shots pass it by.
+    /// The fruit is the player's egg: in the idle round, shots pass it by,
+    /// and so they do while a new one ripens.
     private var fruitTarget: ArcadeSnake.Cell? {
-        idle || hunting ? nil : snake.food
+        idle || hunting || clock - foodAt < ArcadeRules.ripen ? nil : snake.food
     }
 
     /// One bullet, one target: the first thing it touches.
@@ -780,11 +861,16 @@ final class ArcadeGame {
         return false
     }
 
-    /// The laser's tick: everything in the ship's column, all at once.
+    /// The laser's tick: everything under any beam, all at once. A target
+    /// under two beams still takes one hit a tick, so the wingmen's beams
+    /// cover ground rather than melting Bitjelly three times as fast.
     private func burnColumn() {
-        let x = ship.x, top = ship.y - 10
-        func inColumn(_ p: CGPoint, _ half: CGFloat) -> Bool { abs(p.x - x) < half && p.y < top }
-        if let b = boss, abs(b.p.x - x) < 27 * ArcadeBoss.scale, b.p.y < top { damageBoss(at: CGPoint(x: x, y: b.p.y + 30)) }
+        let beams = guns, reach = beamReach
+        func beam(over p: CGPoint, _ half: CGFloat) -> CGPoint? {
+            beams.first { abs(p.x - $0.x) < half + reach && p.y < $0.y }
+        }
+        func inColumn(_ p: CGPoint, _ half: CGFloat) -> Bool { beam(over: p, half) != nil }
+        if let b = boss, let x = beam(over: b.p, 27 * ArcadeBoss.scale)?.x { damageBoss(at: CGPoint(x: x, y: b.p.y + 30)) }
         for m in formation.presentIndices where inColumn(formation.center(m), 9) { damageMember(m, at: formation.center(m)) }
         for d in divers.indices.reversed() where inColumn(divers[d].p, 10) { damageDiver(d, at: divers[d].p) }
         for j in brood.indices.reversed() where inColumn(brood[j].p, brood[j].kind.reach.width) { damageJelly(j, at: brood[j].p) }
@@ -823,15 +909,28 @@ final class ArcadeGame {
             if gone.col >= 0 { formation.members[gone.col].alive = false }
         }
 
-        // Wingmen take a hit each before the ship does.
+        // Wingmen take a hit each before the ship does. Against a furious
+        // Bitjelly its orbs play by Touhou's rules instead: the wingmen are
+        // untouchable, and the ship is hit only at its core.
+        let furious = boss?.furious == true
         var dead = IndexSet()
         for (i, b) in bombs.enumerated() {
-            if let w = wingmanSpots.firstIndex(where: { near(b.p, $0, 8, 7) }), !rolling {
+            let core = furious && b.orb
+            if !core, !rolling, let w = wingmanSpots.firstIndex(where: { near(b.p, $0, 8, 7) }) {
                 loseWingman(at: w)
                 dead.insert(i)
-            } else if near(b.p, ship, 8, 8) {
+            } else if near(b.p, ship, core ? 3.5 : 8, core ? 3.5 : 8) {
                 dead.insert(i)
                 hurt()
+            }
+        }
+        // Charmed, the snake is on your side all the way down: it swallows
+        // the fire it passes through.
+        if charmed {
+            let cell = ArcadeSnake.cell
+            let body = Set(snake.body.map { $0.x * 10_000 + $0.y })
+            for (i, b) in bombs.enumerated() where body.contains(Int(b.p.x / cell) * 10_000 + Int(b.p.y / cell)) {
+                dead.insert(i)
             }
         }
         bombs.remove(atOffsets: dead)
@@ -912,8 +1011,15 @@ final class ArcadeGame {
                 callout = ("Shields!", clock)
             } else {
                 wingmen = 2
+                // Arriving inside your bubble, they are in it too.
+                if shield > 0 { shields = 2 }
                 callout = ("Wingmen!", clock)
             }
+        case .shield:
+            shield = min(3, shield + 1)
+            // The bubble takes in whoever is flying with you.
+            shields = max(shields, wingmen)
+            callout = ("Shields!", clock)
         case .loop:
             loops = min(5, loops + 1)
             callout = ("Extra roll!", clock)
@@ -926,7 +1032,7 @@ final class ArcadeGame {
             // fruit, and only another burst fruit sets it on you again.
             hunting = false
             egg = nil
-            if snake.food == nil { snake.placeFood(&rng) }
+            if snake.food == nil { serveFood() }
             callout = ("Snake charmed!", clock)
         case .bomb:
             callout = ("Bomb!", clock)
@@ -953,6 +1059,14 @@ final class ArcadeGame {
 
     private func hurt() {
         guard !isOver, clock >= invulnerableUntil, !rolling else { return }
+        // The bubble takes it: a layer gone, and a beat to get clear.
+        if shield > 0 {
+            shield -= 1
+            invulnerableUntil = clock + 1
+            bursts.append(Burst(p: ship, age: 0, life: 0.5, color: arcade.snake, reach: 24))
+            buzz()
+            return
+        }
         invulnerableUntil = clock + 2
         pop(ship, arcade.star, big: true)
         // The idle round cannot lose; it only blinks.
@@ -974,7 +1088,7 @@ final class ArcadeGame {
     var scene: ArcadeScene {
         ArcadeScene(
             arcade: arcade, size: size, clock: clock, top: formationTop, idle: idle, isOver: isOver,
-            snake: snake.body, food: snake.food, egg: egg, charmedUntil: charmedUntil,
+            snake: snake.body, food: snake.food, nextFood: snake.nextFood, foodAt: foodAt, egg: egg, charmedUntil: charmedUntil,
             aliens: formation.presentIndices.map { i in
                 let m = formation.members[i]
                 return .init(alien: m.alien, hp: m.hp, tint: m.tint, frame: formation.march, p: formation.center(i))
@@ -982,8 +1096,8 @@ final class ArcadeGame {
             brood: brood, mothership: mothership,
             raiders: raid.map { r in (0 ..< 5).filter { r.alive[$0] }.map { raiderPosition(r, $0).0 } } ?? [],
             pows: pows, shots: shots, bombs: bombs, bursts: bursts, boss: boss,
-            ship: ship, wingmen: wingmanSpots, shields: shields, rollStart: rollStart,
-            invulnerableUntil: invulnerableUntil, laserUntil: laserUntil, wideLevel: wideLevel,
+            ship: ship, wingmen: wingmanSpots, shields: shields, shield: shield, rollStart: rollStart,
+            invulnerableUntil: invulnerableUntil, laserUntil: laserUntil, wideLevel: wideLevel, beams: guns, beamReach: beamReach,
         )
     }
 }

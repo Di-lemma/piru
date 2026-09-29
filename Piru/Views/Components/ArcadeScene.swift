@@ -7,7 +7,14 @@ import SwiftUI
 // MARK: - Parts
 
 nonisolated struct ArcadeShot: Sendable { var p: CGPoint; var vx: CGFloat }
-nonisolated struct ArcadeBomb: Sendable { var p: CGPoint; var v: CGVector; var orb = false }
+nonisolated struct ArcadeBomb: Sendable {
+    var p: CGPoint
+    var v: CGVector
+    var orb = false
+    /// How fast its heading turns, in radians a second: furious Bitjelly's
+    /// flowers curl.
+    var curl = 0.0
+}
 nonisolated struct ArcadePow: Sendable { var p: CGPoint; var kind: ArcadePower; var born: Double; var changedAt = -9.0 }
 nonisolated struct ArcadeBurst: Sendable { var p: CGPoint; var age: Double; var life: Double; var color: Color; var reach: CGFloat }
 /// The bonus ship across the top, from the second wave.
@@ -39,6 +46,9 @@ nonisolated struct ArcadeBoss: Sendable {
     var dyingAt: Double?
     var spiralAt = 0.0
     var summonAt = 0.0
+    /// You came with everything (Wide at five-way and both wingmen), so it
+    /// goes red and fills the screen. Only while you still have it all.
+    var furious = false
     /// The health fractions still owed a POW, highest first.
     var drops: [Double] = [0.75, 0.5, 0.25]
 
@@ -64,6 +74,9 @@ nonisolated struct ArcadeSnake {
     var body: [Cell]
     var dir: Cell = (1, 0)
     var food: Cell?
+    /// Where the fruit after this one lands, rolled ahead so the round can
+    /// mark the spot before anything is there to shoot.
+    var nextFood: Cell?
     var growth = 0
     let cols: Int, rows: Int
     /// The fruit lands in the sky, above the horizon.
@@ -132,12 +145,21 @@ nonisolated struct ArcadeSnake {
         return outcome
     }
 
+    /// Serves the fruit that was waiting (unless the body has since moved
+    /// onto its spot) and rolls the one after it.
     mutating func placeFood(_ rng: inout SeededRNG) {
+        let waiting = nextFood.flatMap { c in body.contains { $0 == c } ? nil : c }
+        let served = waiting ?? roll(&rng, avoiding: nil)
+        food = served
+        nextFood = roll(&rng, avoiding: served)
+    }
+
+    private func roll(_ rng: inout SeededRNG, avoiding other: Cell?) -> Cell {
         for _ in 0 ..< 64 {
             let c: Cell = (Int(rng.next() % UInt64(max(cols, 1))), Int(rng.next() % UInt64(max(skyRows, 1))))
-            if !body.contains(where: { $0 == c }) { food = c; return }
+            if !body.contains(where: { $0 == c }), other.map({ $0 != c }) ?? true { return c }
         }
-        food = (0, 0)
+        return (0, 0)
     }
 }
 
@@ -158,6 +180,8 @@ nonisolated struct ArcadeScene: Sendable {
 
     let snake: [ArcadeSnake.Cell]
     let food: ArcadeSnake.Cell?
+    let nextFood: ArcadeSnake.Cell?
+    let foodAt: Double
     let egg: (at: Double, p: CGPoint)?
     let charmedUntil: Double
 
@@ -174,10 +198,14 @@ nonisolated struct ArcadeScene: Sendable {
     let ship: CGPoint
     let wingmen: [CGPoint]
     let shields: Int
+    let shield: Int
     let rollStart: Double
     let invulnerableUntil: Double
     let laserUntil: Double
     let wideLevel: Int
+    /// Where each beam starts while the laser is on: the nose, then the wingmen.
+    let beams: [CGPoint]
+    let beamReach: CGFloat
 
     private var rolling: Bool { clock - rollStart < 1.0 }
     private var charmed: Bool { clock < charmedUntil }
@@ -217,14 +245,21 @@ nonisolated struct ArcadeScene: Sendable {
         }
         for s in shots { ArcadeDraw.shot(at: s.p, color: arcade.star, in: &context) }
         if let b = boss { drawBoss(b, in: &context, dark: dark) }
+        // Orbs go down as three paths, however many there are: a furious
+        // Bitjelly keeps hundreds in the air.
+        var edges = Path(), orbs = Path(), cores = Path()
         for b in bombs {
             if b.orb {
-                context.fill(Path(ellipseIn: CGRect(x: b.p.x - 3, y: b.p.y - 3, width: 6, height: 6)), with: .color(arcade.border))
-                context.fill(Path(CGRect(x: b.p.x - 1, y: b.p.y - 1, width: 2, height: 2)), with: .color(arcade.star))
+                edges.addEllipse(in: CGRect(x: b.p.x - 4, y: b.p.y - 4, width: 8, height: 8))
+                orbs.addEllipse(in: CGRect(x: b.p.x - 3, y: b.p.y - 3, width: 6, height: 6))
+                cores.addRect(CGRect(x: b.p.x - 1, y: b.p.y - 1, width: 2, height: 2))
             } else {
                 ArcadeDraw.bomb(at: b.p, color: arcade.raider, time: t, in: &context)
             }
         }
+        context.fill(edges, with: .color(ArcadeDraw.outline))
+        context.fill(orbs, with: .color(boss?.furious == true ? arcade.raider : arcade.border))
+        context.fill(cores, with: .color(arcade.star))
         for b in bursts { ArcadeDraw.burst(at: b.p, age: b.age, life: b.life, color: b.color, reach: b.reach, in: &context) }
         if let egg, sinceEgg < 0.7 {
             // A shockwave ring, and the screen going the fruit's color for a beat.
@@ -244,6 +279,11 @@ nonisolated struct ArcadeScene: Sendable {
         let t = clock, cell = ArcadeSnake.cell
         // Charmed it wears the invaders' green, flickering as it wears off.
         let charm = charmed && (charmedUntil - t > 2 || Int(t * 8) % 2 == 0)
+        var edge = Path()
+        for c in snake {
+            edge.addRoundedRect(in: CGRect(x: CGFloat(c.x) * cell + 1, y: CGFloat(c.y) * cell + 1, width: cell - 2, height: cell - 2), cornerSize: CGSize(width: 2, height: 2))
+        }
+        context.stroke(edge, with: .color(ArcadeDraw.outline), lineWidth: 2)
         for (k, c) in snake.enumerated() {
             let rect = CGRect(x: CGFloat(c.x) * cell + 1, y: CGFloat(c.y) * cell + 1, width: cell - 2, height: cell - 2)
             let isHead = k == 0
@@ -273,9 +313,27 @@ nonisolated struct ArcadeScene: Sendable {
             }
         }
         if let f = food {
-            let r = CGRect(x: CGFloat(f.x) * cell + 2, y: CGFloat(f.y) * cell + 2, width: cell - 4, height: cell - 4)
-            let blink = 0.6 + 0.4 * (sin(t * 2 * 6.28) > 0 ? 1 : 0)
-            context.fill(Path(roundedRect: r, cornerRadius: 2), with: .color(arcade.food.opacity(blink)))
+            // It grows in while it ripens, and only blinks once it can be burst.
+            let u = min(1, (t - foodAt) / ArcadeRules.ripen)
+            let inset = 2 + (cell / 2 - 2) * (1 - u) * 0.7
+            let r = CGRect(x: CGFloat(f.x) * cell, y: CGFloat(f.y) * cell, width: cell, height: cell).insetBy(dx: inset, dy: inset)
+            let blink = u < 1 ? 0.55 + 0.45 * u : 0.6 + 0.4 * (sin(t * 2 * 6.28) > 0 ? 1 : 0)
+            let fruit = Path(roundedRect: r, cornerRadius: 2)
+            context.stroke(fruit, with: .color(ArcadeDraw.outline), lineWidth: 3)
+            context.fill(fruit, with: .color(arcade.food.opacity(blink)))
+        }
+        // Where the next one will land, for the player: corner ticks, so it
+        // reads as a spot to keep your fire off rather than a fruit.
+        if !idle, food != nil, let n = nextFood {
+            let r = CGRect(x: CGFloat(n.x) * cell, y: CGFloat(n.y) * cell, width: cell, height: cell)
+            var ticks = Path()
+            for (x, y, sx, sy) in [(r.minX, r.minY, CGFloat(1), CGFloat(1)), (r.maxX, r.minY, -1, 1), (r.minX, r.maxY, 1, -1), (r.maxX, r.maxY, -1, -1)] {
+                ticks.move(to: CGPoint(x: x + 4 * sx, y: y))
+                ticks.addLine(to: CGPoint(x: x, y: y))
+                ticks.addLine(to: CGPoint(x: x, y: y + 4 * sy))
+            }
+            context.stroke(ticks, with: .color(ArcadeDraw.outline), lineWidth: 3)
+            context.stroke(ticks, with: .color(arcade.food.opacity(0.5 + 0.25 * sin(t * 4))), lineWidth: 1.5)
         }
     }
 
@@ -286,7 +344,7 @@ nonisolated struct ArcadeScene: Sendable {
         case .shielded:
             ArcadeDraw.sprite(ArcadeSprite.shielded[a.frame], at: a.p, color: arcade.star, glow: false, in: &context)
             if a.hp < a.alien.hp {
-                ArcadeDraw.sprite(ArcadeSprite.crack, at: a.p, color: .black.opacity(0.75), glow: false, in: &context)
+                ArcadeDraw.sprite(ArcadeSprite.crack, at: a.p, color: .black.opacity(0.75), glow: false, outlined: false, in: &context)
             }
         case .splitter:
             let halves = ArcadeSprite.splitter[a.frame]
@@ -300,17 +358,42 @@ nonisolated struct ArcadeScene: Sendable {
     private func capsule(_ kind: ArcadePower, at p: CGPoint, swell: CGFloat = 1, in context: inout GraphicsContext) {
         let rect = CGRect(x: p.x - 11 * swell, y: p.y - 8 * swell, width: 22 * swell, height: 16 * swell)
         // Charm is the rare one: the fruit's magenta, not the POW yellow.
-        context.fill(Path(roundedRect: rect, cornerRadius: 4), with: .color((kind == .charm ? arcade.food : arcade.pow).opacity(0.9)))
+        let shell = Path(roundedRect: rect, cornerRadius: 4)
+        context.stroke(shell, with: .color(ArcadeDraw.outline), lineWidth: 2)
+        context.fill(shell, with: .color((kind == .charm ? arcade.food : arcade.pow).opacity(0.9)))
         context.fill(ArcadeSprite.pows[kind]!.applying(CGAffineTransform(translationX: p.x, y: p.y)), with: .color(.black.opacity(0.8)))
     }
 
     private func drawBoss(_ b: ArcadeBoss, in context: inout GraphicsContext, dark: Bool) {
         let t = clock - b.start, s = ArcadeBoss.scale
+        let fury = b.furious && b.dyingAt == nil
+        // Furious, it shakes with it.
+        let shake = fury ? CGSize(width: 1.5 * sin(clock * 53), height: 1.5 * cos(clock * 47)) : .zero
         context.drawLayer { layer in
-            layer.translateBy(x: b.p.x, y: b.p.y)
+            layer.translateBy(x: b.p.x + shake.width, y: b.p.y + shake.height)
             layer.scaleBy(x: s, y: s)
             if let dying = b.dyingAt { layer.opacity = max(0, 1 - (clock - dying) / 1.5) }
             JellySpecies.bitjelly.draw(in: &layer, time: t, motion: ArcadeBoss.motion, bell: arcade.snake, dark: dark, showFace: true)
+            guard fury else { return }
+            // Red all through, glow and all: the hue at its own lightness,
+            // deepened, then cut back to its shape by drawing it again as the
+            // mask, in a layer of its own so the mask goes on in one piece.
+            let cover = Path(CGRect(x: -44, y: -44, width: 88, height: 110))
+            layer.blendMode = .color
+            layer.fill(cover, with: .color(ArcadeDraw.fury))
+            layer.blendMode = .multiply
+            layer.fill(cover, with: .color(ArcadeDraw.furyDepth))
+            layer.blendMode = .destinationIn
+            layer.drawLayer { mask in
+                JellySpecies.bitjelly.draw(in: &mask, time: t, motion: ArcadeBoss.motion, bell: arcade.snake, dark: dark, showFace: true)
+            }
+            layer.blendMode = .normal
+            // And mad: eyes gone hot under brows that slant down to the middle.
+            var eyes = Path(), brows = Path()
+            for q in [4, 9] { eyes.addRect(JellySpecies.bitjellyCell(q, 4).union(JellySpecies.bitjellyCell(q, 5))) }
+            for (q, r) in [(3, 2), (4, 3), (10, 2), (9, 3)] { brows.addRect(JellySpecies.bitjellyCell(q, r)) }
+            layer.fill(eyes, with: .color(arcade.pow))
+            layer.fill(brows, with: .color(.black.opacity(0.85)))
         }
         // A hit flashes the bell white for a frame or two.
         if b.flash > 0 {
@@ -322,7 +405,7 @@ nonisolated struct ArcadeScene: Sendable {
         let bar = CGRect(x: 20, y: top - 26, width: size.width - 40, height: 9)
         let left = CGFloat(b.hp) / CGFloat(b.maxHP)
         context.fill(Path(bar), with: .color(arcade.star.opacity(0.12)))
-        context.fill(Path(CGRect(x: bar.minX, y: bar.minY, width: bar.width * left, height: bar.height)), with: .color(b.hp * 2 < b.maxHP ? arcade.raider : arcade.border))
+        context.fill(Path(CGRect(x: bar.minX, y: bar.minY, width: bar.width * left, height: bar.height)), with: .color(b.hp * 2 < b.maxHP || b.furious ? arcade.raider : arcade.border))
         var ticks = Path()
         for k in 1 ..< 10 {
             let x = bar.minX + bar.width * CGFloat(k) / 10
@@ -340,6 +423,7 @@ nonisolated struct ArcadeScene: Sendable {
         var held: [(ArcadePower, Double?, Int)] = []
         if wideLevel > 0 { held.append((.wide, nil, wideLevel)) }
         if !wingmen.isEmpty { held.append((.wingmen, nil, shields)) }
+        if shield > 0 { held.append((.shield, nil, shield)) }
         if t < laserUntil { held.append((.laser, (laserUntil - t) / 6, 0)) }
         if charmed { held.append((.charm, (charmedUntil - t) / 10, 0)) }
         for (i, (power, left, pips)) in held.enumerated() {
@@ -359,12 +443,14 @@ nonisolated struct ArcadeScene: Sendable {
 
     private func drawShip(in context: inout GraphicsContext, dark: Bool) {
         let t = clock
-        // The laser, from the nose to the top of the field.
+        // The laser, from each gun to the top of the field, as wide as Wide makes it.
         if t < laserUntil, !rolling {
             let flick = 0.8 + 0.2 * sin(t * 50)
-            let beam = CGRect(x: ship.x - 4, y: 0, width: 8, height: ship.y - 10)
-            context.fill(Path(beam), with: .color(arcade.border.opacity(0.35 * flick)))
-            context.fill(Path(beam.insetBy(dx: 2.5, dy: 0)), with: .color(arcade.star.opacity(flick)))
+            for b in beams {
+                let beam = CGRect(x: b.x - 4 - beamReach, y: 0, width: 8 + beamReach * 2, height: b.y)
+                context.fill(Path(beam), with: .color(arcade.border.opacity(0.35 * flick)))
+                context.fill(Path(beam.insetBy(dx: 2.5 + beamReach * 0.75, dy: 0)), with: .color(arcade.star.opacity(flick)))
+            }
         }
         // Blinks while it cannot be hit; a roll turns it over and lifts it.
         guard !(t < invulnerableUntil && Int(t * 10) % 2 == 1) else { return }
@@ -393,5 +479,18 @@ nonisolated struct ArcadeScene: Sendable {
             }
         }
         ArcadeDraw.ship(at: ship, arcade: arcade, time: t, glow: dark && !idle, rotation: spin, scale: lift, in: &context)
+        // Against a furious Bitjelly only the core can be hit, so show it.
+        if boss?.furious == true {
+            let core = CGRect(x: ship.x - 3, y: ship.y - 3, width: 6, height: 6)
+            context.fill(Path(ellipseIn: core.insetBy(dx: -1.5, dy: -1.5)), with: .color(arcade.raider))
+            context.fill(Path(ellipseIn: core), with: .color(arcade.star))
+        }
+        // The bubble: a ring per layer.
+        for k in 0 ..< shield {
+            let r = (15 + CGFloat(k) * 3.5) * lift
+            let ring = Path(ellipseIn: CGRect(x: ship.x - r, y: ship.y - r, width: r * 2, height: r * 2))
+            context.stroke(ring, with: .color(ArcadeDraw.outline), lineWidth: 3)
+            context.stroke(ring, with: .color(arcade.snake.opacity(0.6 + 0.3 * sin(t * 6 + Double(k)))), lineWidth: 1.5)
+        }
     }
 }

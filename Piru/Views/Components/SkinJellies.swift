@@ -377,6 +377,14 @@ private nonisolated enum Remi {
 
 // MARK: - Bitjelly
 
+extension JellySpecies {
+    /// One of Bitjelly's grid cells, in the space `draw` paints it into, for
+    /// drawing on its face.
+    nonisolated static func bitjellyCell(_ q: Int, _ r: Int) -> CGRect {
+        Bitjelly.rect(q, r).offsetBy(dx: -32, dy: -25)
+    }
+}
+
 private nonisolated enum Bitjelly {
     static let gridW = 14
     static let cell = 3.9

@@ -36,6 +36,7 @@ nonisolated enum ArcadeSprite {
         .loop: [".XXX.", "X...X", "X...X", ".XXX."],
         .laser: ["..X..", "..X..", "..X..", ".XXX."],
         .charm: [".X.X.", "XXXXX", ".XXX.", "..X.."],
+        .shield: ["XXXXX", "X...X", ".X.X.", "..X.."],
     ]
 
     /// Play mode's extra aliens, from the second wave on.
@@ -128,6 +129,9 @@ nonisolated enum ArcadeAlien: Sendable {
 nonisolated enum ArcadePower: CaseIterable, Sendable {
     case wide
     case wingmen
+    /// A bubble on the ship that takes a hit for it, life and power-ups
+    /// kept. Stacks to three, and shields the wingmen flying with it.
+    case shield
     case bomb
     case loop
     /// Six seconds of a beam that pierces the whole column above the ship.
@@ -137,7 +141,7 @@ nonisolated enum ArcadePower: CaseIterable, Sendable {
 
     /// What a shot turns a capsule into, in order. Charm stays out of it: it
     /// is rare, and shooting your way to it would make it common.
-    static let cycle: [ArcadePower] = [.wide, .wingmen, .loop, .laser, .bomb]
+    static let cycle: [ArcadePower] = [.wide, .wingmen, .shield, .loop, .laser, .bomb]
 
     var next: ArcadePower {
         guard let i = Self.cycle.firstIndex(of: self) else { return self }
@@ -174,6 +178,9 @@ nonisolated enum ArcadeRules {
     static let cols = 6, rows = 3
     static let spacing = CGSize(width: 26, height: 20)
     static let shotSpeed: CGFloat = 520, bombSpeed: CGFloat = 150
+    /// A new fruit cannot be burst for this long: it grows in first, so a
+    /// stream of fire already on its spot does not set the snake on you.
+    static let ripen = 0.8
 
     /// Home height: just over the horizon, the floor's own line. The pilot
     /// drifts around it rather than riding it.
@@ -241,11 +248,19 @@ nonisolated enum ArcadeRules {
 /// The pieces both the backdrop and the cabinet draw, so a ship you pick up is
 /// the same ship that was playing.
 nonisolated enum ArcadeDraw {
+    /// The dark edge round everything in play, so pink and purple still read
+    /// against the pink sun. Invisible on the night sky, which is the point.
+    static let outline = Color.black.opacity(0.7)
+    /// Furious Bitjelly's red: its hue goes on at the jelly's own lightness,
+    /// so the lights and shading stay, and `furyDepth` multiplies it deeper.
+    static let fury = Color(.displayP3, red: 1, green: 0.18, blue: 0.14)
+    static let furyDepth = Color(.displayP3, red: 1, green: 0.55, blue: 0.55)
+
     static func invaderTint(_ arcade: SkinArcade, row: Int) -> Color {
         [arcade.invader, arcade.wall, arcade.border][row % 3]
     }
 
-    static func sprite(_ path: Path, at p: CGPoint, color: Color, glow: Bool, rotation: Angle = .zero, scale: CGFloat = 1, in context: inout GraphicsContext) {
+    static func sprite(_ path: Path, at p: CGPoint, color: Color, glow: Bool, rotation: Angle = .zero, scale: CGFloat = 1, outlined: Bool = true, in context: inout GraphicsContext) {
         if glow {
             context.fill(
                 Path(ellipseIn: CGRect(x: p.x - 14 * scale, y: p.y - 14 * scale, width: 28 * scale, height: 28 * scale)),
@@ -253,7 +268,10 @@ nonisolated enum ArcadeDraw {
             )
         }
         let t = CGAffineTransform(translationX: p.x, y: p.y).rotated(by: rotation.radians).scaledBy(x: scale, y: scale)
-        context.fill(path.applying(t), with: .color(color))
+        let placed = path.applying(t)
+        // Stroked under the fill, so only the half outside the pixels shows.
+        if outlined { context.stroke(placed, with: .color(outline), lineWidth: 2) }
+        context.fill(placed, with: .color(color))
     }
 
     static func ship(at p: CGPoint, arcade: SkinArcade, time: Double, glow: Bool, rotation: Angle = .zero, scale: CGFloat = 1, in context: inout GraphicsContext) {
@@ -264,6 +282,7 @@ nonisolated enum ArcadeDraw {
     }
 
     static func shot(at p: CGPoint, color: Color, in context: inout GraphicsContext) {
+        context.fill(Path(CGRect(x: p.x - 2, y: p.y - 5, width: 4, height: 10)), with: .color(outline))
         context.fill(Path(CGRect(x: p.x - 1, y: p.y - 4, width: 2, height: 8)), with: .color(color))
     }
 
@@ -275,6 +294,7 @@ nonisolated enum ArcadeDraw {
         z.addLine(to: CGPoint(x: p.x + 2 * flip, y: p.y - 2))
         z.addLine(to: CGPoint(x: p.x - 2 * flip, y: p.y + 1))
         z.addLine(to: CGPoint(x: p.x, y: p.y + 4))
+        context.stroke(z, with: .color(outline), lineWidth: 3.5)
         context.stroke(z, with: .color(color), lineWidth: 1.5)
     }
 
