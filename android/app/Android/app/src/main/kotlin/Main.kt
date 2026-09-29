@@ -42,6 +42,7 @@ open class AndroidAppMain: Application {
         logger.info("starting app")
         ProcessInfo.launch(applicationContext)
         AppDelegate.shared.onInit()
+        AndroidPlatform.watchTimeZone(applicationContext)
     }
 
     companion object {
@@ -57,6 +58,7 @@ open class MainActivity: AppCompatActivity {
         super.onCreate(savedInstanceState)
         logger.info("starting activity")
         UIApplication.launch(this)
+        AndroidDocuments.register(this)
         enableEdgeToEdge()
 
         setContent {

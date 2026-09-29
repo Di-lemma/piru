@@ -1,6 +1,7 @@
 // The slice of Security and CommonCrypto that BackupCrypto calls, so its code compiles
 // unchanged. Keychain items are files in the app's private directory, which Android
-// sandboxes per app; nothing syncs, because Android has no iCloud Keychain.
+// sandboxes per app. The manifest's backup rules keep them on the device: no cloud backup and
+// no device-to-device transfer carries them.
 // TODO(android): back the key with the Android Keystore instead of a plain private file.
 
 import _CryptoExtras
@@ -45,7 +46,8 @@ nonisolated func SecItemAdd(_ attributes: CFDictionary, _: UnsafeMutablePointer<
     guard let file = keychainFile(attributes), let data = attributes[kSecValueData] as? Data else { return errSecParam }
     if FileManager.default.fileExists(atPath: file.path) { return errSecDuplicateItem }
     do {
-        try data.write(to: file, options: [.atomic, .withoutOverwriting])
+        // `.withoutOverwriting` alone: swift-foundation traps on it combined with `.atomic`.
+        try data.write(to: file, options: .withoutOverwriting)
         return errSecSuccess
     } catch {
         return FileManager.default.fileExists(atPath: file.path) ? errSecDuplicateItem : errSecParam

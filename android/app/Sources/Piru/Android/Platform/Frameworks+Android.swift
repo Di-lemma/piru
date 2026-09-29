@@ -30,29 +30,6 @@ struct UTType: Hashable, Sendable {
     static let image = UTType(identifier: "public.image", preferredFilenameExtension: nil)
 }
 
-extension View {
-    // TODO(android): open Android's document picker (ACTION_OPEN_DOCUMENT / ACTION_CREATE_DOCUMENT).
-    func fileImporter(
-        isPresented _: Binding<Bool>, allowedContentTypes _: [UTType], allowsMultipleSelection _: Bool = false,
-        onCompletion _: @escaping (Result<URL, any Error>) -> Void,
-    ) -> some View { self }
-
-    func fileImporter(
-        isPresented _: Binding<Bool>, allowedContentTypes _: [UTType], allowsMultipleSelection _: Bool,
-        onCompletion _: @escaping (Result<[URL], any Error>) -> Void,
-    ) -> some View { self }
-
-    func fileExporter(
-        isPresented _: Binding<Bool>, document _: (some Any)?, contentType _: UTType, defaultFilename _: String? = nil,
-        onCompletion _: @escaping (Result<URL, any Error>) -> Void,
-    ) -> some View { self }
-
-    func fileExporter(
-        isPresented _: Binding<Bool>, document _: (some Any)?, contentTypes _: [UTType] = [], defaultFilename _: String? = nil,
-        onCompletion _: @escaping (Result<URL, any Error>) -> Void, onCancellation _: @escaping () -> Void = {},
-    ) -> some View { self }
-}
-
 // MARK: - HealthKit (Piru/Utilities/HealthKitVitals.swift, HealthKitBodyMass.swift)
 
 /// Android has no HealthKit; Health Connect is not wired. Every read is "unavailable",
@@ -142,10 +119,12 @@ final class SkinShop {
 // MARK: - MapKit (Piru/Views/Journal/DailyDose/LocationPickerView.swift)
 
 /// A place chosen for a dose: a display name plus its coordinate.
+/// A place and, when one is known, its coordinate. A typed place has none, and the journal
+/// stores it as a name with nil coordinates, the way an entry without a place stores nil.
 struct PickedLocation: Equatable {
     var name: String
-    var latitude: Double
-    var longitude: Double
+    var latitude: Double?
+    var longitude: Double?
 }
 
 /// Android's picker takes a typed place name, or one of the recent places. There is no
@@ -163,7 +142,7 @@ struct LocationPickerView: View {
                 Section {
                     TextField(String(localized: "Place"), text: $name)
                     Button(String(localized: "Use This Place")) {
-                        onPick(PickedLocation(name: name, latitude: .nan, longitude: .nan))
+                        onPick(PickedLocation(name: name, latitude: nil, longitude: nil))
                         dismiss()
                     }
                     .disabled(name.trimmingCharacters(in: .whitespaces).isEmpty)
@@ -299,8 +278,8 @@ extension View {
 
 // MARK: - FileDocument
 
-/// The document protocol behind `.fileExporter`; the exporter stand-in never calls it, and a
-/// real Android exporter would write `fileWrapper(...).regularFileContents`.
+/// The document protocol behind `.fileExporter`, which saves `fileWrapper(...).regularFileContents`
+/// (Documents+Android.swift).
 protocol FileDocument {
     typealias ReadConfiguration = FileDocumentReadConfiguration
     typealias WriteConfiguration = FileDocumentWriteConfiguration
@@ -328,13 +307,7 @@ final class FileWrapper {
     }
 }
 
-// MARK: - Sharing (Piru/Views/Components/ShareSheetPresenter.swift, ImageQuickLook+iOS.swift)
-
-/// Programmatic sharing of files and images. TODO(android): an ACTION_SEND intent through
-/// the activity; until then only SwiftUI ShareLinks share, which Skip bridges for text.
-enum ShareSheetPresenter {
-    static func present(_: [Any]) {}
-}
+// MARK: - Quick Look (ImageQuickLook+iOS.swift)
 
 /// Quick Look previews are iOS's; Android opens nothing.
 enum ImageQuickLook {
@@ -348,27 +321,3 @@ struct ZoomSourceView: View {
     var body: some View { Color.clear }
 }
 
-/// The share sheet a `.sheet` presents (Piru/Views/Components/ShareSheet.swift): one
-/// ShareLink per item, each opening Android's chooser through Skip's ACTION_SEND bridge.
-struct ShareSheet: View {
-    let items: [Any]
-
-    var body: some View {
-        NavigationStack {
-            List {
-                ForEach(0 ..< items.count, id: \.self) { index in
-                    if let url = items[index] as? URL {
-                        ShareLink(item: url) {
-                            Label(url.lastPathComponent, systemImage: "square.and.arrow.up")
-                        }
-                    } else if let text = items[index] as? String {
-                        ShareLink(item: text) {
-                            Label(String(localized: "Share"), systemImage: "square.and.arrow.up")
-                        }
-                    }
-                }
-            }
-            .navigationTitle(String(localized: "Share"))
-        }
-    }
-}
