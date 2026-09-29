@@ -149,3 +149,6 @@ Bundle\.main\.url\(forResource:	AndroidResources.url(forResource:
 
 # Skip's LazyVGrid lays out nothing inside a scroll view (Grid+Android.swift).
 \bLazyVGrid\(	AndroidVGrid(
+
+# About lists the Android build's own licenses after the iOS ones (Android/Views/AboutLicenses+Android.swift).
+\bForEach\(BundledLicense\.all\)	ForEach(BundledLicense.all + BundledLicense.android)

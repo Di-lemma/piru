@@ -299,7 +299,8 @@ def stage_resources(tree: Path):
         shutil.copy2(source, resources / source.name)
     flatten_asset_catalog(REPO / "Shared/Assets.xcassets", resources / "Module.xcassets")
     shutil.copytree(REPO / "Piru/Resources/Licenses", resources / "Licenses", dirs_exist_ok=True)
-    stage_symbols(resources / "Module.xcassets", resources / "Licenses")
+    shutil.copytree(ANDROID / "licenses", resources / "Licenses", dirs_exist_ok=True)
+    stage_symbols(resources / "Module.xcassets")
     stage_materials(resources / "Module.xcassets")
     (tree / MODULE / "Generated").mkdir(exist_ok=True)
     generate_asset_symbols(
@@ -366,7 +367,7 @@ def material_symbol(name: str, filled: bool) -> Path:
     return local
 
 
-def stage_symbols(catalog: Path, licenses: Path):
+def stage_symbols(catalog: Path):
     """Every SF Symbol android/symbols.tsv maps becomes a `.symbolset` of that name holding the
     Material glyph, laid out as an SF Symbols export (Symbols > Regular-S > path): SkipUI looks
     a system image up in the catalog before its own few Material fallbacks. SF Symbols may not
@@ -397,19 +398,6 @@ def stage_symbols(catalog: Path, licenses: Path):
             )
             + "\n"
         )
-    license_file = PIRU_ANDROID / "downloads" / "material-symbols" / MATERIAL_SYMBOLS / "LICENSE"
-    if not license_file.exists():
-        run(
-            "curl",
-            "--fail",
-            "--silent",
-            "--show-error",
-            "--location",
-            f"https://raw.githubusercontent.com/google/material-design-icons/{MATERIAL_SYMBOLS}/LICENSE",
-            "-o",
-            str(license_file),
-        )
-    shutil.copy2(license_file, licenses / "License-Apache-2.0-MaterialSymbols.txt")
 
 
 # MARK: - Materials
