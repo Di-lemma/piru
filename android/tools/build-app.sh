@@ -12,6 +12,7 @@
 # skipstone because the SwiftPM mirrors belong to this package; package-apk.sh disables it.
 # Writes every distinct compiler error, relative to the staged module, to
 # $PIRU_ANDROID/build/app.errors and prints the count. Extra arguments go to both builds.
+# PIRU_CONFIG=release builds the bridge optimized (the alpha APK); the default is debug.
 set -e
 TOOLS="${0:A:h}"
 . "$TOOLS/env.sh"
@@ -34,6 +35,7 @@ fi
 if [[ $STATUS == 0 ]]; then
     TARGET_OS_ANDROID=1 skip android build --arch aarch64 --plain --ndk "$ANDROID_NDK_HOME" \
         -d "$BRIDGE/jni-libs" --scratch-path "$BRIDGE/swift" --product Piru \
+        --configuration "${PIRU_CONFIG:-debug}" \
         -Xcc -fPIC -Xswiftc -DTARGET_OS_ANDROID \
         -Xswiftc -continue-building-after-errors "$@" > "$LOG" 2>&1
     STATUS=$?

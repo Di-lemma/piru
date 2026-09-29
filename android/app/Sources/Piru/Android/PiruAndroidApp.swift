@@ -37,6 +37,13 @@ import SwiftUI
 @MainActor
 enum PiruAndroidLaunch {
     static let container: ModelContainer = {
+        // iOS creates an app's Documents folder with its sandbox; Android's files/Documents
+        // exists only once made, and the stores inside it cannot open without it.
+        for directory in [FileManager.SearchPathDirectory.documentDirectory, .applicationSupportDirectory, .cachesDirectory] {
+            if let url = FileManager.default.urls(for: directory, in: .userDomainMask).first {
+                try? FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
+            }
+        }
         let storeURL = StoreRecovery.canonicalStoreURL()
         let container: ModelContainer
         do {

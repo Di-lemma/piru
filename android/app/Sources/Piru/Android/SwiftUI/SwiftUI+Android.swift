@@ -627,3 +627,22 @@ extension View {
         _ scope: Binding<V>, activation: SearchScopeActivation = .automatic, @ViewBuilder scopes: () -> S
     ) -> some View { self }
 }
+
+extension View {
+    /// SkipFuseUI has no safeAreaInset: the inset content is stacked against the view's edge,
+    /// which shrinks the view by the content's height as the inset would. The flexible frame
+    /// becomes a Compose weight, so a view that fills (a NavigationStack) leaves the inset room.
+    func androidSafeAreaInset<V: View>(
+        edge: VerticalEdge, spacing: CGFloat? = nil, @ViewBuilder content: () -> V
+    ) -> some View {
+        VStack(spacing: spacing ?? 0) {
+            if edge == .top {
+                content()
+                frame(maxHeight: .infinity)
+            } else {
+                frame(maxHeight: .infinity)
+                content()
+            }
+        }
+    }
+}

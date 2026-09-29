@@ -33,6 +33,26 @@ android/tools/package-apk.sh   # Gradle → APK, installs on a running emulator
 android/tools/launch.sh shot   # restart, screenshot to $PIRU_ANDROID/build/shot.png, fatal lines
 ```
 
+`PIRU_CONFIG=release` on both scripts builds the optimized APK. The debug build's deep
+bridged view stacks can overflow the main thread's stack (quick log did).
+
+### Driving the emulator
+
+`android/tools/droid` is the `axe` of this setup: adb and uiautomator, nothing to install.
+Labels are the SwiftUI accessibility labels, as Compose reports them.
+
+```bash
+android/tools/droid restart                       # force-stop and relaunch Piru
+android/tools/droid wait --label Journal          # until it is up
+android/tools/droid tap --label "Record an entry" # --index N when a label repeats
+android/tools/droid tree                          # labels with center coordinates
+android/tools/droid shot quicklog                 # → $PIRU_ANDROID/build/quicklog.png
+android/tools/droid logs                          # the app's fatal and error lines
+```
+
+"The UI never went idle" means the app is hung or animating without end. The emulator needs
+6 GB (`setup.sh` sets it): at 2 GB the app's startup is killed under memory pressure.
+
 `build-app.sh` writes every compiler error to `$PIRU_ANDROID/build/app.errors`. To change an
 upstream file for Android: edit it in place, `android/tools/mkpatch.py <name> <paths> --message
 "why"`, then `git checkout -- <paths>`. `stage.py --check` reports patches that no longer apply.
@@ -51,8 +71,8 @@ upstream file for Android: edit it in place, `android/tools/mkpatch.py <name> <p
 
 ## Known gaps
 
-- **Skins:** only the free skins, and no store. The decoration scenes (stickers, night sky)
-  draw the skin's plain background; they are a per-frame Canvas.
+- **Skins:** none on Android (patch 0014): no Skins menu entries, and the app wears the piru
+  skin.
 - **Not wired on Android:** sharing files (ACTION_SEND), file import/export, notification
   actions, Health Connect, location search, widgets.
 - **Material Symbols' license** is staged into `Resources/Licenses` but not listed in About.

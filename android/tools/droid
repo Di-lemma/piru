@@ -1,0 +1,213 @@
+#!/usr/bin/env python3
+"""Drive Piru on the Android emulator the way `axe` drives the iOS simulator.
+
+    droid restart                 force-stop and relaunch Piru
+    droid shot [name]             screenshot → $PIRU_ANDROID/build/<name>.png (prints the path)
+    droid tree [--all]            labeled nodes: label, center x,y (device pixels), bounds
+    droid tap --label TEXT        tap the node whose text or description matches TEXT
+    droid tap X Y                 tap device pixels
+    droid wait --label TEXT       poll until a node matches (default 30 s)
+    droid swipe X1 Y1 X2 Y2 [ms]  swipe in device pixels
+    droid scroll up|down          one screen-height scroll in the middle of the screen
+    droid type TEXT               type into the focused field
+    droid back | home             system navigation
+    droid logs                    this process's fatal and Swift lines since launch
+
+Labels come from Compose's semantics (the SwiftUI accessibility labels): an exact
+case-insensitive match wins, then a unique substring. An ambiguous label is refused with the
+candidates listed; pass --index N to pick one. Coordinates are device pixels (1080×2400),
+as `tree` and screenshots report them.
+"""
+
+import argparse
+import os
+import re
+import subprocess
+import sys
+import time
+import xml.etree.ElementTree as ElementTree
+from pathlib import Path
+
+PACKAGE = "glass.kagerou.piru"
+ACTIVITY = f"{PACKAGE}/piru.module.MainActivity"
+PIRU_ANDROID = Path(os.environ.get("PIRU_ANDROID", "/Volumes/Ugreen/Projects/piru-android"))
+ADB = str(PIRU_ANDROID / "android-sdk/platform-tools/adb")
+
+
+def adb(*args, capture=True, check=True, timeout=30):
+    result = subprocess.run(
+        [ADB, *args], capture_output=capture, text=True, check=False, timeout=timeout
+    )
+    if check and result.returncode != 0:
+        sys.exit(f"adb {' '.join(args)} failed: {result.stderr.strip()}")
+    return result.stdout if capture else ""
+
+
+def nodes(include_unlabeled=False):
+    """The on-screen hierarchy. uiautomator waits for the UI to go idle, so a screen that never
+    settles (a wedged main thread, an endless animation) times out; that is reported as such."""
+    try:
+        adb("shell", "uiautomator", "dump", "/sdcard/droid.xml", timeout=20)
+    except subprocess.TimeoutExpired:
+        sys.exit("the UI never went idle: the app may be hung (droid logs, droid restart)")
+    root = ElementTree.fromstring(adb("exec-out", "cat", "/sdcard/droid.xml"))
+    found = []
+    for element in root.iter("node"):
+        label = element.get("text") or element.get("content-desc") or ""
+        if not label and not include_unlabeled:
+            continue
+        x1, y1, x2, y2 = map(int, re.findall(r"\d+", element.get("bounds", "[0,0][0,0]")))
+        if x2 <= x1 or y2 <= y1:
+            continue
+        found.append(
+            {
+                "label": label,
+                "center": ((x1 + x2) // 2, (y1 + y2) // 2),
+                "bounds": (x1, y1, x2, y2),
+                "class": element.get("class", "").rsplit(".", 1)[-1],
+            }
+        )
+    return found
+
+
+def match(label, index=None):
+    candidates = nodes()
+    wanted = label.lower()
+    exact = [n for n in candidates if n["label"].lower() == wanted]
+    partial = [n for n in candidates if wanted in n["label"].lower()]
+    pool = exact or partial
+    if not pool:
+        return None, []
+    # Compose reports a labeled control and its icon as two nodes a few pixels apart.
+    distinct = []
+    for n in pool:
+        if all(
+            abs(n["center"][0] - d["center"][0]) + abs(n["center"][1] - d["center"][1]) > 24
+            for d in distinct
+        ):
+            distinct.append(n)
+    if index is not None:
+        return (distinct[index] if index < len(distinct) else None), distinct
+    return (distinct[0] if len(distinct) == 1 else None), distinct
+
+
+def command_tap(args):
+    if args.label is None:
+        if len(args.coords) != 2:
+            sys.exit("tap needs --label TEXT or X Y")
+        x, y = args.coords
+    else:
+        node, candidates = match(args.label, args.index)
+        if node is None:
+            if not candidates:
+                sys.exit(f"no node labeled {args.label!r} (droid tree lists them)")
+            listing = "\n".join(
+                f"  [{i}] {n['label']!r} at {n['center']}" for i, n in enumerate(candidates)
+            )
+            sys.exit(f"{args.label!r} is ambiguous; pass --index:\n{listing}")
+        x, y = node["center"]
+    adb("shell", "input", "tap", str(x), str(y))
+    print(f"tapped {x},{y}")
+
+
+def command_wait(args):
+    deadline = time.time() + args.timeout
+    while time.time() < deadline:
+        _, candidates = match(args.label)
+        if candidates:
+            print(f"{args.label!r} at {candidates[0]['center']}")
+            return
+        time.sleep(1)
+    sys.exit(f"{args.label!r} did not appear within {args.timeout:g} s")
+
+
+def command_tree(args):
+    for n in nodes(args.all):
+        x, y = n["center"]
+        print(f"{n['label'][:60]!r:64} {x:>5},{y:<5} {n['class']}")
+
+
+def command_shot(args):
+    path = PIRU_ANDROID / "build" / f"{args.name}.png"
+    path.write_bytes(
+        subprocess.run([ADB, "exec-out", "screencap", "-p"], capture_output=True, check=True).stdout
+    )
+    print(path)
+
+
+def command_restart(_):
+    adb("shell", "am", "force-stop", PACKAGE)
+    adb("logcat", "-c")
+    adb("shell", "am", "start", "-n", ACTIVITY)
+    print("restarted; droid wait --label Journal to know it is up")
+
+
+def command_logs(_):
+    pid = adb("shell", "pidof", PACKAGE, check=False).strip()
+    log = adb("logcat", "-d", timeout=60)
+    # Fatal lines name the app even after its process is gone; the rest are its own errors.
+    fatal = re.compile(rf"SwiftRuntime|Abort message|ANR in {PACKAGE}|Process: {PACKAGE}")
+    own = re.compile(rf"^\S+ \S+\s+{pid}\s+\d+ [EWF] ") if pid else None
+    lines = [
+        line
+        for line in log.splitlines()
+        if fatal.search(line) or (own and own.search(line) and "hiddenapi" not in line)
+    ]
+    print(f"pid: {pid or 'not running'}")
+    print("\n".join(lines[-40:]))
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+    sub = parser.add_subparsers(dest="command", required=True)
+    tap = sub.add_parser("tap")
+    tap.add_argument("coords", nargs="*", type=int)
+    tap.add_argument("--label")
+    tap.add_argument("--index", type=int)
+    wait = sub.add_parser("wait")
+    wait.add_argument("--label", required=True)
+    wait.add_argument("--timeout", type=float, default=30)
+    tree = sub.add_parser("tree")
+    tree.add_argument("--all", action="store_true")
+    shot = sub.add_parser("shot")
+    shot.add_argument("name", nargs="?", default="droid")
+    swipe = sub.add_parser("swipe")
+    swipe.add_argument("points", nargs="+", type=int)
+    scroll = sub.add_parser("scroll")
+    scroll.add_argument("direction", choices=["up", "down"])
+    typing = sub.add_parser("type")
+    typing.add_argument("text")
+    for name in ["back", "home", "restart", "logs"]:
+        sub.add_parser(name)
+    args = parser.parse_args()
+
+    if args.command == "tap":
+        command_tap(args)
+    elif args.command == "wait":
+        command_wait(args)
+    elif args.command == "tree":
+        command_tree(args)
+    elif args.command == "shot":
+        command_shot(args)
+    elif args.command == "swipe":
+        adb("shell", "input", "swipe", *map(str, args.points))
+    elif args.command == "scroll":
+        # A finger moving up scrolls the content down.
+        start, end = (1700, 700) if args.direction == "down" else (700, 1700)
+        adb("shell", "input", "swipe", "540", str(start), "540", str(end), "300")
+    elif args.command == "type":
+        adb("shell", "input", "text", args.text.replace(" ", "%s"))
+    elif args.command == "back":
+        adb("shell", "input", "keyevent", "KEYCODE_BACK")
+    elif args.command == "home":
+        adb("shell", "input", "keyevent", "KEYCODE_HOME")
+    elif args.command == "restart":
+        command_restart(args)
+    elif args.command == "logs":
+        command_logs(args)
+
+
+if __name__ == "__main__":
+    main()

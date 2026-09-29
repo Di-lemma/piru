@@ -1,0 +1,54 @@
+Android ships without skins for now: no Skins menu entries, and every screen wears the piru skin
+
+diff --git a/Piru/Data/Services/SkinStore.swift b/Piru/Data/Services/SkinStore.swift
+index a23d4c9e..eec598f1 100644
+--- a/Piru/Data/Services/SkinStore.swift
++++ b/Piru/Data/Services/SkinStore.swift
+@@ -23,7 +23,12 @@ final class SkinStore {
+ 
+     /// The skin the app is wearing.
+     var current: Skin {
+-        renderingAs ?? tryingOn ?? chosen
++        #if os(Android)
++            // Android ships without skins: every screen wears Piru's own.
++            .piru
++        #else
++            renderingAs ?? tryingOn ?? chosen
++        #endif
+     }
+ 
+     /// Set only for the length of one synchronous offscreen render — see
+diff --git a/Piru/Views/AppChrome.swift b/Piru/Views/AppChrome.swift
+index 99c27f7d..fc03c837 100644
+--- a/Piru/Views/AppChrome.swift
++++ b/Piru/Views/AppChrome.swift
+@@ -24,9 +24,11 @@ struct AppOverflowMenu<Extras: View>: View {
+                 }
+             }
+             Section {
+-                Button { present(.skins) } label: {
+-                    Label("Skins", systemImage: "paintbrush")
+-                }
++                #if !os(Android)
++                    Button { present(.skins) } label: {
++                        Label("Skins", systemImage: "paintbrush")
++                    }
++                #endif
+                 Button { present(.settings) } label: {
+                     Label("Settings", systemImage: "gearshape")
+                 }
+diff --git a/Piru/Views/Journal/JournalMenus.swift b/Piru/Views/Journal/JournalMenus.swift
+index 6662d5ed..e538b190 100644
+--- a/Piru/Views/Journal/JournalMenus.swift
++++ b/Piru/Views/Journal/JournalMenus.swift
+@@ -111,7 +111,9 @@ struct JournalOptionsMenu: View {
+             sectionDivider
+ 
+             VStack(spacing: 0) {
+-                actionRow(.skins, title: Text("Skins"), systemImage: "paintbrush")
++                #if !os(Android)
++                    actionRow(.skins, title: Text("Skins"), systemImage: "paintbrush")
++                #endif
+                 actionRow(.settings, title: Text("Settings"), systemImage: "gearshape")
+             }
+             .padding(.bottom, Spacing.md)

@@ -1,0 +1,92 @@
+Quick log on Android is one full-screen cover with the dock inline at the foot of its scroll view, sized as its detent would size it: a detented sheet over the cover is a second window that takes every tap. Off a sheet, presentationDetents swallows the dock, so the sheet modifiers stay iOS-only
+
+diff --git a/Piru/Navigation/SheetStackPresenter.swift b/Piru/Navigation/SheetStackPresenter.swift
+index d4d11d03..5bb44dfa 100644
+--- a/Piru/Navigation/SheetStackPresenter.swift
++++ b/Piru/Navigation/SheetStackPresenter.swift
+@@ -48,7 +48,7 @@ private struct SheetLayer: ViewModifier {
+                     routeContent(route)
+                         .modifier(SheetLayer(navigator: navigator, depth: depth + 1))
+                 }
+-            #if os(iOS)
++            #if os(iOS) || os(Android)
+                 .fullScreenCover(item: binding(fullScreen: true)) { route in
+                     // swiftlint:disable:next redundant_discardable_let
+                     let _ = assert(
+diff --git a/Piru/Views/QuickLog/QuickLogSupport.swift b/Piru/Views/QuickLog/QuickLogSupport.swift
+index 8bf38d01..775000ad 100644
+--- a/Piru/Views/QuickLog/QuickLogSupport.swift
++++ b/Piru/Views/QuickLog/QuickLogSupport.swift
+@@ -88,11 +88,14 @@ struct DockSheetHost: View {
+         // Routine…) present here, stacked on the dock — the dock occupies
+         // the cover's only presentation slot, so they can't present there.
+         .hostsNestedNavigatorSheets(navigator)
++        #if !os(Android)
++        // The dock is inline on Android (QuickLogView), where no sheet takes these.
+         .presentationDetents(detents, selection: $detent)
+         .presentationBackgroundInteraction(.enabled(upThrough: .medium))
+         .presentationContentInteraction(.resizes)
+         .presentationBackground { Color.clear }
+         .interactiveDismissDisabled()
++        #endif
+     }
+ 
+     /// Stage a scanned label as a complete dose — the strength read off the box
+diff --git a/Piru/Views/QuickLog/QuickLogView.swift b/Piru/Views/QuickLog/QuickLogView.swift
+index d737f7b8..c6050427 100644
+--- a/Piru/Views/QuickLog/QuickLogView.swift
++++ b/Piru/Views/QuickLog/QuickLogView.swift
+@@ -168,6 +168,25 @@ struct QuickLogView: View {
+             // counters here would re-run the whole `QuickLogView.body` on
+             // every stage/increment.
+             .background(StagingHaptics(tray: tray))
++            #if os(Android)
++                // One presentation: the dock is the foot of the cover itself, sized as its
++                // detent would size it. A detented sheet over the cover is a second window
++                // that takes every tap, and Compose sheets have no undimmed detents.
++                .androidSafeAreaInset(edge: .bottom, spacing: 0) {
++                    DockSheetHost(
++                        tray: tray,
++                        content: content,
++                        containerHeight: containerHeight,
++                        searchText: $searchText,
++                        searchActive: $searchActive,
++                        showCustomForm: $showCustomForm,
++                        showEditSheet: $showEditSheet,
++                        showScanner: $showScanner,
++                        onCommit: commitTray,
++                    )
++                    .frame(maxWidth: .infinity, minHeight: androidDockHeight, maxHeight: androidDockHeight)
++                }
++            #endif
+             #if canImport(UIKit)
+                 .background(CoverAccessibilityUnmasker())
+             #endif
+@@ -318,6 +337,7 @@ struct QuickLogView: View {
+         .onGeometryChange(for: CGFloat.self, of: \.size.height) { newValue in
+             containerHeight = newValue
+         }
++        #if !os(Android)
+         .sheet(isPresented: $dockPresented) {
+             DockSheetHost(
+                 tray: tray,
+@@ -331,8 +351,19 @@ struct QuickLogView: View {
+                 onCommit: commitTray,
+             )
+         }
++        #endif
+     }
+ 
++    #if os(Android)
++        /// The height the dock's detent gives it on iOS: the search pill alone, room for the
++        /// tray and its Log button, or most of the screen while searching.
++        private var androidDockHeight: CGFloat {
++            let height = containerHeight > 0 ? containerHeight : 800
++            if searchActive { return height * 0.7 }
++            return tray.isEmpty ? 104 : height * 0.5
++        }
++    #endif
++
+     // MARK: - Daily routine
+ 
+     /// Cheap change-signature for the group pills' inputs (tiny N), used to

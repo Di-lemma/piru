@@ -39,4 +39,6 @@ yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --sdk_root="$ANDROID_H
   platform-tools emulator "system-images;android-36;google_apis;arm64-v8a" > /dev/null
 echo no | "$ANDROID_HOME/cmdline-tools/latest/bin/avdmanager" create avd -n piru-spike \
   -k "system-images;android-36;google_apis;arm64-v8a" -d pixel_8 --force > /dev/null
+# The default 2 GB fails the app's startup under memory pressure (ANR "failed to complete startup").
+sed -i '' 's/^hw.ramSize=.*/hw.ramSize=6G/' "$ANDROID_AVD_HOME/piru-spike.avd/config.ini"
 echo "ready: $PIRU_ANDROID"
