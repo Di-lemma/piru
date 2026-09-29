@@ -33,6 +33,7 @@ struct UnifiedTimelineView: View {
     @AppStorage("timelineZoom", store: UserDefaults(suiteName: AppIdentity.appGroup)) private var zoom = 1.0
     @AppStorage("timelineCompression", store: UserDefaults(suiteName: AppIdentity.appGroup)) private var compressGaps = true
     @AppStorage("timelinePKCurves", store: UserDefaults(suiteName: AppIdentity.appGroup)) private var pkCurves = false
+    @AppStorage("timelineCurveScale", store: UserDefaults(suiteName: AppIdentity.appGroup)) private var curveScale = TimelineCurveScale.doseStrength
     @AppStorage("timelineShowsAxis", store: UserDefaults(suiteName: AppIdentity.appGroup)) private var showsAxis = true
     @AppStorage("timelineBubbleStyle", store: UserDefaults(suiteName: AppIdentity.appGroup)) private var bubbleStyle = TimelineBubbleStyle.full
     @AppStorage("showSessionVitals", store: UserDefaults(suiteName: AppIdentity.appGroup)) private var showsVitals = false
@@ -65,6 +66,7 @@ struct UnifiedTimelineView: View {
                         zoom: $zoom,
                         compressGaps: $compressGaps,
                         pkCurves: $pkCurves,
+                        curveScale: $curveScale,
                         showsAxis: $showsAxis,
                         bubbleStyle: $bubbleStyle,
                     ) {
@@ -95,6 +97,7 @@ struct UnifiedTimelineView: View {
                     zoom: zoom,
                     compressGaps: compressGaps,
                     pkCurves: pkCurves,
+                    curveScale: curveScale,
                     showsAxis: showsAxis,
                     bubbleStyle: bubbleStyle,
                     showsVitals: showsVitals,
@@ -104,7 +107,7 @@ struct UnifiedTimelineView: View {
     }
 
     private var rebuildKey: String {
-        "\(DoseLogService.shared.revision)|\(zoom)|\(compressGaps)|\(pkCurves)|\(showsAxis)|\(bubbleStyle.rawValue)|\(showsVitals)|\(dynamicTypeSize)|\(clockTick)"
+        "\(DoseLogService.shared.revision)|\(zoom)|\(compressGaps)|\(pkCurves)|\(curveScale.rawValue)|\(showsAxis)|\(bubbleStyle.rawValue)|\(showsVitals)|\(dynamicTypeSize)|\(clockTick)"
     }
 
     /// Pinch on the graph: preview by stretching vertically while the fingers
@@ -188,12 +191,13 @@ final class UnifiedTimelineModel {
         zoom: Double,
         compressGaps: Bool,
         pkCurves: Bool,
+        curveScale: TimelineCurveScale,
         showsAxis: Bool,
         bubbleStyle: TimelineBubbleStyle,
         showsVitals: Bool,
         cacheable: Bool = true,
     ) async {
-        let preferences = "\(zoom)|\(compressGaps)|\(pkCurves)|\(showsAxis)|\(bubbleStyle.rawValue)|\(showsVitals)|\(TimelineDoseBubble.heightScale)"
+        let preferences = "\(zoom)|\(compressGaps)|\(pkCurves)|\(curveScale.rawValue)|\(showsAxis)|\(bubbleStyle.rawValue)|\(showsVitals)|\(TimelineDoseBubble.heightScale)"
         let key = "\(revision)|\(preferences)|\(entries.count)"
         if key == builtKey, !days.isEmpty { return }
         let now = DebugClock.now
@@ -222,6 +226,7 @@ final class UnifiedTimelineModel {
                 bubbleStyle: bubbleStyle,
                 pkMode: pkCurves,
             ),
+            curveScale: curveScale,
             heartRate: heartRate,
             sessions: sessions,
         ) else {
@@ -262,19 +267,20 @@ final class UnifiedTimelineModel {
     /// comes from a `COUNT` and a one-row fetch on ``DatabaseActor``, so a hit
     /// never materializes the dose log on the main actor; the file decodes
     /// off the main actor. `false` on a miss, leaving the build to
-    /// ``rebuild(entries:colors:colorMap:revision:zoom:compressGaps:pkCurves:showsAxis:bubbleStyle:showsVitals:cacheable:)``.
+    /// ``rebuild(entries:colors:colorMap:revision:zoom:compressGaps:pkCurves:curveScale:showsAxis:bubbleStyle:showsVitals:cacheable:)``.
     func restoreCached(
         container: ModelContainer,
         revision: Int,
         zoom: Double,
         compressGaps: Bool,
         pkCurves: Bool,
+        curveScale: TimelineCurveScale,
         showsAxis: Bool,
         bubbleStyle: TimelineBubbleStyle,
         showsVitals: Bool,
     ) async -> Bool {
         guard days.isEmpty else { return false }
-        let preferences = "\(zoom)|\(compressGaps)|\(pkCurves)|\(showsAxis)|\(bubbleStyle.rawValue)|\(showsVitals)|\(TimelineDoseBubble.heightScale)"
+        let preferences = "\(zoom)|\(compressGaps)|\(pkCurves)|\(curveScale.rawValue)|\(showsAxis)|\(bubbleStyle.rawValue)|\(showsVitals)|\(TimelineDoseBubble.heightScale)"
         let now = DebugClock.now
         let identity = await DoseLogIdentity.fetch(container: container)
         guard identity.entryCount > 0, !Task.isCancelled else { return false }

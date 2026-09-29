@@ -17,6 +17,11 @@ struct TimelineStripBuilder {
     /// duration data have no state and appear as dots/cards only, exactly as
     /// they render as markers elsewhere.
     private let statesBySubstance: [String: [ActiveSubstanceState]]
+    /// Effect mode under a relative ``TimelineCurveScale``: per substance, each
+    /// state's weight divided by its reference crest, parallel to
+    /// ``statesBySubstance``. Empty under ``TimelineCurveScale/doseStrength``,
+    /// where the curve reads ``ActiveSubstanceState/doseIntensity`` as is.
+    private let relativeWeightsBySubstance: [String: [Double]]
     /// Raw entries per substance (lowercased name, ascending) — the PK mode's
     /// input.
     private let entriesBySubstance: [String: [DoseEntry]]
@@ -88,6 +93,7 @@ struct TimelineStripBuilder {
         zoom: Double,
         compressGaps: Bool,
         style: TimelineDayLayout.Style,
+        curveScale: TimelineCurveScale = .doseStrength,
         heartRate: [HeartRateSample] = [],
         sessions: [PersistentIdentifier: Session] = [:],
     ) {
@@ -118,7 +124,14 @@ struct TimelineStripBuilder {
                 protectingStates.append(state)
             }
         }
-        statesBySubstance = Dictionary(grouping: states) { $0.substanceName.lowercased() }
+        let grouped = Dictionary(grouping: states) { $0.substanceName.lowercased() }
+            .mapValues { $0.sorted { $0.doseTimestamp < $1.doseTimestamp } }
+        statesBySubstance = grouped
+        relativeWeightsBySubstance = if let lookback = curveScale.lookback, !style.pkMode {
+            grouped.mapValues { Self.relativeWeights(states: $0, lookback: lookback) }
+        } else {
+            [:]
+        }
         var bySubstance = Dictionary(grouping: entries) { $0.substance.lowercased() }
         for k in bySubstance.keys {
             bySubstance[k]?.sort { $0.timestamp < $1.timestamp }
@@ -707,10 +720,14 @@ struct TimelineStripBuilder {
     /// derived from the global map — the same phase-based curves the journal
     /// cards and session detail draw, so a dose's spine curve ends when its
     /// effects end, not when the last molecule clears (that's the %-badge's
-    /// and In Your System's job). The width is the dose's strength on its
-    /// substance's ladder — `amount / heavy`, so a heavy dose reaches the
-    /// lane's edge and a common one sits well inside it — which makes widths
-    /// comparable across substances and days alike.
+    /// and In Your System's job). By default the width is the dose's strength
+    /// on its substance's ladder — `amount / heavy`, so a heavy dose reaches
+    /// the lane's edge and a common one sits well inside it — which makes
+    /// widths comparable across substances and days alike. A relative
+    /// ``TimelineCurveScale`` instead measures each dose against the
+    /// substance's largest recent one (``relativeWeights(states:lookback:)``):
+    /// widths then compare a substance with itself, and a lone dose fills the
+    /// lane.
     private mutating func curveSeries(slice: Slice, localY: (Date) -> CGFloat) -> [TimelineDayLayout.CurveSeries] {
         // Sample grid over the slice's time range, denser where the map is
         // stretched: walk global segments clipped to the slice.
@@ -753,13 +770,16 @@ struct TimelineStripBuilder {
 
     private mutating func effectSeries(slice: Slice, grid: [(t: Date, y: CGFloat)]) -> [TimelineDayLayout.CurveSeries] {
         var result: [TimelineDayLayout.CurveSeries] = []
-        for states in statesBySubstance.values {
+        for (key, states) in statesBySubstance {
             // Only states whose effect window overlaps this slice contribute.
-            let relevant = states.filter { state in
-                let end = state.doseTimestamp.addingTimeInterval(state.totalMinutes * 60)
-                return state.doseTimestamp <= slice.topTime && end >= slice.bottomTime
+            let indices = states.indices.filter { i in
+                let end = states[i].doseTimestamp.addingTimeInterval(states[i].totalMinutes * 60)
+                return states[i].doseTimestamp <= slice.topTime && end >= slice.bottomTime
             }
-            guard !relevant.isEmpty else { continue }
+            guard !indices.isEmpty else { continue }
+            let relevant = indices.map { states[$0] }
+            let weights = relativeWeightsBySubstance[key].map { all in indices.map { all[$0] } }
+                ?? relevant.map(\.doseIntensity)
 
             var values: [Double] = []
             var phases: [TimelineCurvePhase?] = []
@@ -767,19 +787,17 @@ struct TimelineStripBuilder {
             phases.reserveCapacity(grid.count)
             var sliceMax = 0.0
             for sample in grid {
-                let v = Self.effectValue(at: sample.t, states: relevant)
+                let v = Self.effectValue(at: sample.t, states: relevant, weights: weights)
                 values.append(v)
                 phases.append(TimelineCurvePhase.phase(at: sample.t, states: relevant))
                 sliceMax = max(sliceMax, v)
             }
 
-            // Never normalize to the substance's own largest dose: a lone dose
-            // would then fill the lane, and a label-dose paracetamol beside a
-            // stimulant would read as the strongest thing taken.
             guard sliceMax > Self.minimumVisibleIntensity else { continue }
             // With no ladder there is no strength to read, only the neutral
-            // `unknownIntensity`; the dotted stroke says so.
-            let isUnscaled = states.allSatisfy(\.doseIsUnscaled)
+            // `unknownIntensity`; the dotted stroke says so. A relative scale
+            // reads the amounts themselves, so every curve there is measured.
+            let isUnscaled = relativeWeightsBySubstance[key] == nil && states.allSatisfy(\.doseIsUnscaled)
 
             let color = SubstancePalette.color(for: relevant[0].substanceName, colorMap: colorMap)
             let points = Self.trimmed(zip(grid, zip(values, phases)).map {
@@ -885,16 +903,70 @@ struct TimelineStripBuilder {
     }
 
     /// Stacked effect intensity for one substance at `t` — each dose's
-    /// phase-curve shape scaled by its dose intensity, summed. Unit weight
-    /// would send every dose to the lane cap and flatten the peaks.
-    private static func effectValue(at t: Date, states: [ActiveSubstanceState]) -> Double {
+    /// phase-curve shape scaled by its weight (`weights[i]` for `states[i]`),
+    /// summed. Unit weight would send every dose to the lane cap and flatten
+    /// the peaks.
+    private static func effectValue(at t: Date, states: [ActiveSubstanceState], weights: [Double]) -> Double {
         var total = 0.0
-        for state in states {
+        for (state, weight) in zip(states, weights) {
             let minutes = t.timeIntervalSince(state.doseTimestamp) / 60
             guard minutes >= 0, minutes <= state.totalMinutes else { continue }
-            total += state.doseIntensity * TimelineCurveModel.intensity(at: minutes, for: state)
+            total += weight * TimelineCurveModel.intensity(at: minutes, for: state)
         }
         return total
+    }
+
+    /// One substance's per-dose curve weights under a relative
+    /// ``TimelineCurveScale``, for `states` in ascending time order.
+    ///
+    /// A dose weighs its amount on the ladder (``ActiveSubstanceState/doseMagnitude``,
+    /// uncapped so doses past heavy still rank), or its raw amount when the
+    /// substance has no ladder. The curves stack those weights, and each
+    /// dose's crest — the stacked value midway through its peak — is a
+    /// candidate reference. A dose is then divided by the tallest crest among
+    /// the doses in `lookback` before it, itself included (every dose, before
+    /// or after, when `lookback` is infinite), so the largest recent dose
+    /// reaches the lane's edge. Dividing per dose, not per moment, keeps the
+    /// stacked curve continuous where the reference changes.
+    static func relativeWeights(states: [ActiveSubstanceState], lookback: TimeInterval) -> [Double] {
+        guard !states.isEmpty else { return [] }
+        let usesAmount = states.contains(where: \.doseIsUnscaled)
+        let raw = states.map { usesAmount ? $0.amount : $0.doseMagnitude }
+        let longest = states.map(\.totalMinutes).max() ?? 0
+
+        let crests = states.indices.map { j in
+            let state = states[j]
+            let crest = state.doseTimestamp.addingTimeInterval(
+                (state.comeupEndMinutes + state.peakEndMinutes) / 2 * 60,
+            )
+            // Only doses taken within the longest effect before the crest can
+            // still be running at it.
+            let earliest = crest.addingTimeInterval(-longest * 60)
+            var lo = j
+            while lo > 0, states[lo - 1].doseTimestamp >= earliest {
+                lo -= 1
+            }
+            var hi = j
+            while hi + 1 < states.count, states[hi + 1].doseTimestamp <= crest {
+                hi += 1
+            }
+            return effectValue(at: crest, states: Array(states[lo ... hi]), weights: Array(raw[lo ... hi]))
+        }
+
+        if lookback.isInfinite {
+            let reference = crests.max() ?? 0
+            return raw.map { reference > 0 ? $0 / reference : 0 }
+        }
+        return states.indices.map { i in
+            let earliest = states[i].doseTimestamp.addingTimeInterval(-lookback)
+            var reference = crests[i]
+            var j = i
+            while j > 0, states[j - 1].doseTimestamp >= earliest {
+                j -= 1
+                reference = max(reference, crests[j])
+            }
+            return reference > 0 ? raw[i] / reference : 0
+        }
     }
 
     /// A slice skips a substance whose stacked intensity never rises above

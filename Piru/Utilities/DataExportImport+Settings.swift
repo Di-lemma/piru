@@ -69,6 +69,7 @@ enum ExportedSettings {
         .init(key: "timelineZoom", domain: .appGroup, kind: .double),
         .init(key: "timelineCompression", domain: .appGroup, kind: .bool),
         .init(key: "timelinePKCurves", domain: .appGroup, kind: .bool),
+        .init(key: "timelineCurveScale", domain: .appGroup, kind: .string),
         .init(key: "timelineShowsAxis", domain: .appGroup, kind: .bool),
         .init(key: "timelineBubbleStyle", domain: .appGroup, kind: .string),
         .init(key: "journalGrouping", domain: .appGroup, kind: .string),

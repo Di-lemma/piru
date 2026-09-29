@@ -1057,6 +1057,28 @@
         }
       }
     },
+    "Empty stomach" : {
+      "localizations" : {
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Estómago vacío"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "空腹"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "空腹"
+          }
+        }
+      }
+    },
     "Engraved gold, a plum night, a turning wheel" : {
       "localizations" : {
         "es" : {
@@ -1198,6 +1220,28 @@
         }
       }
     },
+    "Fasted" : {
+      "localizations" : {
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En ayunas"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "空腹"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "空腹"
+          }
+        }
+      }
+    },
     "Fireflies over a dark meadow" : {
       "localizations" : {
         "es" : {
@@ -1250,6 +1294,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "跟隨系統"
+          }
+        }
+      }
+    },
+    "Full meal" : {
+      "localizations" : {
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Comida completa"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "吃过正餐"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "吃過正餐"
           }
         }
       }
@@ -1730,6 +1796,28 @@
         }
       }
     },
+    "Light snack" : {
+      "localizations" : {
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Algo ligero"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "少量进食"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "少量進食"
+          }
+        }
+      }
+    },
     "Linen" : {
       "localizations" : {
         "es" : {
@@ -1782,6 +1870,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "低可信度"
+          }
+        }
+      }
+    },
+    "Meal" : {
+      "localizations" : {
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Comida"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正餐"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正餐"
           }
         }
       }
@@ -2574,6 +2684,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "板岩"
+          }
+        }
+      }
+    },
+    "Snack" : {
+      "localizations" : {
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ligero"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "少量"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "少量"
           }
         }
       }

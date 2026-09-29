@@ -287,6 +287,7 @@ struct EntryListView: View {
                             zoom: prefs.$zoom,
                             compressGaps: prefs.$compressGaps,
                             pkCurves: prefs.$pkCurves,
+                            curveScale: prefs.$curveScale,
                             showsAxis: prefs.$showsAxis,
                             bubbleStyle: prefs.$bubbleStyle,
                         )
@@ -380,6 +381,7 @@ struct EntryListView: View {
                    zoom: prefs.zoom,
                    compressGaps: prefs.compressGaps,
                    pkCurves: prefs.pkCurves,
+                   curveScale: prefs.curveScale,
                    showsAxis: prefs.showsAxis,
                    bubbleStyle: prefs.bubbleStyle,
                    showsVitals: prefs.showsVitals,
@@ -400,6 +402,7 @@ struct EntryListView: View {
                 zoom: prefs.zoom,
                 compressGaps: prefs.compressGaps,
                 pkCurves: prefs.pkCurves,
+                curveScale: prefs.curveScale,
                 showsAxis: prefs.showsAxis,
                 bubbleStyle: prefs.bubbleStyle,
                 showsVitals: prefs.showsVitals,

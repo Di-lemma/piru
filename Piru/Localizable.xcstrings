@@ -1932,6 +1932,28 @@
         }
       }
     },
+    "%@ Custom" : {
+      "localizations" : {
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ Personalizado"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 自定义"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 自訂"
+          }
+        }
+      }
+    },
     "%@ days" : {
       "localizations" : {
         "es" : {
@@ -6859,6 +6881,28 @@
         }
       }
     },
+    "^[%lld dose](inflect: true)" : {
+      "localizations" : {
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "^[%lld dosis](inflect: true)"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld 份剂量"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld 份劑量"
+          }
+        }
+      }
+    },
     "^[%lld entry](inflect: true)" : {
       "localizations" : {
         "es" : {
@@ -7080,6 +7124,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "另有 %lld 種物質"
+          }
+        }
+      }
+    },
+    "^[%lld staged dose](inflect: true)" : {
+      "localizations" : {
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "^[%lld dosis preparada](inflect: true)"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已暂存 %lld 份剂量"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已暫存 %lld 份劑量"
           }
         }
       }
@@ -9445,6 +9511,50 @@
         }
       }
     },
+    "A meal delays **%@** by %@" : {
+      "localizations" : {
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Una comida retrasa el inicio de **%@** %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正餐会让 **%@** 起效推迟 %@"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正餐會讓 **%@** 起效延後 %@"
+          }
+        }
+      }
+    },
+    "A meal delays ^[%lld dose](inflect: true) by up to ~%@" : {
+      "localizations" : {
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Una comida retrasa ^[%lld dosis](inflect: true) hasta ~%@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正餐会让 %lld 份剂量起效最多推迟约 %@"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正餐會讓 %lld 份劑量起效最多延後約 %@"
+          }
+        }
+      }
+    },
     "A model estimate, not a measurement. What's in your body and what you feel don't always line up." : {
       "localizations" : {
         "es" : {
@@ -10063,6 +10173,50 @@
         }
       }
     },
+    "A snack delays **%@** by %@" : {
+      "localizations" : {
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un tentempié retrasa el inicio de **%@** %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "少量进食会让 **%@** 起效推迟 %@"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "少量進食會讓 **%@** 起效延後 %@"
+          }
+        }
+      }
+    },
+    "A snack delays ^[%lld dose](inflect: true) by up to ~%@" : {
+      "localizations" : {
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un tentempié retrasa ^[%lld dosis](inflect: true) hasta ~%@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "少量进食会让 %lld 份剂量起效最多推迟约 %@"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "少量進食會讓 %lld 份劑量起效最多延後約 %@"
+          }
+        }
+      }
+    },
     "A summary of how the drug affects the brain's three main signaling chemicals — serotonin, dopamine, and noradrenaline — and whether it releases them or blocks their reuptake. The slider shows which one it leans toward." : {
       "localizations" : {
         "es" : {
@@ -10115,6 +10269,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "你的身體用這次劑量和本場中的另一種物質生成的第三種化合物——單獨任何一種都不會產生。"
+          }
+        }
+      }
+    },
+    "A typical delay for oral doses. No food study has measured **%@** itself." : {
+      "localizations" : {
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un retraso típico para dosis orales. Ningún estudio sobre comida ha medido **%@** en concreto."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "口服剂量的一般推迟时间。还没有食物研究专门测量过 **%@**。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "口服劑量的一般延後時間。還沒有食物研究專門測量過 **%@**。"
           }
         }
       }
@@ -26380,6 +26556,34 @@
         }
       }
     },
+    "Curve Scale" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escala de curvas"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escala de curvas"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "曲线比例"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "曲線比例"
+          }
+        }
+      }
+    },
     "Curves" : {
       "localizations" : {
         "es" : {
@@ -30088,6 +30292,34 @@
         }
       }
     },
+    "Dose Strength" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Potencia de la dosis"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Potencia de la dosis"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "剂量强度"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "劑量強度"
+          }
+        }
+      }
+    },
     "Dose time" : {
       "localizations" : {
         "es" : {
@@ -33412,6 +33644,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "共情劑"
+          }
+        }
+      }
+    },
+    "Empty stomach" : {
+      "localizations" : {
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Estómago vacío"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "空腹"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "空腹"
           }
         }
       }
@@ -36938,6 +37192,28 @@
         }
       }
     },
+    "Fasted" : {
+      "localizations" : {
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En ayunas"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "空腹"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "空腹"
+          }
+        }
+      }
+    },
     "Favorite" : {
       "localizations" : {
         "es" : {
@@ -37753,6 +38029,72 @@
         }
       }
     },
+    "Food" : {
+      "localizations" : {
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Comida"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "食物"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "食物"
+          }
+        }
+      }
+    },
+    "Food doesn't delay **%@**" : {
+      "localizations" : {
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La comida no retrasa **%@**"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "进食不会推迟 **%@** 起效"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "進食不會延後 **%@** 起效"
+          }
+        }
+      }
+    },
+    "Food doesn't delay these doses" : {
+      "localizations" : {
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La comida no retrasa estas dosis"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "进食不会推迟这些剂量起效"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "進食不會延後這些劑量起效"
+          }
+        }
+      }
+    },
     "For importing into the PsychonautWiki app" : {
       "localizations" : {
         "es" : {
@@ -38510,6 +38852,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "完全的效應；體驗本身就是一切，日常活動被擱置。"
+          }
+        }
+      }
+    },
+    "Full meal" : {
+      "localizations" : {
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Comida completa"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "吃过正餐"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "吃過正餐"
           }
         }
       }
@@ -45916,6 +46280,118 @@
         }
       }
     },
+    "Largest Dose Ever" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dosis más alta de siempre"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dosis más alta de siempre"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "历来最大剂量"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "歷來最大劑量"
+          }
+        }
+      }
+    },
+    "Largest Dose, 7 Days" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dosis más alta, 7 días"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dosis más alta, 7 días"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "7 天内最大剂量"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "7 天內最大劑量"
+          }
+        }
+      }
+    },
+    "Largest Dose, 30 Days" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dosis más alta, 30 días"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dosis más alta, 30 días"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "30 天内最大剂量"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "30 天內最大劑量"
+          }
+        }
+      }
+    },
+    "Largest Dose, 90 Days" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dosis más alta, 90 días"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dosis más alta, 90 días"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "90 天内最大剂量"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "90 天內最大劑量"
+          }
+        }
+      }
+    },
     "Last 7 Days" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -46812,6 +47288,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "輕度活動或拉伸——不要劇烈運動"
+          }
+        }
+      }
+    },
+    "Light snack" : {
+      "localizations" : {
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Algo ligero"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "少量进食"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "少量進食"
           }
         }
       }
@@ -49263,6 +49761,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "MDMA 會大量釋放血清素，鋰在此之上再加一份，因此主要風險是血清素症候群。鋰與經典迷幻劑合用有癲癇發作的報告；MDMA 沒有被同樣地研究過。"
+          }
+        }
+      }
+    },
+    "Meal" : {
+      "localizations" : {
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Comida"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正餐"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正餐"
           }
         }
       }
@@ -67682,6 +68202,7 @@
       }
     },
     "Remove entry" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -74391,6 +74912,28 @@
         }
       }
     },
+    "Shows the staged doses" : {
+      "localizations" : {
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Muestra las dosis preparadas"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "显示已暂存的剂量"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "顯示已暫存的劑量"
+          }
+        }
+      }
+    },
     "Shows your body weight, heart rate, blood pressure and workouts from Health alongside your journal. Change what Piru can see in the Health app's settings." : {
       "localizations" : {
         "es" : {
@@ -75402,6 +75945,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "平穩"
+          }
+        }
+      }
+    },
+    "Snack" : {
+      "localizations" : {
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ligero"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "少量"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "少量"
           }
         }
       }
@@ -77898,6 +78463,50 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "會自己計數的庫存"
+          }
+        }
+      }
+    },
+    "Stomach" : {
+      "localizations" : {
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Estómago"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "进食状态"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "進食狀態"
+          }
+        }
+      }
+    },
+    "Stomach: %@" : {
+      "localizations" : {
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Estómago: %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "进食状态：%@"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "進食狀態：%@"
           }
         }
       }
@@ -85213,6 +85822,28 @@
         }
       }
     },
+    "Typical estimate" : {
+      "localizations" : {
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Estimación típica"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "一般估计"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "一般估計"
+          }
+        }
+      }
+    },
     "Typical protocol" : {
       "localizations" : {
         "es" : {
@@ -90905,468 +91536,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "μ-鴉片受體配體"
-          }
-        }
-      }
-    },
-    "^[%lld dose](inflect: true)" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld 份剂量"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld 份劑量"
-          }
-        },
-        "es-ES" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "^[%lld dosis](inflect: true)"
-          }
-        }
-      }
-    },
-    "^[%lld staged dose](inflect: true)" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "已暂存 %lld 份剂量"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "已暫存 %lld 份劑量"
-          }
-        },
-        "es-ES" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "^[%lld dosis preparada](inflect: true)"
-          }
-        }
-      }
-    },
-    "Shows the staged doses" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "显示已暂存的剂量"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "顯示已暫存的劑量"
-          }
-        },
-        "es-ES" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Muestra las dosis preparadas"
-          }
-        }
-      }
-    },
-    "Typical estimate" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "一般估计"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "一般估計"
-          }
-        },
-        "es-ES" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Estimación típica"
-          }
-        }
-      }
-    },
-    "A meal delays **%@** by %@" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "正餐会让 **%@** 起效推迟 %@"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "正餐會讓 **%@** 起效延後 %@"
-          }
-        },
-        "es-ES" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Una comida retrasa el inicio de **%@** %@"
-          }
-        }
-      }
-    },
-    "A snack delays **%@** by %@" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "少量进食会让 **%@** 起效推迟 %@"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "少量進食會讓 **%@** 起效延後 %@"
-          }
-        },
-        "es-ES" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Un tentempié retrasa el inicio de **%@** %@"
-          }
-        }
-      }
-    },
-    "A typical delay for oral doses. No food study has measured **%@** itself." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "口服剂量的一般推迟时间。还没有食物研究专门测量过 **%@**。"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "口服劑量的一般延後時間。還沒有食物研究專門測量過 **%@**。"
-          }
-        },
-        "es-ES" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Un retraso típico para dosis orales. Ningún estudio sobre comida ha medido **%@** en concreto."
-          }
-        }
-      }
-    },
-    "%@ Custom" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ 自定义"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ 自訂"
-          }
-        },
-        "es-ES" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ Personalizado"
-          }
-        }
-      }
-    },
-    "Food doesn't delay **%@**" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "进食不会推迟 **%@** 起效"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "進食不會延後 **%@** 起效"
-          }
-        },
-        "es-ES" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "La comida no retrasa **%@**"
-          }
-        }
-      }
-    },
-    "Food doesn't delay these doses" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "进食不会推迟这些剂量起效"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "進食不會延後這些劑量起效"
-          }
-        },
-        "es-ES" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "La comida no retrasa estas dosis"
-          }
-        }
-      }
-    },
-    "A meal delays ^[%lld dose](inflect: true) by up to ~%@" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "正餐会让 %lld 份剂量起效最多推迟约 %@"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "正餐會讓 %lld 份劑量起效最多延後約 %@"
-          }
-        },
-        "es-ES" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Una comida retrasa ^[%lld dosis](inflect: true) hasta ~%@"
-          }
-        }
-      }
-    },
-    "A snack delays ^[%lld dose](inflect: true) by up to ~%@" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "少量进食会让 %lld 份剂量起效最多推迟约 %@"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "少量進食會讓 %lld 份劑量起效最多延後約 %@"
-          }
-        },
-        "es-ES" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Un tentempié retrasa ^[%lld dosis](inflect: true) hasta ~%@"
-          }
-        }
-      }
-    },
-    "Empty stomach" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "空腹"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "空腹"
-          }
-        },
-        "es-ES" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Estómago vacío"
-          }
-        }
-      }
-    },
-    "Light snack" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "少量进食"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "少量進食"
-          }
-        },
-        "es-ES" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Algo ligero"
-          }
-        }
-      }
-    },
-    "Full meal" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "吃过正餐"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "吃過正餐"
-          }
-        },
-        "es-ES" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Comida completa"
-          }
-        }
-      }
-    },
-    "Fasted" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "空腹"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "空腹"
-          }
-        },
-        "es-ES" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "En ayunas"
-          }
-        }
-      }
-    },
-    "Snack" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "少量"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "少量"
-          }
-        },
-        "es-ES" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ligero"
-          }
-        }
-      }
-    },
-    "Meal" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "正餐"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "正餐"
-          }
-        },
-        "es-ES" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Comida"
-          }
-        }
-      }
-    },
-    "Stomach" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "进食状态"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "進食狀態"
-          }
-        },
-        "es-ES" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Estómago"
-          }
-        }
-      }
-    },
-    "Stomach: %@" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "进食状态：%@"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "進食狀態：%@"
-          }
-        },
-        "es-ES" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Estómago: %@"
-          }
-        }
-      }
-    },
-    "Food" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "食物"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "食物"
-          }
-        },
-        "es-ES" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Comida"
           }
         }
       }

@@ -22,6 +22,10 @@ struct TimelinePreferences: DynamicProperty {
     @AppStorage("timelinePKCurves", store: UserDefaults(suiteName: AppIdentity.appGroup))
     var pkCurves = false
 
+    /// What an effect curve's width is measured against.
+    @AppStorage("timelineCurveScale", store: UserDefaults(suiteName: AppIdentity.appGroup))
+    var curveScale = TimelineCurveScale.doseStrength
+
     /// Show the hour axis down the left edge.
     @AppStorage("timelineShowsAxis", store: UserDefaults(suiteName: AppIdentity.appGroup))
     var showsAxis = true
@@ -42,6 +46,6 @@ struct TimelinePreferences: DynamicProperty {
     /// The options the timeline layout is keyed on — folded into the rebuild
     /// key so a display change re-lays the strip and nothing else does.
     var layoutSignature: String {
-        "\(zoom)|\(compressGaps)|\(pkCurves)|\(showsAxis)|\(bubbleStyle.rawValue)|\(showsVitals)"
+        "\(zoom)|\(compressGaps)|\(pkCurves)|\(curveScale.rawValue)|\(showsAxis)|\(bubbleStyle.rawValue)|\(showsVitals)"
     }
 }

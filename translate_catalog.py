@@ -1000,6 +1000,13 @@ T = {
     # Timeline options menu (2026-09-02)
     "Compress Empty Time": ("压缩空闲时间", "壓縮空閒時間"),
     "Curves": ("曲线", "曲線"),
+    # Timeline curve scale (2026-09-29)
+    "Curve Scale": ("曲线比例", "曲線比例"),
+    "Dose Strength": ("剂量强度", "劑量強度"),
+    "Largest Dose, 7 Days": ("7 天内最大剂量", "7 天內最大劑量"),
+    "Largest Dose, 30 Days": ("30 天内最大剂量", "30 天內最大劑量"),
+    "Largest Dose, 90 Days": ("90 天内最大剂量", "90 天內最大劑量"),
+    "Largest Dose Ever": ("历来最大剂量", "歷來最大劑量"),
     # Notes follow-up (2026-09-02)
     "Notes at their T+ offsets, descriptors by domain — 1 session with notes": (
         "按 T+ 偏移列出的笔记，按领域分组的描述词——1 个场次有笔记",
@@ -8114,6 +8121,12 @@ if __name__ == "__main__":
     # catalog yet. List them here so they get inserted; clear once Xcode has
     # picked them up on a real build (after which they're update-only).
     NEW_KEYS: set[str] = {
+        "Curve Scale",
+        "Dose Strength",
+        "Largest Dose, 7 Days",
+        "Largest Dose, 30 Days",
+        "Largest Dose, 90 Days",
+        "Largest Dose Ever",
         "^[%lld dose](inflect: true)",
         "^[%lld staged dose](inflect: true)",
         "Shows the staged doses",
