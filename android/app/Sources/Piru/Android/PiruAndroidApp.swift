@@ -72,6 +72,9 @@ enum PiruAndroidLaunch {
         SubstanceColorStore.refreshDefaults(in: container.mainContext)
         _ = SearchHistoryStore.shared.recent
         SessionService.ensureSessionsPopulated(in: container.mainContext)
+        // Folded routines first, then the reminder horizon rolled forward, as PiruApp does.
+        MedsMigrator.foldRoutinesIfNeeded(context: container.mainContext)
+        await DoseNotificationManager.syncMedRemindersIfNeeded(container: container)
         #if DEBUG
             if !DemoData.insertImportFileData(container: container),
                !DemoData.insertPersonaData(container: container) {

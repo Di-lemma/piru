@@ -7,6 +7,10 @@
 
     <!-- permissions needed for using the internet or an embedded WebKit browser -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- sensoryFeedback (staging, logging): without it every haptic throws a SecurityException -->
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <!-- session and routine reminders (runtime-granted on Android 13+) -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <!-- <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /> -->
 
     <application

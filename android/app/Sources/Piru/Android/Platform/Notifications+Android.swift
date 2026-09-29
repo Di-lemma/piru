@@ -86,3 +86,15 @@ nonisolated extension UNUserNotificationCenter {
         }
     }
 }
+
+/// A repeating calendar reminder on Android. Skip's calendar trigger carries its
+/// DateComponents as `Any`, which the bridge cannot hand to Kotlin (a fatal error on
+/// schedule), so the reminder is the next matching moment as a one-shot interval trigger.
+/// The routine reminders are rescheduled whenever the app runs, which carries it forward.
+enum AndroidCalendarTrigger {
+    static func make(dateMatching components: DateComponents, repeats: Bool) -> UNNotificationTrigger {
+        let next = Calendar.current.nextDate(after: .now, matching: components, matchingPolicy: .nextTime)
+            ?? .now.addingTimeInterval(60)
+        return UNTimeIntervalNotificationTrigger(timeInterval: max(1, next.timeIntervalSinceNow), repeats: false)
+    }
+}

@@ -47,9 +47,12 @@ def nodes(include_unlabeled=False):
     """The on-screen hierarchy. uiautomator waits for the UI to go idle, so a screen that never
     settles (a wedged main thread, an endless animation) times out; that is reported as such."""
     try:
-        adb("shell", "uiautomator", "dump", "/sdcard/droid.xml", timeout=20)
+        dumped = adb("shell", "uiautomator", "dump", "/sdcard/droid.xml", timeout=20, check=False)
     except subprocess.TimeoutExpired:
         sys.exit("the UI never went idle: the app may be hung (droid logs, droid restart)")
+    # A window mid-transition has no root node yet: that is an empty screen, not an error.
+    if "dumped to" not in dumped:
+        return []
     root = ElementTree.fromstring(adb("exec-out", "cat", "/sdcard/droid.xml"))
     found = []
     for element in root.iter("node"):

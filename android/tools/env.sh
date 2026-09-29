@@ -11,3 +11,11 @@ export ANDROID_SDK_ROOT="$ANDROID_HOME"
 export ANDROID_AVD_HOME="$PIRU_ANDROID/avd"
 export GRADLE_USER_HOME="$PIRU_ANDROID/gradle-home"
 export PATH="$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$PATH"
+
+# An emulator on another Mac: PIRU_ADB_SSH=user@host routes adb through that host's adb
+# server over an SSH tunnel, so every tool here drives its emulator.
+if [[ -n "${PIRU_ADB_SSH:-}" ]]; then
+  export ADB_SERVER_SOCKET=tcp:localhost:5038
+  pgrep -f "5038:localhost:5037" > /dev/null \
+    || ssh -f -N -o ServerAliveInterval=30 -o ExitOnForwardFailure=yes -L 5038:localhost:5037 "$PIRU_ADB_SSH"
+fi

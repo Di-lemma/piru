@@ -132,3 +132,13 @@
 Bundle\.main\.object\(forInfoDictionaryKey:	AndroidInfoPlist.object(forInfoDictionaryKey:
 Bundle\.main\.infoDictionary	AndroidInfoPlist.infoDictionary
 Bundle\.main\.url\(forResource:	AndroidResources.url(forResource:
+
+# Skip cannot bridge a calendar trigger's DateComponents (Notifications+Android.swift).
+\bUNCalendarNotificationTrigger\(dateMatching:	AndroidCalendarTrigger.make(dateMatching:
+
+# Materials become the fills they read as on iOS (Color+Android.swift, stage.py MATERIALS).
+\.ultraThinMaterial\b	.androidUltraThinMaterial
+\.thinMaterial\b	.androidThinMaterial
+\.regularMaterial\b	.androidRegularMaterial
+\.thickMaterial\b	.androidThickMaterial
+\.ultraThickMaterial\b	.androidUltraThickMaterial

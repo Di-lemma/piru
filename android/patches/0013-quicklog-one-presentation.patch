@@ -33,10 +33,10 @@ index 8bf38d01..775000ad 100644
  
      /// Stage a scanned label as a complete dose — the strength read off the box
 diff --git a/Piru/Views/QuickLog/QuickLogView.swift b/Piru/Views/QuickLog/QuickLogView.swift
-index d737f7b8..c6050427 100644
+index d737f7b8..99ef4612 100644
 --- a/Piru/Views/QuickLog/QuickLogView.swift
 +++ b/Piru/Views/QuickLog/QuickLogView.swift
-@@ -168,6 +168,25 @@ struct QuickLogView: View {
+@@ -168,6 +168,31 @@ struct QuickLogView: View {
              // counters here would re-run the whole `QuickLogView.body` on
              // every stage/increment.
              .background(StagingHaptics(tray: tray))
@@ -57,12 +57,18 @@ index d737f7b8..c6050427 100644
 +                        onCommit: commitTray,
 +                    )
 +                    .frame(maxWidth: .infinity, minHeight: androidDockHeight, maxHeight: androidDockHeight)
++                    // The sheet the dock is on iOS: a floating rounded panel over the list,
++                    // clear of the gesture bar.
++                    .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 32, style: .continuous))
++                    .shadow(color: .black.opacity(0.14), radius: 16, y: 2)
++                    .padding(.horizontal, 8)
++                    .padding(.bottom, 12)
 +                }
 +            #endif
              #if canImport(UIKit)
                  .background(CoverAccessibilityUnmasker())
              #endif
-@@ -318,6 +337,7 @@ struct QuickLogView: View {
+@@ -318,6 +343,7 @@ struct QuickLogView: View {
          .onGeometryChange(for: CGFloat.self, of: \.size.height) { newValue in
              containerHeight = newValue
          }
@@ -70,7 +76,7 @@ index d737f7b8..c6050427 100644
          .sheet(isPresented: $dockPresented) {
              DockSheetHost(
                  tray: tray,
-@@ -331,8 +351,19 @@ struct QuickLogView: View {
+@@ -331,8 +357,19 @@ struct QuickLogView: View {
                  onCommit: commitTray,
              )
          }

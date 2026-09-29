@@ -1,21 +1,18 @@
 // Piru/Views/Components/FlowLayout.swift for Android. The upstream type is a custom `Layout`,
-// a protocol SkipFuseUI does not provide, so this one lays chips out in an adaptive grid:
-// they wrap into as many columns as fit, aligned to a column grid instead of packed tight.
-// Call sites are unchanged: `FlowLayout(spacing:) { … }` reaches `callAsFunction`, as a
-// Layout's does.
+// a protocol SkipFuseUI does not provide, so the children are handed to Compose's FlowRow
+// (Skip/AndroidFlowComposer.kt), which wraps them the same way. Call sites are unchanged:
+// `FlowLayout(spacing:) { … }` reaches `callAsFunction`, as a Layout's does.
 
+import SkipBridge
 import SwiftUI
 
 struct FlowLayout {
     var spacing: CGFloat = 8
 
     func callAsFunction<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
-        LazyVGrid(
-            columns: [GridItem(.adaptive(minimum: 96), spacing: spacing, alignment: .leading)],
-            alignment: .leading,
-            spacing: spacing
-        ) {
-            content()
+        let children = content().Java_viewOrEmpty
+        return ComposeView {
+            try! AnyDynamicObject(className: "piru.module.AndroidFlowComposer", Double(spacing), children)
         }
     }
 }

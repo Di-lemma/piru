@@ -38,3 +38,13 @@ nonisolated extension Color {
         )
     }
 }
+
+/// iOS materials as the fills stage.py generates for them (`MATERIALS`): Compose draws no blur,
+/// and Skip's own stand-in is near-white, which leaves a material card invisible on the page.
+extension ShapeStyle where Self == Color {
+    static var androidUltraThinMaterial: Color { Color("android__material__ultraThin", bundle: AndroidResources.bundle) }
+    static var androidThinMaterial: Color { Color("android__material__thin", bundle: AndroidResources.bundle) }
+    static var androidRegularMaterial: Color { Color("android__material__regular", bundle: AndroidResources.bundle) }
+    static var androidThickMaterial: Color { Color("android__material__thick", bundle: AndroidResources.bundle) }
+    static var androidUltraThickMaterial: Color { Color("android__material__ultraThick", bundle: AndroidResources.bundle) }
+}

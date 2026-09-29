@@ -199,6 +199,7 @@ def stage_resources(tree: Path):
     flatten_asset_catalog(REPO / "Shared/Assets.xcassets", resources / "Module.xcassets")
     shutil.copytree(REPO / "Piru/Resources/Licenses", resources / "Licenses", dirs_exist_ok=True)
     stage_symbols(resources / "Module.xcassets", resources / "Licenses")
+    stage_materials(resources / "Module.xcassets")
     (tree / MODULE / "Generated").mkdir(exist_ok=True)
     generate_asset_symbols(
         REPO / "Shared/Assets.xcassets", tree / MODULE / "Generated/AssetSymbols.swift"
@@ -279,6 +280,54 @@ def stage_symbols(catalog: Path, licenses: Path):
             str(license_file),
         )
     shutil.copy2(license_file, licenses / "License-Apache-2.0-MaterialSymbols.txt")
+
+
+# MARK: - Materials
+
+# iOS materials as the fills they read as on a plain page, since Compose has no blur behind a
+# view: a neutral at partial opacity, so over white a card is iOS's measured #F5F5F5 and over a
+# colored surface the color still shows through as it would through the blur.
+# (material, light gray, light alpha, dark gray, dark alpha)
+MATERIALS = [
+    ("ultraThin", 0.94, 0.72, 0.11, 0.72),
+    ("thin", 0.94, 0.80, 0.12, 0.80),
+    ("regular", 0.95, 0.88, 0.13, 0.88),
+    ("thick", 0.96, 0.94, 0.14, 0.94),
+    ("ultraThick", 0.97, 0.97, 0.15, 0.97),
+]
+
+
+def stage_materials(catalog: Path):
+    def color(gray: float, alpha: float, dark: bool) -> dict:
+        entry = {
+            "color": {
+                "color-space": "srgb",
+                "components": {
+                    "red": f"{gray:.3f}",
+                    "green": f"{gray:.3f}",
+                    "blue": f"{min(1.0, gray + 0.01):.3f}",
+                    "alpha": f"{alpha:.3f}",
+                },
+            },
+            "idiom": "universal",
+        }
+        if dark:
+            entry["appearances"] = [{"appearance": "luminosity", "value": "dark"}]
+        return entry
+
+    for name, light, light_alpha, dark, dark_alpha in MATERIALS:
+        folder = catalog / f"android__material__{name}.colorset"
+        folder.mkdir(parents=True, exist_ok=True)
+        (folder / "Contents.json").write_text(
+            json.dumps(
+                {
+                    "colors": [color(light, light_alpha, False), color(dark, dark_alpha, True)],
+                    "info": {"author": "stage.py", "version": 1},
+                },
+                indent=2,
+            )
+            + "\n"
+        )
 
 
 # MARK: - Info.plist

@@ -54,11 +54,16 @@ extension View {
         @ViewBuilder content: () -> V
     ) -> some View {
         let bar = content()
+        // The flexible frame is a Compose weight: a scroll view above the bar would otherwise
+        // take the whole height and push the bar out of its container.
         return VStack(alignment: alignment, spacing: spacing ?? 0) {
             if edge == .top { bar }
-            self
+            frame(maxHeight: .infinity)
             if edge == .bottom { bar }
         }
+        // Flexible itself too, or a parent stack measures it unbounded and the weight inside
+        // has nothing to divide (both upstream uses sit on scroll views that fill).
+        .frame(maxHeight: .infinity)
     }
 
     /// Shows the first phase: the cycle is an iOS flourish, and the resting frame reads the same.
