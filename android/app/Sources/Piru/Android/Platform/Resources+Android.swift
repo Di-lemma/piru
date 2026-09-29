@@ -7,9 +7,19 @@
     import AndroidAssetManager
     import Foundation
     import SkipAndroidBridge
+    import SkipBridge
     @preconcurrency import SwiftJNI
 
     nonisolated enum AndroidResources {
+        /// The module's resource bundle, backed by the APK assets. SwiftPM's generated
+        /// `Bundle.module` builds a Darwin-style `.bundle` URL that no Android bundle answers;
+        /// Skip's path initializer maps `<main bundle>/<package>_Piru.resources` to the module.
+        static let bundle: Bundle = AndroidBundle(
+            path: AndroidBundle.main.bundlePath + "/piru-android_Piru.resources", moduleName: "Piru"
+        ) {
+            try! AnyDynamicObject(className: "piru.module._ModuleBundleAccessor_Piru").moduleBundle!
+        } ?? .main
+
         /// Where Skip puts the module's resources, and the folders stage.py copies whole (on iOS
         /// their files sit at the bundle root).
         private static let assetDirectory = "piru/module/Resources"

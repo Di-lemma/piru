@@ -9,13 +9,13 @@ nonisolated extension String {
     typealias LocalizationValue = LocalizedStringResource
 
     init(localized resource: LocalizedStringResource, comment: StaticString? = nil) {
-        let format = Bundle.module.localizedString(forKey: resource.key, value: nil, table: resource.table)
+        let format = AndroidResources.bundle.localizedString(forKey: resource.key, value: nil, table: resource.table)
         let arguments = resource.defaultValue.values.map { $0 as? CVarArg ?? String(describing: $0) }
         self = arguments.isEmpty ? format : String(format: format, arguments: arguments)
     }
 
     init(localized key: String, defaultValue: String? = nil, table: String? = nil, comment: StaticString? = nil) {
-        self = Bundle.module.localizedString(forKey: key, value: defaultValue, table: table)
+        self = AndroidResources.bundle.localizedString(forKey: key, value: defaultValue, table: table)
     }
 }
 
