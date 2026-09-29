@@ -134,9 +134,15 @@ final class ArcadeGame {
         #if DEBUG
             // `-piruArcadeWave <n>` starts the round at wave n, and
             // `-piruArcadeBoss` at the tenth, Bitjelly's, for recording a wave
-            // without playing up to it.
+            // without playing up to it. `-piruArcadeFury` is the boss with
+            // five-way and both wingmen already on, so it arrives furious.
             let args = ProcessInfo.processInfo.arguments
-            let startWave = args.contains("-piruArcadeBoss") ? 10 : args.firstIndex(of: "-piruArcadeWave").flatMap { args.indices.contains($0 + 1) ? Int(args[$0 + 1]) : nil }
+            let fury = args.contains("-piruArcadeFury")
+            if fury {
+                wideLevel = 2
+                wingmen = 2
+            }
+            let startWave = args.contains("-piruArcadeBoss") || fury ? 10 : args.firstIndex(of: "-piruArcadeWave").flatMap { args.indices.contains($0 + 1) ? Int(args[$0 + 1]) : nil }
             if let startWave, startWave > 1 {
                 wave = startWave - 1
                 for i in formation.members.indices { formation.members[i].alive = false }
