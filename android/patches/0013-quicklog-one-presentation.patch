@@ -1,4 +1,4 @@
-Quick log on Android is one full-screen cover with the dock inline at the foot of its scroll view, sized as its detent would size it: a detented sheet over the cover is a second window that takes every tap. Off a sheet, presentationDetents swallows the dock, so the sheet modifiers stay iOS-only
+Quick log on Android is one full-screen cover with the dock inline at the foot of its scroll view, sized as its detent would size it: a detented sheet over the cover is a second window that takes every tap. Off a sheet, presentationDetents swallows the dock, so the sheet modifiers stay iOS-only. DockClearance stays iOS-only: the inline dock already ends the cards above it
 
 diff --git a/Piru/Navigation/SheetStackPresenter.swift b/Piru/Navigation/SheetStackPresenter.swift
 index d4d11d03..5bb44dfa 100644
@@ -14,18 +14,20 @@ index d4d11d03..5bb44dfa 100644
                      // swiftlint:disable:next redundant_discardable_let
                      let _ = assert(
 diff --git a/Piru/Views/QuickLog/QuickLogSupport.swift b/Piru/Views/QuickLog/QuickLogSupport.swift
-index 8bf38d01..775000ad 100644
+index 7243ba96..aa827c39 100644
 --- a/Piru/Views/QuickLog/QuickLogSupport.swift
 +++ b/Piru/Views/QuickLog/QuickLogSupport.swift
-@@ -88,11 +88,14 @@ struct DockSheetHost: View {
+@@ -90,6 +90,8 @@ struct DockSheetHost: View {
          // Routine…) present here, stacked on the dock — the dock occupies
          // the cover's only presentation slot, so they can't present there.
          .hostsNestedNavigatorSheets(navigator)
 +        #if !os(Android)
 +        // The dock is inline on Android (QuickLogView), where no sheet takes these.
          .presentationDetents(detents, selection: $detent)
-         .presentationBackgroundInteraction(.enabled(upThrough: .medium))
-         .presentationContentInteraction(.resizes)
+         // At every height, never `upThrough: .medium`: a tall staged stack sets
+         // its compact detent above medium, and past that threshold the sheet
+@@ -98,6 +100,7 @@ struct DockSheetHost: View {
+         .presentationContentInteraction(geometry.compactOverflows ? .scrolls : .resizes)
          .presentationBackground { Color.clear }
          .interactiveDismissDisabled()
 +        #endif
@@ -33,12 +35,20 @@ index 8bf38d01..775000ad 100644
  
      /// Stage a scanned label as a complete dose — the strength read off the box
 diff --git a/Piru/Views/QuickLog/QuickLogView.swift b/Piru/Views/QuickLog/QuickLogView.swift
-index d737f7b8..99ef4612 100644
+index 28948769..8c4db218 100644
 --- a/Piru/Views/QuickLog/QuickLogView.swift
 +++ b/Piru/Views/QuickLog/QuickLogView.swift
-@@ -168,6 +168,31 @@ struct QuickLogView: View {
+@@ -166,11 +166,40 @@ struct QuickLogView: View {
+             // Staging haptics live in a leaf, not this body: reading the tick
              // counters here would re-run the whole `QuickLogView.body` on
              // every stage/increment.
++            #if !os(Android)
++            // The inline dock on Android already ends the cards above it.
+             .modifier(DockClearance(geometry: dockGeometry))
++            #endif
+             .onScrollPhaseChange { _, phase in
+                 if phase == .interacting { dockGeometry.requestMinimize() }
+             }
              .background(StagingHaptics(tray: tray))
 +            #if os(Android)
 +                // One presentation: the dock is the foot of the cover itself, sized as its
@@ -49,6 +59,7 @@ index d737f7b8..99ef4612 100644
 +                        tray: tray,
 +                        content: content,
 +                        containerHeight: containerHeight,
++                        geometry: dockGeometry,
 +                        searchText: $searchText,
 +                        searchActive: $searchActive,
 +                        showCustomForm: $showCustomForm,
@@ -68,7 +79,7 @@ index d737f7b8..99ef4612 100644
              #if canImport(UIKit)
                  .background(CoverAccessibilityUnmasker())
              #endif
-@@ -318,6 +343,7 @@ struct QuickLogView: View {
+@@ -321,6 +350,7 @@ struct QuickLogView: View {
          .onGeometryChange(for: CGFloat.self, of: \.size.height) { newValue in
              containerHeight = newValue
          }
@@ -76,7 +87,7 @@ index d737f7b8..99ef4612 100644
          .sheet(isPresented: $dockPresented) {
              DockSheetHost(
                  tray: tray,
-@@ -331,8 +357,19 @@ struct QuickLogView: View {
+@@ -335,8 +365,19 @@ struct QuickLogView: View {
                  onCommit: commitTray,
              )
          }
