@@ -16,8 +16,28 @@ final class ModelChanges {
     var token = 0
 }
 
+/// A model's reads and writes, reported to Skip's registrar as well: in this file
+/// `Observation.ObservationRegistrar` is Skip's, which recomposes the Compose views that read
+/// a property, where PortableData's registrar reaches only Observation.
+private struct SkipModelObservation: ModelObservationBridge {
+    let registrar = Observation.ObservationRegistrar()
+
+    func access<Subject: Observable>(_ subject: Subject, keyPath: KeyPath<Subject, some Any>) {
+        registrar.access(subject, keyPath: keyPath)
+    }
+
+    func willSet<Subject: Observable>(_ subject: Subject, keyPath: KeyPath<Subject, some Any>) {
+        registrar.willSet(subject, keyPath: keyPath)
+    }
+
+    func didSet<Subject: Observable>(_ subject: Subject, keyPath: KeyPath<Subject, some Any>) {
+        registrar.didSet(subject, keyPath: keyPath)
+    }
+}
+
 extension View {
     func modelContainer(_ container: ModelContainer) -> some View {
+        ModelObservation.makeBridge = { SkipModelObservation() }
         ModelContainer.application = container
         container.mainContext.changeHandler = { ModelChanges.shared.token += 1 }
         return environment(\.modelContext, container.mainContext)

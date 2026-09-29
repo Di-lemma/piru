@@ -40,6 +40,9 @@ let package = Package(
             name: "PortableData",
             dependencies: [
                 "PortableDataMacros",
+                // Logger, on every platform: this package builds Compat's `os` for its tests, and on
+                // macOS that module would stand in for Apple's in PortableData's import either way.
+                "os",
                 // Loaded by every target downstream, so `#Predicate` expands off Apple platforms.
                 .target(name: "FoundationMacros", condition: .when(platforms: portable)),
                 .product(name: "GRDB", package: "GRDB.swift"),

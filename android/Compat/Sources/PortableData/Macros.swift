@@ -1,6 +1,18 @@
-@attached(member, conformances: PersistentModel, names: named(_$backing), named(init), named(_$encode), named(_$resolve))
-@attached(extension, conformances: PersistentModel)
+import Observation
+
+@attached(
+    member,
+    conformances: PersistentModel, Observable,
+    names: named(_$backing), named(_$observationRegistrar), named(init), named(_$restore), named(_$encode), named(_$describe)
+)
+@attached(memberAttribute)
+@attached(extension, conformances: PersistentModel, Observable)
 public macro Model() = #externalMacro(module: "PortableDataMacros", type: "ModelMacro")
+
+/// Applied by `@Model` to each stored `var`: tracked accessors over a `_name` peer.
+@attached(accessor, names: named(init), named(get), named(set), named(_modify))
+@attached(peer, names: prefixed(_))
+public macro _PersistedProperty() = #externalMacro(module: "PortableDataMacros", type: "PersistedPropertyMacro")
 
 @attached(peer)
 public macro Attribute(

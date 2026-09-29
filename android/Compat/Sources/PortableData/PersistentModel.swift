@@ -8,9 +8,13 @@ import Foundation
 /// so its key paths are `Sendable` and `#Predicate` and `SortDescriptor` accept them.
 public protocol PersistentModel: AnyObject, Hashable, Identifiable, SendableMetatype {
     var _$backing: ModelBacking { get }
+    /// Builds a model from a stored row. Relationships start empty; the context connects them.
     init(_$snapshot: Snapshot) throws
-    func _$encode(into snapshot: inout Snapshot)
-    func _$resolve(_ resolver: RelationshipResolver) throws
+    /// Writes the stored attributes named in `keys` (every one when `nil`) back into this instance.
+    func _$restore(from snapshot: Snapshot, keys: Set<String>?) throws
+    /// Every stored property, relationships as the identifiers they point at.
+    func _$encode(into snapshot: inout Snapshot) throws
+    static func _$describe(_ entity: EntityDescription)
 }
 
 public extension PersistentModel {
@@ -56,133 +60,53 @@ public final class ModelBacking: @unchecked Sendable {
     public init() {}
 }
 
-/// One model's stored form: every attribute as a JSON value, every to-one relationship as
-/// the primary key it points at.
-public struct Snapshot {
-    public let identifier: PersistentIdentifier
-    var stored: [String: Any]
-    var written: [String: Data] = [:]
-    var referenced: [any PersistentModel] = []
+// MARK: - Accessor hooks
 
-    init(identifier: PersistentIdentifier, json: Data) throws {
-        self.identifier = identifier
-        stored = try JSONSerialization.jsonObject(with: json) as? [String: Any] ?? [:]
-    }
-
-    init(identifier: PersistentIdentifier) {
-        self.identifier = identifier
-        stored = [:]
-    }
-
-    // MARK: Reading
-
-    public func decode<T: Decodable>(_ key: String) throws -> T {
-        let value = stored[key] ?? NSNull()
-        let fragment = try JSONSerialization.data(withJSONObject: value, options: .fragmentsAllowed)
-        return try JSONDecoder().decode(T.self, from: fragment)
-    }
-
-    /// Relationships start empty; ``RelationshipResolver`` fills them once every model
-    /// they could point at exists.
-    public func decode<M: PersistentModel>(_: String) throws -> M? {
-        nil
-    }
-
-    public func decode<M: PersistentModel>(_: String) throws -> [M]? {
-        nil
-    }
-
-    public func decode<M: PersistentModel>(_: String) throws -> [M] {
-        []
-    }
-
-    func primaryKey(_ key: String) -> String? {
-        stored[key] as? String
-    }
-
-    func primaryKeys(_ key: String) -> [String] {
-        stored[key] as? [String] ?? []
-    }
-
-    // MARK: Writing
-
-    public mutating func encode(_ value: some Encodable, _ key: String) {
-        written[key] = (try? JSONEncoder().encode(value)) ?? Data("null".utf8)
-    }
-
-    public mutating func encode(_ value: (some PersistentModel)?, _ key: String) {
-        guard let value, !value.isDeleted else {
-            written[key] = Data("null".utf8)
-            return
+/// Called by a tracked setter before a to-one relationship changes from `old` to `new`:
+/// moves `child` from `old`'s inverse array to `new`'s, as SwiftData updates the other side
+/// of a relationship on assignment.
+public func _willSet<Target: PersistentModel>(_ child: some PersistentModel, from old: Target?, to new: Target?) {
+    guard old !== new else { return }
+    let context = child._$backing.context
+    if context?.isApplying == true { return }
+    let childType = ObjectIdentifier(type(of: child))
+    for inverse in EntityDescription.of(Target.self).inverses where ObjectIdentifier(inverse.child) == childType {
+        guard inverse.owner(of: child) === old else { continue }
+        if let old {
+            inverse.remove(child, from: old)
         }
-        referenced.append(value)
-        written[key] = pendingKey(of: value)
-    }
-
-    public mutating func encode(_ value: [some PersistentModel]?, _ key: String) {
-        let live = (value ?? []).filter { !$0.isDeleted }
-        referenced.append(contentsOf: live as [any PersistentModel])
-        let keys = live.map(\.persistentModelID.primaryKey)
-        written[key] = (try? JSONEncoder().encode(keys)) ?? Data("[]".utf8)
-    }
-
-    /// The target's key as a JSON string. The context assigns identity to every referenced
-    /// model before it encodes anything, so this is never provisional in a saved row.
-    private func pendingKey(of model: some PersistentModel) -> Data {
-        (try? JSONEncoder().encode(model.persistentModelID.primaryKey)) ?? Data("null".utf8)
-    }
-
-    var json: Data {
-        var out = Data("{".utf8)
-        for (index, (key, value)) in written.sorted(by: { $0.key < $1.key }).enumerated() {
-            if index > 0 { out.append(Data(",".utf8)) }
-            out.append((try? JSONEncoder().encode(key)) ?? Data())
-            out.append(Data(":".utf8))
-            out.append(value)
+        if let new {
+            inverse.add(child, to: new)
         }
-        out.append(Data("}".utf8))
-        return out
+        break
     }
+    context?.noteMutation(of: child)
 }
 
-/// Reconnects a loaded model's relationships. Forward relationships resolve from the keys
-/// the model stored; a to-many side declared with `inverse:` is rebuilt from the models
-/// pointing back at it, so the two sides cannot disagree on disk.
-public struct RelationshipResolver {
-    enum Phase { case forward, inverse }
+/// Called by a tracked setter before any other stored property changes.
+public func _willSet<Value>(_ model: some PersistentModel, from _: Value, to _: Value) {
+    model._$backing.context?.noteMutation(of: model)
+}
 
-    let context: ModelContext
-    let snapshot: Snapshot?
-    let phase: Phase
+/// Called by a tracked property's `_modify`, which changes the value in place.
+public func _willMutate(_ model: some PersistentModel) {
+    model._$backing.context?.noteMutation(of: model)
+}
 
-    public func resolve(_: inout some Decodable, _: String) throws {}
+/// Whether an assignment changes the value, so observers hear only of real changes, as
+/// Observation's own setters decide it.
+public func _differs<Value>(_: Value, _: Value) -> Bool {
+    true
+}
 
-    public func resolve<M: PersistentModel>(_ value: inout M?, _ key: String) throws {
-        guard phase == .forward, let snapshot else { return }
-        value = try snapshot.primaryKey(key).flatMap { try context.registered(M.self, primaryKey: $0) }
-    }
+public func _differs<Value: Equatable>(_ lhs: Value, _ rhs: Value) -> Bool {
+    lhs != rhs
+}
 
-    public func resolve<M: PersistentModel>(_ value: inout [M]?, _ key: String) throws {
-        guard phase == .forward, let snapshot else { return }
-        value = try snapshot.primaryKeys(key).compactMap { try context.registered(M.self, primaryKey: $0) }
-    }
+public func _differs<Value: AnyObject>(_ lhs: Value, _ rhs: Value) -> Bool {
+    lhs !== rhs
+}
 
-    public func resolve<M: PersistentModel>(_ value: inout [M], _ key: String) throws {
-        guard phase == .forward, let snapshot else { return }
-        value = try snapshot.primaryKeys(key).compactMap { try context.registered(M.self, primaryKey: $0) }
-    }
-
-    public func resolveInverse<M: PersistentModel, Owner: PersistentModel>(
-        _ value: inout [M]?, _ inverse: KeyPath<M, Owner?>, owner: Owner,
-    ) throws {
-        guard phase == .inverse else { return }
-        value = context.registeredModels(M.self).filter { $0[keyPath: inverse] === owner }
-    }
-
-    public func resolveInverse<M: PersistentModel, Owner: PersistentModel>(
-        _ value: inout [M], _ inverse: KeyPath<M, Owner?>, owner: Owner,
-    ) throws {
-        guard phase == .inverse else { return }
-        value = context.registeredModels(M.self).filter { $0[keyPath: inverse] === owner }
-    }
+public func _differs<Value: Equatable & AnyObject>(_ lhs: Value, _ rhs: Value) -> Bool {
+    lhs != rhs
 }
