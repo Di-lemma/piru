@@ -226,6 +226,9 @@ nonisolated struct GraphicsContext {
     }
 
     private func append(_ kind: CanvasItem.Kind) {
+        // An erase (a fade cut into what is already drawn) has no shape to lay out: each item
+        // is its own Compose node, composited only over the page.
+        guard blendMode != .destinationOut else { return }
         recording.items.append(CanvasItem(kind: kind, opacity: opacity, clip: clip))
     }
 }

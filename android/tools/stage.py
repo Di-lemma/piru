@@ -41,6 +41,8 @@ UPSTREAM_DIRS = ["Piru", "Shared"]
 # bridge phase's. Each keeps its own checkouts and resolved revisions.
 SCRATCH_PATHS = [Path(".build"), Path(".build/Android/Piru/swift")]
 SQLITE = "sqlite-amalgamation-3530400"
+# google/material-design-icons, the source of the glyphs android/symbols.tsv names (Apache-2.0).
+MATERIAL_SYMBOLS = "bd8cb85bd4bad964fe6918f79665bb40c3a8efef"
 
 # Pinned dependencies replaced by a patched local clone: (url, tag, version). The mirror maps
 # the original URL to the clone, so no manifest names the substitute. `skip` is patched to build
@@ -195,11 +197,87 @@ def stage_resources(tree: Path):
         shutil.copy2(source, resources / source.name)
     flatten_asset_catalog(REPO / "Shared/Assets.xcassets", resources / "Module.xcassets")
     shutil.copytree(REPO / "Piru/Resources/Licenses", resources / "Licenses", dirs_exist_ok=True)
+    stage_symbols(resources / "Module.xcassets", resources / "Licenses")
     (tree / MODULE / "Generated").mkdir(exist_ok=True)
     generate_asset_symbols(
         REPO / "Shared/Assets.xcassets", tree / MODULE / "Generated/AssetSymbols.swift"
     )
     generate_info_plist(tree / MODULE / "Generated/InfoPlist.swift")
+
+
+# MARK: - Symbols
+
+
+def material_symbol(name: str, filled: bool) -> Path:
+    """The Material Symbols Rounded SVG at the pinned commit, fetched once into downloads/."""
+    cache = PIRU_ANDROID / "downloads" / "material-symbols" / MATERIAL_SYMBOLS
+    file = f"{name}{'_fill1' if filled else ''}_24px.svg"
+    local = cache / file
+    if not local.exists():
+        cache.mkdir(parents=True, exist_ok=True)
+        url = (
+            f"https://raw.githubusercontent.com/google/material-design-icons/{MATERIAL_SYMBOLS}"
+            f"/symbols/web/{name}/materialsymbolsrounded/{file}"
+        )
+        run(
+            "curl",
+            "--fail",
+            "--silent",
+            "--show-error",
+            "--location",
+            "--retry",
+            "3",
+            url,
+            "-o",
+            str(local),
+        )
+    return local
+
+
+def stage_symbols(catalog: Path, licenses: Path):
+    """Every SF Symbol android/symbols.tsv maps becomes a `.symbolset` of that name holding the
+    Material glyph, laid out as an SF Symbols export (Symbols > Regular-S > path): SkipUI looks
+    a system image up in the catalog before its own few Material fallbacks. SF Symbols may not
+    ship on Android (Apple's license), so every glyph drawn there is Material's."""
+    for line in (ANDROID / "symbols.tsv").read_text().splitlines():
+        if not line.strip() or line.startswith("#"):
+            continue
+        sf, material, fill = line.split("\t")
+        svg = material_symbol(material, fill == "1").read_text()
+        paths = re.findall(r'<path d="([^"]+)"', svg)
+        if not paths:
+            raise SystemExit(f"no path in Material symbol {material} (for {sf})")
+        folder = catalog / f"{sf}.symbolset"
+        folder.mkdir(parents=True, exist_ok=True)
+        (folder / f"{sf}.svg").write_text(
+            '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">'
+            '<g id="Symbols"><g id="Regular-S">'
+            + "".join(f'<path d="{d}"/>' for d in paths)
+            + "</g></g></svg>\n"
+        )
+        (folder / "Contents.json").write_text(
+            json.dumps(
+                {
+                    "info": {"author": "stage.py", "version": 1},
+                    "symbols": [{"filename": f"{sf}.svg", "idiom": "universal"}],
+                },
+                indent=2,
+            )
+            + "\n"
+        )
+    license_file = PIRU_ANDROID / "downloads" / "material-symbols" / MATERIAL_SYMBOLS / "LICENSE"
+    if not license_file.exists():
+        run(
+            "curl",
+            "--fail",
+            "--silent",
+            "--show-error",
+            "--location",
+            f"https://raw.githubusercontent.com/google/material-design-icons/{MATERIAL_SYMBOLS}/LICENSE",
+            "-o",
+            str(license_file),
+        )
+    shutil.copy2(license_file, licenses / "License-Apache-2.0-MaterialSymbols.txt")
 
 
 # MARK: - Info.plist
