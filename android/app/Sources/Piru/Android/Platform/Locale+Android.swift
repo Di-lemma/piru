@@ -5,6 +5,7 @@
 
 import Foundation
 import SkipBridge
+import SkipFuse
 
 nonisolated enum AndroidPlatform {
     private static var kotlin: AnyDynamicObject? {
@@ -20,6 +21,7 @@ nonisolated enum AndroidPlatform {
         setenv("TZ", identifier, 1)
         tzset()
         NSTimeZone.resetSystemTimeZone()
+        Logger(subsystem: "piru", category: "platform").info("time zone \(identifier, privacy: .public) → TimeZone.current \(TimeZone.current.identifier, privacy: .public)")
     }
 
     /// The user's languages, most preferred first.

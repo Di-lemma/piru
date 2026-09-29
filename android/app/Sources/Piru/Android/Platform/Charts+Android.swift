@@ -90,6 +90,36 @@ struct ChartMark {
     var interpolation = InterpolationMethod.linear
     var symbolSize: CGFloat = 30
     var opacity: Double = 1
+    /// A bar that stacks on the bars before it at the same x, as Swift Charts stacks
+    /// `BarMark(x:y:)` unless it is unstacked or positioned by series.
+    var stacks = false
+}
+
+extension [ChartMark] {
+    /// Stacking bars given their cumulative extents: positive values stack up from zero and
+    /// negative ones down, per x, in the order the chart lists them.
+    var stacked: [ChartMark] {
+        var above: [PlottedValue: Double] = [:]
+        var below: [PlottedValue: Double] = [:]
+        return map { mark in
+            guard mark.kind == .bar, mark.stacks, mark.yStart == nil, mark.yEnd == nil,
+                  let x = mark.x, case let .number(value)? = mark.y
+            else { return mark }
+            var stacked = mark
+            if value >= 0 {
+                let base = above[x, default: 0]
+                above[x] = base + value
+                stacked.yStart = .number(base)
+                stacked.yEnd = .number(base + value)
+            } else {
+                let base = below[x, default: 0]
+                below[x] = base + value
+                stacked.yStart = .number(base)
+                stacked.yEnd = .number(base + value)
+            }
+            return stacked
+        }
+    }
 }
 
 protocol ChartContent {
@@ -131,7 +161,10 @@ extension AndroidMark {
     func opacity(_ value: Double) -> Self { with { $0.opacity = value } }
     func cornerRadius(_: CGFloat, style _: RoundedCornerStyle = .continuous) -> Self { self }
     func position(by value: PlottableValue<some Plottable>, axis _: Axis? = nil) -> Self {
-        with { $0.series = value.value.androidPlotted.seriesName }
+        with {
+            $0.series = value.value.androidPlotted.seriesName
+            $0.stacks = false
+        }
     }
     func offset(x _: CGFloat = 0, y _: CGFloat = 0) -> Self { self }
     func zIndex(_: Double) -> Self { self }
@@ -236,8 +269,9 @@ struct PointMark: AndroidMark {
 struct BarMark: AndroidMark {
     var mark: ChartMark
 
-    init(x: PlottableValue<some Plottable>, y: PlottableValue<some Plottable>, width _: MarkDimension = .automatic, stacking _: MarkStackingMethod = .standard) {
-        mark = ChartMark(kind: .bar, x: x.value.androidPlotted, y: y.value.androidPlotted)
+    /// `.normalized` and `.center` stack as `.standard` does.
+    init(x: PlottableValue<some Plottable>, y: PlottableValue<some Plottable>, width _: MarkDimension = .automatic, stacking: MarkStackingMethod = .standard) {
+        mark = ChartMark(kind: .bar, x: x.value.androidPlotted, y: y.value.androidPlotted, stacks: stacking != .unstacked)
     }
 
     init<Y: Plottable>(x: PlottableValue<some Plottable>, yStart: PlottableValue<Y>, yEnd: PlottableValue<Y>, width _: MarkDimension = .automatic) {
@@ -573,11 +607,11 @@ struct Chart: View {
     @Environment(\.androidChartConfiguration) var configuration
 
     init(@ChartContentBuilder content: () -> [ChartMark]) {
-        marks = content()
+        marks = content().stacked
     }
 
     init<Data: RandomAccessCollection>(_ data: Data, @ChartContentBuilder content: (Data.Element) -> [ChartMark]) {
-        marks = data.flatMap(content)
+        marks = data.flatMap(content).stacked
     }
 
     var body: some View {
