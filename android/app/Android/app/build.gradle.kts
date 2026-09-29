@@ -1,4 +1,3 @@
-import java.util.Properties
 
 plugins {
     alias(libs.plugins.kotlin.compose)
@@ -56,31 +55,11 @@ android {
         includeInBundle = false
     }
 
-    // default signing configuration tries to load from keystore.properties
-    // see: https://skip.dev/docs/deployment/#export-signing
-    signingConfigs {
-        val keystorePropertiesFile = file("keystore.properties")
-        create("release") {
-            if (keystorePropertiesFile.isFile) {
-                val keystoreProperties = Properties()
-                keystoreProperties.load(keystorePropertiesFile.inputStream())
-                keyAlias = keystoreProperties.getProperty("keyAlias")
-                keyPassword = keystoreProperties.getProperty("keyPassword")
-                storeFile = file(keystoreProperties.getProperty("storeFile"))
-                storePassword = keystoreProperties.getProperty("storePassword")
-            } else {
-                // when there is no keystore.properties file, fall back to signing with debug config
-                keyAlias = signingConfigs.getByName("debug").keyAlias
-                keyPassword = signingConfigs.getByName("debug").keyPassword
-                storeFile = signingConfigs.getByName("debug").storeFile
-                storePassword = signingConfigs.getByName("debug").storePassword
-            }
-        }
-    }
-
     buildTypes {
         release {
-            signingConfig = signingConfigs.findByName("release")
+            // Unsigned: package-apk.sh signs the release APK with the key from the macOS
+            // keychain, and a release without that key fails rather than falling back.
+            signingConfig = null
             isMinifyEnabled = true
             isShrinkResources = true
             isDebuggable = false // can be set to true for debugging release build, but needs to be false when uploading to store
