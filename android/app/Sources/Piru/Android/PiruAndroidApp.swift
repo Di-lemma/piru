@@ -45,8 +45,13 @@ import SwiftUI
         AppLaunch.becameActive(container: PiruAndroidLaunch.container)
     }
 
+    /// Pending edits are saved before Android may stop the process: autosave waits for the
+    /// next main-actor turn, which a killed process never reaches.
     /* SKIP @bridge */ public func onPause() {
         guard PiruAndroidLaunch.finishedLaunching else { return }
+        MainActor.assumeIsolated {
+            try? PiruAndroidLaunch.container.flush()
+        }
         Task { await AppLaunch.enteredBackground(container: PiruAndroidLaunch.container) }
     }
 
