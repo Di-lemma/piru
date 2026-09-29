@@ -50,6 +50,9 @@ android/tools/droid shot quicklog                 # → $PIRU_ANDROID/build/quic
 android/tools/droid logs                          # the app's fatal and error lines
 ```
 
+An emulator on another Mac: `PIRU_ADB_SSH=user@host` (with `env.sh` sourced) tunnels adb to
+that Mac's adb server, and every tool drives its emulator.
+
 "The UI never went idle" means the app is hung or animating without end. The emulator needs
 6 GB (`setup.sh` sets it): at 2 GB the app's startup is killed under memory pressure.
 
@@ -71,11 +74,17 @@ upstream file for Android: edit it in place, `android/tools/mkpatch.py <name> <p
 
 ## Known gaps
 
-- **Skins:** none on Android (patch 0014): no Skins menu entries, and the app wears the piru
-  skin.
+- **Search tab results:** typing switches to results, but the results task never starts
+  (a `.task(id:)` on a `Group` inside a `List`; skip-ui patch 0002 did not reach it). The
+  quick-log search works.
+- **Skins:** none on Android (patch 0014); the app wears the piru skin.
+- **Launcher icon:** a faint ring shows inside the round mask on the Pixel launcher; the
+  generated layers themselves are clean.
 - **Not wired on Android:** sharing files (ACTION_SEND), file import/export, notification
-  actions, Health Connect, location search, widgets.
+  actions, Health Connect, location search, widgets. Routine reminders are one-shot
+  interval triggers, rescheduled at launch.
 - **Material Symbols' license** is staged into `Resources/Licenses` but not listed in About.
+- **Needs rsvg-convert and Pillow** on the build machine (launcher icon).
 
 ## The shared core (the earlier headless build)
 
