@@ -99,6 +99,10 @@ extension View {
         self
     }
 
+    func pagedTabViewStyle() -> some View {
+        tabViewStyle(.page(indexDisplayMode: .never))
+    }
+
     /// Compose draws no context-menu preview, so there is no shape to lift.
     func contextMenuPreviewShape(_: some Shape) -> some View {
         self
