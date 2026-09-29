@@ -685,6 +685,14 @@ extension Binding {
     }
 }
 
+extension LocalizedStringKey.StringInterpolation {
+    /// SkipFuseUI's interpolation takes any value by its description, which for an
+    /// AttributedString is its runs with their attribute braces. Its characters are the text.
+    mutating func appendInterpolation(_ value: AttributedString) {
+        appendInterpolation(String(value.characters))
+    }
+}
+
 extension AttributedString {
     /// SkipUI draws an AttributedString's text without its SwiftUI attributes, so a run's
     /// underline has nowhere to go: setting one is accepted and the text draws plain.
