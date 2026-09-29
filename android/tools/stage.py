@@ -164,34 +164,93 @@ def rewrite_chart_bodies(tree: Path):
 DENSITIES = [("mdpi", 1), ("hdpi", 1.5), ("xhdpi", 2), ("xxhdpi", 3), ("xxxhdpi", 4)]
 
 
+def p3_to_srgb(components: str) -> tuple[int, int, int, int]:
+    """An icon.json `display-p3:r,g,b,a` color as 8-bit sRGB."""
+    r, g, b, a = (float(v) for v in components.split(":", 1)[1].split(","))
+
+    def linear(c: float) -> float:
+        return c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4
+
+    def encode(c: float) -> int:
+        c = min(1.0, max(0.0, c))
+        return round(255 * (12.92 * c if c <= 0.0031308 else 1.055 * c ** (1 / 2.4) - 0.055))
+
+    lr, lg, lb = linear(r), linear(g), linear(b)
+    return (
+        encode(1.2249 * lr - 0.2247 * lg),
+        encode(-0.0420 * lr + 1.0419 * lg),
+        encode(-0.0197 * lr - 0.0786 * lg + 1.0979 * lb),
+        round(255 * a),
+    )
+
+
 def stage_launcher_icon(tree: Path):
-    """The Android launcher icon from the iOS app's rendered icon (AppIconArtwork). The
-    adaptive foreground holds the icon at 80 of its 108 dp, so the pill stays inside the
-    72 dp every launcher mask shows and the icon's own squircle covers any mask shape; the
-    background is the icon's pink, seen only outside the mask. No monochrome layer: a
-    silhouette of the whole artwork is a blob, and without one Android shows the icon."""
+    """The Android launcher icon from the iOS icon's Icon Composer layers (Piru/Piru.icon),
+    as adaptive layers: the icon.json gradient is the background, and the artwork layers
+    composited in icon.json order are the foreground, scaled so the pill stays inside the
+    72 dp every launcher mask shows. The rendered iOS icon cannot serve: its squircle rim
+    shows as a ring inside a round mask. No monochrome layer: without one Android shows the
+    icon itself. Needs rsvg-convert (librsvg)."""
     from PIL import Image
 
-    icon = Image.open(
-        REPO / "Shared/Assets.xcassets/AppIconArtwork.imageset/piru-app-icon.png"
-    ).convert("RGBA")
-    pink = icon.getpixel((icon.width // 2, icon.height // 8))
+    bundle = REPO / "Piru/Piru.icon"
+    spec = json.loads((bundle / "icon.json").read_text())
+    top, bottom = (p3_to_srgb(c) for c in spec["fill"]["linear-gradient"])
+
+    def gradient(size: int) -> Image.Image:
+        image = Image.new("RGBA", (size, size))
+        for y in range(size):
+            t = y / max(1, size - 1)
+            image.paste(
+                tuple(round(a + (b - a) * t) for a, b in zip(top, bottom, strict=True)),
+                (0, y, size, y + 1),
+            )
+        return image
+
+    artwork = Image.new("RGBA", (1024, 1024), (0, 0, 0, 0))
+    with tempfile.TemporaryDirectory() as scratch:
+        for group in reversed(spec["groups"]):
+            for layer in reversed(group["layers"]):
+                if layer.get("hidden"):
+                    continue
+                source = bundle / "Assets" / layer["image-name"]
+                if source.suffix == ".svg":
+                    png = Path(scratch) / (source.stem + ".png")
+                    run("rsvg-convert", "-w", "1024", "-h", "1024", str(source), "-o", str(png))
+                    image = Image.open(png).convert("RGBA")
+                else:
+                    image = Image.open(source).convert("RGBA")
+                scale = layer.get("position", {}).get("scale", 1)
+                size = round(image.width * scale)
+                if size != 1024 or image.width != 1024:
+                    image = image.resize((size, size), Image.LANCZOS)
+                placed = Image.new("RGBA", (1024, 1024), (0, 0, 0, 0))
+                placed.paste(image, ((1024 - size) // 2, (1024 - size) // 2))
+                artwork = Image.alpha_composite(artwork, placed)
+
     res = tree / "Android/app/src/main/res"
     for folder, scale in DENSITIES:
         out = res / f"mipmap-{folder}"
         out.mkdir(parents=True, exist_ok=True)
         canvas = round(108 * scale)
-        inner = round(80 * scale)
+        inner = round(88 * scale)
         foreground = Image.new("RGBA", (canvas, canvas), (0, 0, 0, 0))
         offset = (canvas - inner) // 2
-        foreground.paste(icon.resize((inner, inner), Image.LANCZOS), (offset, offset))
+        foreground.paste(artwork.resize((inner, inner), Image.LANCZOS), (offset, offset))
         foreground.save(out / "ic_launcher_foreground.png", optimize=True)
-        Image.new("RGBA", (canvas, canvas), pink).save(
-            out / "ic_launcher_background.png", optimize=True
-        )
+        gradient(canvas).save(out / "ic_launcher_background.png", optimize=True)
         legacy = round(48 * scale)
-        icon.resize((legacy, legacy), Image.LANCZOS).save(out / "ic_launcher.png", optimize=True)
-        (out / "ic_launcher_monochrome.png").unlink(missing_ok=True)
+        flat = Image.alpha_composite(gradient(1024), artwork).resize(
+            (legacy, legacy), Image.LANCZOS
+        )
+        mask = Image.new("L", (legacy, legacy), 0)
+        from PIL import ImageDraw
+
+        ImageDraw.Draw(mask).rounded_rectangle(
+            (0, 0, legacy - 1, legacy - 1), radius=legacy // 4, fill=255
+        )
+        flat.putalpha(mask)
+        flat.save(out / "ic_launcher.png", optimize=True)
     (res / "mipmap-anydpi").mkdir(parents=True, exist_ok=True)
     (res / "mipmap-anydpi/ic_launcher.xml").write_text(
         '<?xml version="1.0" encoding="utf-8"?>\n'
