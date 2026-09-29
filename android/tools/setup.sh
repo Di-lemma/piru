@@ -4,6 +4,19 @@
 # SDK for Android, NDK r30, SQLite, and an emulator with an Android 36 arm64 image.
 set -e
 . "${0:A:h}/env.sh"
+
+# Host tools this script does not fetch. Versions are the ones the pipeline is built and
+# tested with; the skip CLI must match the vendored skip/skipstone tag (1.9.11).
+missing=()
+[[ "$(skip version 2>/dev/null)" == *"1.9.11"* ]] || missing+=("skip 1.9.11 (brew install skiptools/skip/skip)")
+command -v gradle > /dev/null || missing+=("gradle 9.x (brew install gradle)")
+/usr/libexec/java_home -v 21 > /dev/null 2>&1 || missing+=("JDK 21 (brew install --cask temurin@21)")
+command -v rsvg-convert > /dev/null || missing+=("rsvg-convert (brew install librsvg)")
+python3 -c "import PIL" 2> /dev/null || missing+=("Pillow (pip install pillow)")
+command -v trash > /dev/null || missing+=("trash (brew install trash)")
+if (( ${#missing} )); then
+  printf 'missing host tools:\n'; printf '  %s\n' "${missing[@]}"; exit 1
+fi
 mkdir -p "$PIRU_ANDROID"/{downloads,toolchains,swift-sdks,avd}
 cd "$PIRU_ANDROID/downloads"
 fetch() { [[ -f "$2" ]] || curl -fL --progress-bar -o "$2" "$1"; }
