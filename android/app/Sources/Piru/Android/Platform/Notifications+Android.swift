@@ -6,7 +6,10 @@
 import SwiftUI
 
 nonisolated enum UNNotificationInterruptionLevel: Int {
-    case passive, active, timeSensitive, critical
+    case passive
+    case active
+    case timeSensitive
+    case critical
 }
 
 nonisolated extension UNMutableNotificationContent {
@@ -34,11 +37,11 @@ struct UNNotificationCategoryOptions: OptionSet {
     static let hiddenPreviewsShowTitle = UNNotificationCategoryOptions(rawValue: 2)
 }
 
-nonisolated final class UNNotificationAction: Hashable {
+final nonisolated class UNNotificationAction: Hashable {
     let identifier: String
     let title: String
 
-    init(identifier: String, title: String, options: UNNotificationActionOptions = [], icon: Any? = nil) {
+    init(identifier: String, title: String, options _: UNNotificationActionOptions = [], icon _: Any? = nil) {
         self.identifier = identifier
         self.title = title
     }
@@ -47,10 +50,10 @@ nonisolated final class UNNotificationAction: Hashable {
     func hash(into hasher: inout Hasher) { hasher.combine(identifier) }
 }
 
-nonisolated final class UNNotificationCategory: Hashable {
+final nonisolated class UNNotificationCategory: Hashable {
     let identifier: String
 
-    init(identifier: String, actions: [UNNotificationAction], intentIdentifiers: [String], options: UNNotificationCategoryOptions = []) {
+    init(identifier: String, actions _: [UNNotificationAction], intentIdentifiers _: [String], options _: UNNotificationCategoryOptions = []) {
         self.identifier = identifier
     }
 
@@ -60,11 +63,12 @@ nonisolated final class UNNotificationCategory: Hashable {
 
 nonisolated extension UNUserNotificationCenter {
     /// SkipFuseUI returns the pending requests untyped.
-    @concurrent func androidPendingNotificationRequests() async -> [UNNotificationRequest] {
+    @concurrent
+    func androidPendingNotificationRequests() async -> [UNNotificationRequest] {
         await pendingNotificationRequests().compactMap { $0 as? UNNotificationRequest }
     }
 
-    func setNotificationCategories(_ categories: Set<UNNotificationCategory>) {}
+    func setNotificationCategories(_: Set<UNNotificationCategory>) {}
 
     func add(_ request: UNNotificationRequest, withCompletionHandler completion: (@Sendable (Error?) -> Void)? = nil) {
         // The center is the process-wide singleton, so handing it to the task shares nothing new.
@@ -82,7 +86,7 @@ nonisolated extension UNUserNotificationCenter {
     func getPendingNotificationRequests(completionHandler: @escaping @Sendable ([UNNotificationRequest]) -> Void) {
         nonisolated(unsafe) let center = self
         Task {
-            completionHandler(await center.androidPendingNotificationRequests())
+            await completionHandler(center.androidPendingNotificationRequests())
         }
     }
 }
@@ -92,7 +96,7 @@ nonisolated extension UNUserNotificationCenter {
 /// schedule), so the reminder is the next matching moment as a one-shot interval trigger.
 /// The routine reminders are rescheduled whenever the app runs, which carries it forward.
 enum AndroidCalendarTrigger {
-    static func make(dateMatching components: DateComponents, repeats: Bool) -> UNNotificationTrigger {
+    static func make(dateMatching components: DateComponents, repeats _: Bool) -> UNNotificationTrigger {
         let next = Calendar.current.nextDate(after: .now, matching: components, matchingPolicy: .nextTime)
             ?? .now.addingTimeInterval(60)
         return UNTimeIntervalNotificationTrigger(timeInterval: max(1, next.timeIntervalSinceNow), repeats: false)

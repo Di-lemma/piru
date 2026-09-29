@@ -22,36 +22,36 @@ struct ButtonBorderShape {
     static let capsule = ButtonBorderShape()
     static let circle = ButtonBorderShape()
     static let roundedRectangle = ButtonBorderShape()
-    static func roundedRectangle(radius: CGFloat) -> ButtonBorderShape { ButtonBorderShape() }
+    static func roundedRectangle(radius _: CGFloat) -> ButtonBorderShape { ButtonBorderShape() }
 }
 
 extension View {
     /// Compose hit-tests a view by its bounds, which is what most of these shapes describe.
-    func contentShape(_ shape: some Shape, eoFill: Bool = false) -> some View { self }
-    func contentShape(_ kind: ContentShapeKinds, _ shape: some Shape, eoFill: Bool = false) -> some View { self }
+    func contentShape(_: some Shape, eoFill _: Bool = false) -> some View { self }
+    func contentShape(_: ContentShapeKinds, _: some Shape, eoFill _: Bool = false) -> some View { self }
 
-    func buttonBorderShape(_ shape: ButtonBorderShape) -> some View { self }
-    func layoutPriority(_ value: Double) -> some View { self }
-    func alignmentGuide(_ guide: HorizontalAlignment, computeValue: @escaping (ViewDimensions) -> CGFloat) -> some View { self }
-    func alignmentGuide(_ guide: VerticalAlignment, computeValue: @escaping (ViewDimensions) -> CGFloat) -> some View { self }
-    func gridColumnAlignment(_ alignment: HorizontalAlignment) -> some View { self }
-    func gridCellColumns(_ count: Int) -> some View { self }
-    func gridCellUnsizedAxes(_ axes: Axis.Set) -> some View { self }
-    func gridCellAnchor(_ anchor: UnitPoint) -> some View { self }
-    func accessibilitySortPriority(_ priority: Double) -> some View { self }
-    func persistentSystemOverlays(_ visibility: Visibility) -> some View { self }
-    func matchedGeometryEffect<ID: Hashable>(
-        id: ID, in namespace: AndroidNamespaceID, properties: MatchedGeometryProperties = .frame,
-        anchor: UnitPoint = .center, isSource: Bool = true
+    func buttonBorderShape(_: ButtonBorderShape) -> some View { self }
+    func layoutPriority(_: Double) -> some View { self }
+    func alignmentGuide(_: HorizontalAlignment, computeValue _: @escaping (ViewDimensions) -> CGFloat) -> some View { self }
+    func alignmentGuide(_: VerticalAlignment, computeValue _: @escaping (ViewDimensions) -> CGFloat) -> some View { self }
+    func gridColumnAlignment(_: HorizontalAlignment) -> some View { self }
+    func gridCellColumns(_: Int) -> some View { self }
+    func gridCellUnsizedAxes(_: Axis.Set) -> some View { self }
+    func gridCellAnchor(_: UnitPoint) -> some View { self }
+    func accessibilitySortPriority(_: Double) -> some View { self }
+    func persistentSystemOverlays(_: Visibility) -> some View { self }
+    func matchedGeometryEffect(
+        id _: some Hashable, in _: AndroidNamespaceID, properties _: MatchedGeometryProperties = .frame,
+        anchor _: UnitPoint = .center, isSource _: Bool = true,
     ) -> some View { self }
 
-    func onScrollPhaseChange(_ action: @escaping (ScrollPhase, ScrollPhase) -> Void) -> some View { self }
+    func onScrollPhaseChange(_: @escaping (ScrollPhase, ScrollPhase) -> Void) -> some View { self }
 
     /// The bar stacked at the edge it names. SkipFuseUI has no safe-area inset, so the bar takes
     /// its own space instead of floating over the content's edge.
-    func safeAreaBar<V: View>(
+    func safeAreaBar(
         edge: VerticalEdge, alignment: HorizontalAlignment = .center, spacing: CGFloat? = nil,
-        @ViewBuilder content: () -> V
+        @ViewBuilder content: () -> some View,
     ) -> some View {
         let bar = content()
         // The flexible frame is a Compose weight: a scroll view above the bar would otherwise
@@ -67,10 +67,10 @@ extension View {
     }
 
     /// Shows the first phase: the cycle is an iOS flourish, and the resting frame reads the same.
-    func phaseAnimator<Phase: Equatable, V: View>(
-        _ phases: some Sequence<Phase>, trigger: some Equatable = 0,
-        @ViewBuilder content: @escaping (PlaceholderContentView<Self>, Phase) -> V,
-        animation: @escaping (Phase) -> Animation? = { _ in .default }
+    func phaseAnimator<Phase: Equatable>(
+        _ phases: some Sequence<Phase>, trigger _: some Equatable = 0,
+        @ViewBuilder content: @escaping (PlaceholderContentView<Self>, Phase) -> some View,
+        animation _: @escaping (Phase) -> Animation? = { _ in .default },
     ) -> some View {
         Group {
             if let first = Array(phases).first {
@@ -100,8 +100,8 @@ struct ViewDimensions {
     let width: CGFloat
     let height: CGFloat
 
-    subscript(guide: HorizontalAlignment) -> CGFloat { 0 }
-    subscript(guide: VerticalAlignment) -> CGFloat { 0 }
+    subscript(_: HorizontalAlignment) -> CGFloat { 0 }
+    subscript(_: VerticalAlignment) -> CGFloat { 0 }
 }
 
 // MARK: - Modifiers SkipFuseUI declares unavailable
@@ -110,43 +110,51 @@ struct ViewDimensions {
 // signature would be ambiguous with SkipFuseUI's.
 
 enum AndroidAccessibilityChildBehavior {
-    case ignore, combine, contain
+    case ignore
+    case combine
+    case contain
 }
 
 enum AndroidImageScale {
-    case small, medium, large
+    case small
+    case medium
+    case large
 }
 
 extension View {
     /// TalkBack groups by Compose semantics; there is no per-view grouping to request.
-    func androidAccessibilityElement(children: AndroidAccessibilityChildBehavior = .ignore) -> some View { self }
-    func androidAccessibilityHint(_ hint: Text, isEnabled: Bool = true) -> some View { self }
-    func androidAccessibilityHint(_ hint: LocalizedStringKey, isEnabled: Bool = true) -> some View { self }
-    func androidAccessibilityHint(_ hint: String, isEnabled: Bool = true) -> some View { self }
-    func androidAccessibilityInputLabels(_ labels: [Text], isEnabled: Bool = true) -> some View { self }
-    func androidAccessibilityInputLabels(_ labels: [LocalizedStringKey], isEnabled: Bool = true) -> some View { self }
-    func androidAccessibilityInputLabels(_ labels: [String], isEnabled: Bool = true) -> some View { self }
+    func androidAccessibilityElement(children _: AndroidAccessibilityChildBehavior = .ignore) -> some View { self }
+    func androidAccessibilityHint(_: Text, isEnabled _: Bool = true) -> some View { self }
+    func androidAccessibilityHint(_: LocalizedStringKey, isEnabled _: Bool = true) -> some View { self }
+    func androidAccessibilityHint(_: String, isEnabled _: Bool = true) -> some View { self }
+    func androidAccessibilityInputLabels(_: [Text], isEnabled _: Bool = true) -> some View { self }
+    func androidAccessibilityInputLabels(_: [LocalizedStringKey], isEnabled _: Bool = true) -> some View { self }
+    func androidAccessibilityInputLabels(_: [String], isEnabled _: Bool = true) -> some View { self }
     func androidMonospacedDigit() -> some View { self }
-    func androidKerning(_ kerning: CGFloat) -> some View { self }
-    func androidListRowInsets(_ insets: EdgeInsets?) -> some View { self }
-    func androidImageScale(_ scale: AndroidImageScale) -> some View { self }
-    func androidScrollEdgeEffectStyle(_ style: ScrollEdgeEffectStyle?, for edges: Edge.Set) -> some View { self }
+    func androidKerning(_: CGFloat) -> some View { self }
+    func androidListRowInsets(_: EdgeInsets?) -> some View { self }
+    func androidImageScale(_: AndroidImageScale) -> some View { self }
+    func androidScrollEdgeEffectStyle(_: ScrollEdgeEffectStyle?, for _: Edge.Set) -> some View { self }
 }
 
 enum AndroidControlSize {
-    case mini, small, regular, large, extraLarge
+    case mini
+    case small
+    case regular
+    case large
+    case extraLarge
 }
 
 extension View {
-    func androidControlSize(_ size: AndroidControlSize) -> some View { self }
-    func androidTruncationMode(_ mode: Text.TruncationMode) -> some View { self }
+    func androidControlSize(_: AndroidControlSize) -> some View { self }
+    func androidTruncationMode(_: Text.TruncationMode) -> some View { self }
 
     /// Liquid Glass is Apple's; on Android the same surface is a quiet translucent fill.
-    func androidGlassEffect<S: Shape>(_ glass: Glass = .regular, in shape: S, isEnabled: Bool = true) -> some View {
+    func androidGlassEffect(_: Glass = .regular, in shape: some Shape, isEnabled _: Bool = true) -> some View {
         background(shape.fill(Color.platformSecondarySystemBackground))
     }
 
-    func androidGlassEffect(_ glass: Glass = .regular, isEnabled: Bool = true) -> some View {
+    func androidGlassEffect(_: Glass = .regular, isEnabled _: Bool = true) -> some View {
         background(Capsule().fill(Color.platformSecondarySystemBackground))
     }
 }
@@ -155,7 +163,7 @@ extension View {
 struct AndroidGlassEffectContainer<Content: View>: View {
     private let content: Content
 
-    init(spacing: CGFloat? = nil, @ViewBuilder content: () -> Content) {
+    init(spacing _: CGFloat? = nil, @ViewBuilder content: () -> Content) {
         self.content = content()
     }
 
@@ -175,7 +183,7 @@ extension ShapeStyle where Self == Color {
 
 extension Text {
     func androidMonospacedDigit() -> Text { self }
-    func androidKerning(_ kerning: CGFloat) -> Text { self }
+    func androidKerning(_: CGFloat) -> Text { self }
 }
 
 extension Font {
@@ -183,66 +191,70 @@ extension Font {
 }
 
 extension Image {
-    func androidImageScale(_ scale: AndroidImageScale) -> some View { self }
+    func androidImageScale(_: AndroidImageScale) -> some View { self }
 }
 
 // MARK: - Popover
 
 extension View {
     /// A popover is a sheet on a phone-sized screen, which is what iOS shows there too.
-    func popover<Content: View>(
-        isPresented: Binding<Bool>, attachmentAnchor: PopoverAttachmentAnchor = .rect(.bounds),
-        arrowEdge: Edge? = nil, @ViewBuilder content: @escaping () -> Content
+    func popover(
+        isPresented: Binding<Bool>, attachmentAnchor _: PopoverAttachmentAnchor = .rect(.bounds),
+        arrowEdge _: Edge? = nil, @ViewBuilder content: @escaping () -> some View,
     ) -> some View {
         sheet(isPresented: isPresented, content: content)
     }
 }
 
 enum AndroidPresentationAdaptation {
-    case automatic, none, popover, sheet, fullScreenCover
+    case automatic
+    case none
+    case popover
+    case sheet
+    case fullScreenCover
 }
 
 extension View {
     /// Presentations already adapt to the one size class a phone has.
-    func androidPresentationCompactAdaptation(_ adaptation: AndroidPresentationAdaptation) -> some View { self }
-    func androidPresentationBackground<S: ShapeStyle>(_ style: S) -> some View { self }
-    func androidPresentationBackground<V: View>(alignment: Alignment = .center, @ViewBuilder content: () -> V) -> some View { self }
-    func androidListSectionSpacing(_ spacing: CGFloat) -> some View { self }
-    func androidListSectionSpacing(_ spacing: AndroidListSectionSpacing) -> some View { self }
-    func androidScrollBounceBehavior(_ behavior: AndroidScrollBounceBehavior, axes: Axis.Set = [.vertical]) -> some View { self }
-    func androidContentTransition(_ transition: AndroidContentTransition) -> some View { self }
-    func androidTextSelection(_ selectability: AndroidTextSelectability) -> some View { self }
-    func androidAccessibilityAction(named name: Text, _ handler: @escaping () -> Void) -> some View { self }
-    func androidAccessibilityAction(named name: LocalizedStringKey, _ handler: @escaping () -> Void) -> some View { self }
-    func androidAccessibilityAction(_ kind: AndroidAccessibilityActionKind = .default, _ handler: @escaping () -> Void) -> some View { self }
-    func androidScrollClipDisabled(_ disabled: Bool = true) -> some View { self }
-    func androidSymbolEffect(_ effect: AndroidSymbolEffect, options: Any? = nil, value: some Equatable) -> some View { self }
-    func androidSymbolEffect(_ effect: AndroidSymbolEffect, options: Any? = nil, isActive: Bool = true) -> some View { self }
-    func androidTransaction<V: Equatable>(value: V, _ transform: @escaping (inout Transaction) -> Void) -> some View { self }
+    func androidPresentationCompactAdaptation(_: AndroidPresentationAdaptation) -> some View { self }
+    func androidPresentationBackground(_: some ShapeStyle) -> some View { self }
+    func androidPresentationBackground(alignment _: Alignment = .center, @ViewBuilder content _: () -> some View) -> some View { self }
+    func androidListSectionSpacing(_: CGFloat) -> some View { self }
+    func androidListSectionSpacing(_: AndroidListSectionSpacing) -> some View { self }
+    func androidScrollBounceBehavior(_: AndroidScrollBounceBehavior, axes _: Axis.Set = [.vertical]) -> some View { self }
+    func androidContentTransition(_: AndroidContentTransition) -> some View { self }
+    func androidTextSelection(_: AndroidTextSelectability) -> some View { self }
+    func androidAccessibilityAction(named _: Text, _: @escaping () -> Void) -> some View { self }
+    func androidAccessibilityAction(named _: LocalizedStringKey, _: @escaping () -> Void) -> some View { self }
+    func androidAccessibilityAction(_: AndroidAccessibilityActionKind = .default, _: @escaping () -> Void) -> some View { self }
+    func androidScrollClipDisabled(_: Bool = true) -> some View { self }
+    func androidSymbolEffect(_: AndroidSymbolEffect, options _: Any? = nil, value _: some Equatable) -> some View { self }
+    func androidSymbolEffect(_: AndroidSymbolEffect, options _: Any? = nil, isActive _: Bool = true) -> some View { self }
+    func androidTransaction(value _: some Equatable, _: @escaping (inout Transaction) -> Void) -> some View { self }
 
     /// The sheet's detents without a selection binding, which SkipFuseUI's sheet does not take.
-    func androidPresentationDetents(_ detents: Set<PresentationDetent>, selection: Binding<PresentationDetent>) -> some View {
+    func androidPresentationDetents(_ detents: Set<PresentationDetent>, selection _: Binding<PresentationDetent>) -> some View {
         presentationDetents(detents)
     }
 
-    func androidPresentationBackgroundInteraction(_ interaction: AndroidPresentationBackgroundInteraction) -> some View { self }
-    func androidPresentationContentInteraction(_ interaction: AndroidPresentationContentInteraction) -> some View { self }
-    func androidTransaction(_ transform: @escaping (inout Transaction) -> Void) -> some View { self }
-    func androidDynamicTypeSize<R>(_ range: R) -> some View { self }
-    func androidAccessibilityRepresentation<V: View>(@ViewBuilder representation: () -> V) -> some View { self }
+    func androidPresentationBackgroundInteraction(_: AndroidPresentationBackgroundInteraction) -> some View { self }
+    func androidPresentationContentInteraction(_: AndroidPresentationContentInteraction) -> some View { self }
+    func androidTransaction(_: @escaping (inout Transaction) -> Void) -> some View { self }
+    func androidDynamicTypeSize(_: some Any) -> some View { self }
+    func androidAccessibilityRepresentation(@ViewBuilder representation _: () -> some View) -> some View { self }
     /// Gesture locations are already in the view's own space on Compose.
-    func androidCoordinateSpace(_ name: NamedCoordinateSpace) -> some View { self }
-    func androidScrollPosition<ID: Hashable>(id: Binding<ID?>, anchor: UnitPoint? = nil) -> some View { self }
+    func androidCoordinateSpace(_: NamedCoordinateSpace) -> some View { self }
+    func androidScrollPosition(id _: Binding<(some Hashable)?>, anchor _: UnitPoint? = nil) -> some View { self }
 
     func onScrollGeometryChange<T: Equatable>(
-        for type: T.Type, of transform: @escaping (ScrollGeometry) -> T, action: @escaping (T, T) -> Void
+        for _: T.Type, of _: @escaping (ScrollGeometry) -> T, action _: @escaping (T, T) -> Void,
     ) -> some View { self }
 
-    func accessibilityLabel<S: StringProtocol>(_ label: S) -> some View {
+    func accessibilityLabel(_ label: some StringProtocol) -> some View {
         accessibilityLabel(Text(String(label)))
     }
 
-    func accessibilityValue<S: StringProtocol>(_ value: S) -> some View {
+    func accessibilityValue(_ value: some StringProtocol) -> some View {
         accessibilityValue(Text(String(value)))
     }
 
@@ -250,20 +262,29 @@ extension View {
         lineLimit(limit.upperBound)
     }
 
-    func lineLimit(_ limit: PartialRangeFrom<Int>) -> some View {
+    func lineLimit(_: PartialRangeFrom<Int>) -> some View {
         lineLimit(nil)
     }
 }
 
 enum AndroidSymbolEffect {
-    case replace, bounce, pulse, variableColor, scale, appear, disappear, wiggle, rotate, breathe
+    case replace
+    case bounce
+    case pulse
+    case variableColor
+    case scale
+    case appear
+    case disappear
+    case wiggle
+    case rotate
+    case breathe
 }
 
 struct AndroidPresentationBackgroundInteraction {
     static let automatic = AndroidPresentationBackgroundInteraction()
     static let disabled = AndroidPresentationBackgroundInteraction()
     static let enabled = AndroidPresentationBackgroundInteraction()
-    static func enabled(upThrough detent: PresentationDetent) -> AndroidPresentationBackgroundInteraction { .enabled }
+    static func enabled(upThrough _: PresentationDetent) -> AndroidPresentationBackgroundInteraction { .enabled }
 }
 
 enum AndroidPresentationContentInteraction { case automatic, resizes, scrolls }
@@ -278,9 +299,9 @@ struct AndroidContentTransition {
     static let identity = AndroidContentTransition()
     static let opacity = AndroidContentTransition()
     static let interpolate = AndroidContentTransition()
-    static func numericText(countsDown: Bool = false) -> AndroidContentTransition { AndroidContentTransition() }
-    static func numericText(value: Double) -> AndroidContentTransition { AndroidContentTransition() }
-    static func androidSymbolEffect(_ effect: AndroidSymbolEffect, options: Any? = nil) -> AndroidContentTransition { AndroidContentTransition() }
+    static func numericText(countsDown _: Bool = false) -> AndroidContentTransition { AndroidContentTransition() }
+    static func numericText(value _: Double) -> AndroidContentTransition { AndroidContentTransition() }
+    static func androidSymbolEffect(_: AndroidSymbolEffect, options _: Any? = nil) -> AndroidContentTransition { AndroidContentTransition() }
     static var androidSymbolEffect: AndroidContentTransition { AndroidContentTransition() }
 }
 
@@ -303,7 +324,7 @@ enum ListFormatter {
 
 extension Shape {
     /// A concrete-Color overload, so `strokeBorder(color.opacity(x))` has one reading.
-    func strokeBorder(_ color: Color, lineWidth: CGFloat = 1, antialiased: Bool = true) -> some View {
+    func strokeBorder(_ color: Color, lineWidth: CGFloat = 1, antialiased _: Bool = true) -> some View {
         stroke(color, lineWidth: lineWidth)
     }
 }
@@ -313,12 +334,11 @@ extension Text {
     init(androidRelative date: Date) {
         let seconds = Int(Date().timeIntervalSince(date))
         let magnitude = abs(seconds)
-        let amount: String
-        switch magnitude {
-        case ..<60: amount = String(localized: "\(magnitude) sec")
-        case ..<3600: amount = String(localized: "\(magnitude / 60) min")
-        case ..<86400: amount = String(localized: "\(magnitude / 3600) hr")
-        default: amount = String(localized: "\(magnitude / 86400) days")
+        let amount = switch magnitude {
+        case ..<60: String(localized: "\(magnitude) sec")
+        case ..<3600: String(localized: "\(magnitude / 60) min")
+        case ..<86400: String(localized: "\(magnitude / 3600) hr")
+        default: String(localized: "\(magnitude / 86400) days")
         }
         self.init(verbatim: amount)
     }
@@ -358,7 +378,7 @@ extension ContentUnavailableView where Label == SwiftUI.Label<Text, Image>, Desc
         self.init(label: { SwiftUI.Label(title, systemImage: name) }, description: { description })
     }
 
-    init<S: StringProtocol>(_ title: S, systemImage name: String, description: Text? = nil) {
+    init(_ title: some StringProtocol, systemImage name: String, description: Text? = nil) {
         self.init(label: { SwiftUI.Label(String(title), systemImage: name) }, description: { description })
     }
 
@@ -366,10 +386,10 @@ extension ContentUnavailableView where Label == SwiftUI.Label<Text, Image>, Desc
         ContentUnavailableView("No Results", systemImage: "magnifyingglass")
     }
 
-    static func search(text: String) -> ContentUnavailableView {
+    static func search(text _: String) -> ContentUnavailableView {
         ContentUnavailableView(
             "No Results", systemImage: "magnifyingglass",
-            description: Text("Check the spelling or try a new search.")
+            description: Text("Check the spelling or try a new search."),
         )
     }
 }
@@ -383,7 +403,7 @@ struct Grid<Content: View>: View {
     private let verticalSpacing: CGFloat?
     private let content: Content
 
-    init(alignment: Alignment = .center, horizontalSpacing: CGFloat? = nil, verticalSpacing: CGFloat? = nil, @ViewBuilder content: () -> Content) {
+    init(alignment: Alignment = .center, horizontalSpacing _: CGFloat? = nil, verticalSpacing: CGFloat? = nil, @ViewBuilder content: () -> Content) {
         self.alignment = alignment
         self.verticalSpacing = verticalSpacing
         self.content = content()
@@ -450,7 +470,7 @@ struct AnyLayout {
     }
 
     @ViewBuilder
-    func callAsFunction<V: View>(@ViewBuilder _ content: () -> V) -> some View {
+    func callAsFunction(@ViewBuilder _ content: () -> some View) -> some View {
         switch axis {
         case .horizontal: HStack(alignment: vertical, spacing: spacing) { content() }
         case .vertical: VStack(alignment: horizontal, spacing: spacing) { content() }
@@ -480,7 +500,7 @@ struct AnimationTimelineSchedule: TimelineSchedule {
 }
 
 extension TimelineSchedule where Self == PeriodicTimelineSchedule {
-    static func periodic(from startDate: Date, by interval: TimeInterval) -> PeriodicTimelineSchedule {
+    static func periodic(from _: Date, by interval: TimeInterval) -> PeriodicTimelineSchedule {
         PeriodicTimelineSchedule(androidInterval: max(interval, 1.0 / 30))
     }
 }
@@ -537,7 +557,7 @@ nonisolated struct ConcentricRectangle: Shape {
 
     init() {}
 
-    init(corners: ConcentricCorners, isUniform: Bool = false) {
+    init(corners: ConcentricCorners, isUniform _: Bool = false) {
         cornerRadius = corners.radius
     }
 
@@ -583,7 +603,7 @@ struct ConcentricMinimum: ExpressibleByIntegerLiteral, ExpressibleByFloatLiteral
 typealias ImagePaint = Color
 
 extension Color {
-    init(image: Image, sourceRect: CGRect = CGRect(x: 0, y: 0, width: 1, height: 1), scale: CGFloat = 1) {
+    init(image _: Image, sourceRect _: CGRect = CGRect(x: 0, y: 0, width: 1, height: 1), scale _: CGFloat = 1) {
         self = .clear
     }
 }
@@ -623,13 +643,15 @@ struct ProposedViewSize {
 }
 
 enum SearchScopeActivation {
-    case automatic, onTextEntry, onSearchPresentation
+    case automatic
+    case onTextEntry
+    case onSearchPresentation
 }
 
 extension View {
     /// Compose's search bar has no scope row; the Search tab's scope stays where it was seeded.
-    func searchScopes<V: Hashable, S: View>(
-        _ scope: Binding<V>, activation: SearchScopeActivation = .automatic, @ViewBuilder scopes: () -> S
+    func searchScopes(
+        _: Binding<some Hashable>, activation _: SearchScopeActivation = .automatic, @ViewBuilder scopes _: () -> some View,
     ) -> some View { self }
 }
 
@@ -637,8 +659,8 @@ extension View {
     /// SkipFuseUI has no safeAreaInset: the inset content is stacked against the view's edge,
     /// which shrinks the view by the content's height as the inset would. The flexible frame
     /// becomes a Compose weight, so a view that fills (a NavigationStack) leaves the inset room.
-    func androidSafeAreaInset<V: View>(
-        edge: VerticalEdge, spacing: CGFloat? = nil, @ViewBuilder content: () -> V
+    func androidSafeAreaInset(
+        edge: VerticalEdge, spacing: CGFloat? = nil, @ViewBuilder content: () -> some View,
     ) -> some View {
         VStack(spacing: spacing ?? 0) {
             if edge == .top {

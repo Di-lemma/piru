@@ -1,0 +1,8 @@
+# Adds to the repository's .swiftformat, which SwiftFormat also reads for this tree.
+# FoundationMacros is swift-foundation's source, kept as upstream wrote it so it diffs against theirs.
+--exclude Compat/Sources/FoundationMacros
+# skipstone reads `/* SKIP @bridge */` markers only as block comments: docComments would make
+# them `/** */` and blockComments `//`, and the bridge would silently lose those declarations.
+--disable docComments,blockComments
+# The headers here say what each stand-in approximates; the repository strips Xcode's.
+--header ignore

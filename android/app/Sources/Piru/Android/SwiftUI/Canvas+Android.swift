@@ -12,9 +12,9 @@ struct Canvas<Symbols: View>: View {
     private let renderer: (inout GraphicsContext, CGSize) -> Void
 
     init(
-        opaque: Bool = false,
-        rendersAsynchronously: Bool = false,
-        renderer: @escaping (inout GraphicsContext, CGSize) -> Void
+        opaque _: Bool = false,
+        rendersAsynchronously _: Bool = false,
+        renderer: @escaping (inout GraphicsContext, CGSize) -> Void,
     ) where Symbols == EmptyView {
         self.renderer = renderer
     }
@@ -46,25 +46,25 @@ nonisolated struct GraphicsContext {
         case foreground
 
         /// A tiled image (skin grain); Compose shapes take no image fill, so it draws nothing.
-        static func tiledImage(_ image: Image, origin: CGPoint = .zero, sourceRect: CGRect = CGRect(x: 0, y: 0, width: 1, height: 1), scale: CGFloat = 1) -> Shading {
+        static func tiledImage(_: Image, origin _: CGPoint = .zero, sourceRect _: CGRect = CGRect(x: 0, y: 0, width: 1, height: 1), scale _: CGFloat = 1) -> Shading {
             .color(.clear)
         }
 
-        static func conicGradient(_ gradient: Gradient, center: CGPoint, angle: Angle = .zero, options: GradientOptions = []) -> Shading {
+        static func conicGradient(_ gradient: Gradient, center: CGPoint, angle: Angle = .zero, options _: GradientOptions = []) -> Shading {
             .conic(gradient, center: center, angle: angle)
         }
 
-        static func style<S: ShapeStyle>(_ style: S) -> Shading {
+        static func style(_ style: some ShapeStyle) -> Shading {
             if let color = style as? Color { return .color(color) }
             return .foreground
         }
 
-        static func linearGradient(_ gradient: Gradient, startPoint: CGPoint, endPoint: CGPoint, options: GradientOptions = []) -> Shading {
+        static func linearGradient(_ gradient: Gradient, startPoint: CGPoint, endPoint: CGPoint, options _: GradientOptions = []) -> Shading {
             .linear(gradient, startPoint: startPoint, endPoint: endPoint)
         }
 
         static func radialGradient(
-            _ gradient: Gradient, center: CGPoint, startRadius: CGFloat, endRadius: CGFloat, options: GradientOptions = []
+            _ gradient: Gradient, center: CGPoint, startRadius: CGFloat, endRadius: CGFloat, options _: GradientOptions = [],
         ) -> Shading {
             .radial(gradient, center: center, startRadius: startRadius, endRadius: endRadius)
         }
@@ -111,8 +111,8 @@ nonisolated struct GraphicsContext {
             CGSize(width: min(size.width, CGFloat(text.estimatedLength) * 7), height: min(size.height, 16))
         }
 
-        func firstBaseline(in size: CGSize) -> CGFloat { 12 }
-        func lastBaseline(in size: CGSize) -> CGFloat { 12 }
+        func firstBaseline(in _: CGSize) -> CGFloat { 12 }
+        func lastBaseline(in _: CGSize) -> CGFloat { 12 }
     }
 
     struct ResolvedImage {
@@ -154,7 +154,7 @@ nonisolated struct GraphicsContext {
         transform = CGAffineTransform(rotationAngle: CGFloat(angle.radians)).concatenating(transform)
     }
 
-    mutating func clip(to path: Path, style: FillStyle = FillStyle(), options: ClipOptions = []) {
+    mutating func clip(to path: Path, style _: FillStyle = FillStyle(), options: ClipOptions = []) {
         guard !options.contains(.inverse) else { return }
         clip = path.applying(transform)
     }
@@ -166,7 +166,7 @@ nonisolated struct GraphicsContext {
 
     // MARK: Drawing
 
-    func fill(_ path: Path, with shading: Shading, style: FillStyle = FillStyle()) {
+    func fill(_ path: Path, with shading: Shading, style _: FillStyle = FillStyle()) {
         append(.fill(path.applying(transform), shading))
     }
 
@@ -203,11 +203,11 @@ nonisolated struct GraphicsContext {
         draw(text, at: CGPoint(x: rect.midX, y: rect.midY), anchor: .center)
     }
 
-    func draw(_ image: Image, in rect: CGRect, style: FillStyle = FillStyle()) {
+    func draw(_ image: Image, in rect: CGRect, style _: FillStyle = FillStyle()) {
         append(.image(image, .foreground, rect.applying(transform)))
     }
 
-    func draw(_ image: ResolvedImage, in rect: CGRect, style: FillStyle = FillStyle()) {
+    func draw(_ image: ResolvedImage, in rect: CGRect, style _: FillStyle = FillStyle()) {
         append(.image(image.image, image.shading, rect.applying(transform)))
     }
 
@@ -274,7 +274,8 @@ private struct CanvasItemView: View {
         }
     }
 
-    @ViewBuilder private func filled(_ path: Path, _ shading: GraphicsContext.Shading) -> some View {
+    @ViewBuilder
+    private func filled(_ path: Path, _ shading: GraphicsContext.Shading) -> some View {
         switch shading {
         case let .color(color): path.fill(color)
         case let .linear(gradient, start, end):
@@ -287,7 +288,8 @@ private struct CanvasItemView: View {
         }
     }
 
-    @ViewBuilder private func stroked(_ path: Path, _ shading: GraphicsContext.Shading, _ style: StrokeStyle) -> some View {
+    @ViewBuilder
+    private func stroked(_ path: Path, _ shading: GraphicsContext.Shading, _ style: StrokeStyle) -> some View {
         switch shading {
         case let .color(color): path.stroke(color, style: style)
         case let .linear(gradient, start, end):
@@ -297,11 +299,13 @@ private struct CanvasItemView: View {
         }
     }
 
-    @ViewBuilder private func textView(_ text: Text, _ shading: GraphicsContext.Shading) -> some View {
+    @ViewBuilder
+    private func textView(_ text: Text, _ shading: GraphicsContext.Shading) -> some View {
         if case let .color(color) = shading { text.foregroundStyle(color) } else { text }
     }
 
-    @ViewBuilder private func imageView(_ image: Image, _ shading: GraphicsContext.Shading) -> some View {
+    @ViewBuilder
+    private func imageView(_ image: Image, _ shading: GraphicsContext.Shading) -> some View {
         if case let .color(color) = shading {
             image.resizable().foregroundStyle(color)
         } else {
@@ -314,7 +318,7 @@ private struct CanvasItemView: View {
     }
 }
 
-nonisolated private extension Text {
+private nonisolated extension Text {
     /// A rough glyph count for placing drawn text: the rendered string is only known to Compose.
     var estimatedLength: Int {
         max(1, String(describing: self).count / 3)

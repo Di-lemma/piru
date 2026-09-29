@@ -31,36 +31,45 @@ struct PlottableValue<Value: Plottable> {
     let label: String
     let value: Value
 
-    static func value(_ label: LocalizedStringKey, _ value: Value) -> PlottableValue<Value> {
+    static func value(_: LocalizedStringKey, _ value: Value) -> PlottableValue<Value> {
         PlottableValue(label: "", value: value)
     }
 
-    static func value<S: StringProtocol>(_ label: S, _ value: Value) -> PlottableValue<Value> {
+    static func value(_ label: some StringProtocol, _ value: Value) -> PlottableValue<Value> {
         PlottableValue(label: String(label), value: value)
     }
 
-    static func value(_ label: Text, _ value: Value) -> PlottableValue<Value> {
+    static func value(_: Text, _ value: Value) -> PlottableValue<Value> {
         PlottableValue(label: "", value: value)
     }
 }
 
 extension PlottableValue where Value == Date {
     /// A date binned to `unit`: plotted at the unit's start, as Swift Charts groups it.
-    static func value<S: StringProtocol>(_ label: S, _ value: Date, unit: Calendar.Component, calendar: Calendar = .current) -> PlottableValue<Date> {
+    static func value(_ label: some StringProtocol, _ value: Date, unit: Calendar.Component, calendar: Calendar = .current) -> PlottableValue<Date> {
         PlottableValue(label: String(label), value: calendar.dateInterval(of: unit, for: value)?.start ?? value)
     }
 
-    static func value(_ label: LocalizedStringKey, _ value: Date, unit: Calendar.Component, calendar: Calendar = .current) -> PlottableValue<Date> {
+    static func value(_: LocalizedStringKey, _ value: Date, unit: Calendar.Component, calendar: Calendar = .current) -> PlottableValue<Date> {
         PlottableValue(label: "", value: calendar.dateInterval(of: unit, for: value)?.start ?? value)
     }
 }
 
 enum InterpolationMethod {
-    case linear, monotone, catmullRom, cardinal, stepStart, stepCenter, stepEnd
+    case linear
+    case monotone
+    case catmullRom
+    case cardinal
+    case stepStart
+    case stepCenter
+    case stepEnd
 }
 
 enum MarkStackingMethod {
-    case standard, normalized, center, unstacked
+    case standard
+    case normalized
+    case center
+    case unstacked
 }
 
 // MARK: - Marks
@@ -87,7 +96,7 @@ protocol ChartContent {
     var androidMarks: [ChartMark] { get }
 }
 
-extension Array: ChartContent where Element == ChartMark {
+extension [ChartMark]: ChartContent {
     var androidMarks: [ChartMark] { self }
 }
 
@@ -105,11 +114,11 @@ extension AndroidMark {
         return copy
     }
 
-    func foregroundStyle<S: ShapeStyle>(_ style: S) -> Self {
+    func foregroundStyle(_ style: some ShapeStyle) -> Self {
         with { if let color = style as? Color { $0.color = color } }
     }
 
-    func foregroundStyle<V: Plottable>(by value: PlottableValue<V>) -> Self {
+    func foregroundStyle(by value: PlottableValue<some Plottable>) -> Self {
         with { $0.series = value.value.androidPlotted.seriesName }
     }
 
@@ -117,27 +126,27 @@ extension AndroidMark {
     func interpolationMethod(_ method: InterpolationMethod) -> Self { with { $0.interpolation = method } }
     func symbolSize(_ size: CGFloat) -> Self { with { $0.symbolSize = size } }
     func symbolSize(_ size: CGSize) -> Self { with { $0.symbolSize = size.width * size.height } }
-    func symbol<S>(_ symbol: S) -> Self { self }
-    func symbol<V: Plottable>(by value: PlottableValue<V>) -> Self { self }
+    func symbol(_: some Any) -> Self { self }
+    func symbol(by _: PlottableValue<some Plottable>) -> Self { self }
     func opacity(_ value: Double) -> Self { with { $0.opacity = value } }
-    func cornerRadius(_ radius: CGFloat, style: RoundedCornerStyle = .continuous) -> Self { self }
-    func position<V: Plottable>(by value: PlottableValue<V>, axis: Axis? = nil) -> Self {
+    func cornerRadius(_: CGFloat, style _: RoundedCornerStyle = .continuous) -> Self { self }
+    func position(by value: PlottableValue<some Plottable>, axis _: Axis? = nil) -> Self {
         with { $0.series = value.value.androidPlotted.seriesName }
     }
-    func offset(x: CGFloat = 0, y: CGFloat = 0) -> Self { self }
-    func zIndex(_ value: Double) -> Self { self }
-    func alignsMarkStylesWithPlotArea(_ aligns: Bool = true) -> Self { self }
-    func accessibilityLabel(_ label: Text) -> Self { self }
-    func accessibilityLabel(_ label: String) -> Self { self }
-    func accessibilityValue(_ value: Text) -> Self { self }
-    func accessibilityValue(_ value: String) -> Self { self }
-    func accessibilityHidden(_ hidden: Bool) -> Self { self }
-    func clipShape(_ shape: some Shape) -> Self { self }
-    func mask<M>(_ mask: () -> M) -> Self { self }
-    func annotation<C: View>(
-        position: AnnotationPosition = .automatic, alignment: Alignment = .center, spacing: CGFloat? = nil,
-        overflowResolution: AnnotationOverflowResolution = .automatic,
-        @ViewBuilder content: () -> C
+    func offset(x _: CGFloat = 0, y _: CGFloat = 0) -> Self { self }
+    func zIndex(_: Double) -> Self { self }
+    func alignsMarkStylesWithPlotArea(_: Bool = true) -> Self { self }
+    func accessibilityLabel(_: Text) -> Self { self }
+    func accessibilityLabel(_: String) -> Self { self }
+    func accessibilityValue(_: Text) -> Self { self }
+    func accessibilityValue(_: String) -> Self { self }
+    func accessibilityHidden(_: Bool) -> Self { self }
+    func clipShape(_: some Shape) -> Self { self }
+    func mask(_: () -> some Any) -> Self { self }
+    func annotation(
+        position _: AnnotationPosition = .automatic, alignment _: Alignment = .center, spacing _: CGFloat? = nil,
+        overflowResolution _: AnnotationOverflowResolution = .automatic,
+        @ViewBuilder content _: () -> some View,
     ) -> Self { self }
 }
 
@@ -146,14 +155,14 @@ enum AnnotationPosition { case automatic, top, bottom, leading, trailing, overla
 struct AnnotationOverflowResolution {
     static let automatic = AnnotationOverflowResolution()
     init() {}
-    init(x: AnnotationOverflowStrategy = .automatic, y: AnnotationOverflowStrategy = .automatic) {}
+    init(x _: AnnotationOverflowStrategy = .automatic, y _: AnnotationOverflowStrategy = .automatic) {}
 }
 
 struct AnnotationOverflowStrategy {
     static let automatic = AnnotationOverflowStrategy()
     static let fit = AnnotationOverflowStrategy()
     static let disabled = AnnotationOverflowStrategy()
-    static func fit(to: AnnotationBoundary) -> AnnotationOverflowStrategy { AnnotationOverflowStrategy() }
+    static func fit(to _: AnnotationBoundary) -> AnnotationOverflowStrategy { AnnotationOverflowStrategy() }
 }
 
 enum AnnotationBoundary { case automatic, chart, plot }
@@ -171,11 +180,11 @@ private extension PlottedValue {
 struct LineMark: AndroidMark {
     var mark: ChartMark
 
-    init<X: Plottable, Y: Plottable>(x: PlottableValue<X>, y: PlottableValue<Y>) {
+    init(x: PlottableValue<some Plottable>, y: PlottableValue<some Plottable>) {
         mark = ChartMark(kind: .line, x: x.value.androidPlotted, y: y.value.androidPlotted)
     }
 
-    init<X: Plottable, Y: Plottable, S: Plottable>(x: PlottableValue<X>, y: PlottableValue<Y>, series: PlottableValue<S>) {
+    init(x: PlottableValue<some Plottable>, y: PlottableValue<some Plottable>, series: PlottableValue<some Plottable>) {
         mark = ChartMark(kind: .line, x: x.value.androidPlotted, y: y.value.androidPlotted, series: series.value.androidPlotted.seriesName)
     }
 }
@@ -183,15 +192,15 @@ struct LineMark: AndroidMark {
 struct AreaMark: AndroidMark {
     var mark: ChartMark
 
-    init<X: Plottable, Y: Plottable>(x: PlottableValue<X>, y: PlottableValue<Y>, stacking: MarkStackingMethod = .standard) {
+    init(x: PlottableValue<some Plottable>, y: PlottableValue<some Plottable>, stacking _: MarkStackingMethod = .standard) {
         mark = ChartMark(kind: .area, x: x.value.androidPlotted, y: y.value.androidPlotted)
     }
 
-    init<X: Plottable, Y: Plottable>(x: PlottableValue<X>, yStart: PlottableValue<Y>, yEnd: PlottableValue<Y>) {
+    init<Y: Plottable>(x: PlottableValue<some Plottable>, yStart: PlottableValue<Y>, yEnd: PlottableValue<Y>) {
         mark = ChartMark(kind: .area, x: x.value.androidPlotted, yStart: yStart.value.androidPlotted, yEnd: yEnd.value.androidPlotted)
     }
 
-    init<X: Plottable, Y: Plottable, S: Plottable>(x: PlottableValue<X>, y: PlottableValue<Y>, series: PlottableValue<S>, stacking: MarkStackingMethod = .standard) {
+    init(x: PlottableValue<some Plottable>, y: PlottableValue<some Plottable>, series: PlottableValue<some Plottable>, stacking _: MarkStackingMethod = .standard) {
         mark = ChartMark(kind: .area, x: x.value.androidPlotted, y: y.value.androidPlotted, series: series.value.androidPlotted.seriesName)
     }
 }
@@ -199,19 +208,19 @@ struct AreaMark: AndroidMark {
 struct RuleMark: AndroidMark {
     var mark: ChartMark
 
-    init<X: Plottable>(x: PlottableValue<X>) {
+    init(x: PlottableValue<some Plottable>) {
         mark = ChartMark(kind: .rule, x: x.value.androidPlotted)
     }
 
-    init<Y: Plottable>(y: PlottableValue<Y>) {
+    init(y: PlottableValue<some Plottable>) {
         mark = ChartMark(kind: .rule, y: y.value.androidPlotted)
     }
 
-    init<X: Plottable, Y: Plottable>(xStart: PlottableValue<X>, xEnd: PlottableValue<X>, y: PlottableValue<Y>) {
+    init<X: Plottable>(xStart: PlottableValue<X>, xEnd: PlottableValue<X>, y: PlottableValue<some Plottable>) {
         mark = ChartMark(kind: .rule, y: y.value.androidPlotted, xStart: xStart.value.androidPlotted, xEnd: xEnd.value.androidPlotted)
     }
 
-    init<X: Plottable, Y: Plottable>(x: PlottableValue<X>, yStart: PlottableValue<Y>, yEnd: PlottableValue<Y>) {
+    init<Y: Plottable>(x: PlottableValue<some Plottable>, yStart: PlottableValue<Y>, yEnd: PlottableValue<Y>) {
         mark = ChartMark(kind: .rule, x: x.value.androidPlotted, yStart: yStart.value.androidPlotted, yEnd: yEnd.value.androidPlotted)
     }
 }
@@ -219,7 +228,7 @@ struct RuleMark: AndroidMark {
 struct PointMark: AndroidMark {
     var mark: ChartMark
 
-    init<X: Plottable, Y: Plottable>(x: PlottableValue<X>, y: PlottableValue<Y>) {
+    init(x: PlottableValue<some Plottable>, y: PlottableValue<some Plottable>) {
         mark = ChartMark(kind: .point, x: x.value.androidPlotted, y: y.value.androidPlotted)
     }
 }
@@ -227,15 +236,15 @@ struct PointMark: AndroidMark {
 struct BarMark: AndroidMark {
     var mark: ChartMark
 
-    init<X: Plottable, Y: Plottable>(x: PlottableValue<X>, y: PlottableValue<Y>, width: MarkDimension = .automatic, stacking: MarkStackingMethod = .standard) {
+    init(x: PlottableValue<some Plottable>, y: PlottableValue<some Plottable>, width _: MarkDimension = .automatic, stacking _: MarkStackingMethod = .standard) {
         mark = ChartMark(kind: .bar, x: x.value.androidPlotted, y: y.value.androidPlotted)
     }
 
-    init<X: Plottable, Y: Plottable>(x: PlottableValue<X>, yStart: PlottableValue<Y>, yEnd: PlottableValue<Y>, width: MarkDimension = .automatic) {
+    init<Y: Plottable>(x: PlottableValue<some Plottable>, yStart: PlottableValue<Y>, yEnd: PlottableValue<Y>, width _: MarkDimension = .automatic) {
         mark = ChartMark(kind: .bar, x: x.value.androidPlotted, yStart: yStart.value.androidPlotted, yEnd: yEnd.value.androidPlotted)
     }
 
-    init<X: Plottable, Y: Plottable>(xStart: PlottableValue<X>, xEnd: PlottableValue<X>, y: PlottableValue<Y>, height: MarkDimension = .automatic) {
+    init<X: Plottable>(xStart: PlottableValue<X>, xEnd: PlottableValue<X>, y: PlottableValue<some Plottable>, height _: MarkDimension = .automatic) {
         mark = ChartMark(kind: .bar, y: y.value.androidPlotted, xStart: xStart.value.androidPlotted, xEnd: xEnd.value.androidPlotted)
     }
 }
@@ -247,15 +256,15 @@ struct RectangleMark: AndroidMark {
         mark = ChartMark(
             kind: .rectangle,
             xStart: xStart.value.androidPlotted, xEnd: xEnd.value.androidPlotted,
-            yStart: yStart.value.androidPlotted, yEnd: yEnd.value.androidPlotted
+            yStart: yStart.value.androidPlotted, yEnd: yEnd.value.androidPlotted,
         )
     }
 
-    init<X: Plottable, Y: Plottable>(x: PlottableValue<X>, yStart: PlottableValue<Y>, yEnd: PlottableValue<Y>, width: MarkDimension = .automatic) {
+    init<Y: Plottable>(x: PlottableValue<some Plottable>, yStart: PlottableValue<Y>, yEnd: PlottableValue<Y>, width _: MarkDimension = .automatic) {
         mark = ChartMark(kind: .rectangle, x: x.value.androidPlotted, yStart: yStart.value.androidPlotted, yEnd: yEnd.value.androidPlotted)
     }
 
-    init<X: Plottable, Y: Plottable>(xStart: PlottableValue<X>, xEnd: PlottableValue<X>, y: PlottableValue<Y>, height: MarkDimension = .automatic) {
+    init<X: Plottable>(xStart: PlottableValue<X>, xEnd: PlottableValue<X>, y: PlottableValue<some Plottable>, height _: MarkDimension = .automatic) {
         mark = ChartMark(kind: .rectangle, y: y.value.androidPlotted, xStart: xStart.value.androidPlotted, xEnd: xEnd.value.androidPlotted)
     }
 
@@ -272,21 +281,21 @@ struct RectangleMark: AndroidMark {
 
 struct MarkDimension: ExpressibleByFloatLiteral, ExpressibleByIntegerLiteral {
     static let automatic = MarkDimension()
-    static func fixed(_ value: CGFloat) -> MarkDimension { MarkDimension() }
-    static func ratio(_ value: CGFloat) -> MarkDimension { MarkDimension() }
+    static func fixed(_: CGFloat) -> MarkDimension { MarkDimension() }
+    static func ratio(_: CGFloat) -> MarkDimension { MarkDimension() }
     init() {}
-    init(floatLiteral value: Double) {}
-    init(integerLiteral value: Int) {}
+    init(floatLiteral _: Double) {}
+    init(integerLiteral _: Int) {}
 }
 
 @resultBuilder
 enum ChartContentBuilder {
     static func buildExpression(_ content: some ChartContent) -> [ChartMark] { content.androidMarks }
-    static func buildBlock(_ parts: [ChartMark]...) -> [ChartMark] { parts.flatMap { $0 } }
+    static func buildBlock(_ parts: [ChartMark]...) -> [ChartMark] { parts.flatMap(\.self) }
     static func buildOptional(_ part: [ChartMark]?) -> [ChartMark] { part ?? [] }
     static func buildEither(first: [ChartMark]) -> [ChartMark] { first }
     static func buildEither(second: [ChartMark]) -> [ChartMark] { second }
-    static func buildArray(_ parts: [[ChartMark]]) -> [ChartMark] { parts.flatMap { $0 } }
+    static func buildArray(_ parts: [[ChartMark]]) -> [ChartMark] { parts.flatMap(\.self) }
     static func buildLimitedAvailability(_ part: [ChartMark]) -> [ChartMark] { part }
 }
 
@@ -298,8 +307,8 @@ struct ChartForEach: ChartContent {
         androidMarks = data.flatMap(content)
     }
 
-    init<Data: RandomAccessCollection, ID: Hashable>(
-        _ data: Data, id: KeyPath<Data.Element, ID>, @ChartContentBuilder content: (Data.Element) -> [ChartMark]
+    init<Data: RandomAccessCollection>(
+        _ data: Data, id _: KeyPath<Data.Element, some Hashable>, @ChartContentBuilder content: (Data.Element) -> [ChartMark],
     ) {
         androidMarks = data.flatMap(content)
     }
@@ -322,7 +331,7 @@ struct BasicChartSymbolShape: ChartSymbolShape {
         Path(ellipseIn: rect)
     }
 
-    func strokeBorder(lineWidth: CGFloat = 1) -> BasicChartSymbolShape { self }
+    func strokeBorder(lineWidth _: CGFloat = 1) -> BasicChartSymbolShape { self }
 }
 
 // MARK: - Axes
@@ -331,12 +340,12 @@ protocol AxisContent {}
 
 @resultBuilder
 enum AxisContentBuilder {
-    static func buildExpression(_ content: some AxisContent) -> AxisGroup { AxisGroup() }
-    static func buildBlock(_ parts: AxisGroup...) -> AxisGroup { AxisGroup() }
-    static func buildOptional(_ part: AxisGroup?) -> AxisGroup { AxisGroup() }
+    static func buildExpression(_: some AxisContent) -> AxisGroup { AxisGroup() }
+    static func buildBlock(_: AxisGroup...) -> AxisGroup { AxisGroup() }
+    static func buildOptional(_: AxisGroup?) -> AxisGroup { AxisGroup() }
     static func buildEither(first: AxisGroup) -> AxisGroup { first }
     static func buildEither(second: AxisGroup) -> AxisGroup { second }
-    static func buildArray(_ parts: [AxisGroup]) -> AxisGroup { AxisGroup() }
+    static func buildArray(_: [AxisGroup]) -> AxisGroup { AxisGroup() }
 }
 
 struct AxisGroup: AxisContent {}
@@ -352,7 +361,7 @@ struct AxisValue {
         self.plotted = plotted
     }
 
-    func `as`<V>(_ type: V.Type) -> V? {
+    func `as`<V>(_: V.Type) -> V? {
         switch plotted {
         case let .number(value): (value as? V) ?? (Int(value) as? V)
         case let .date(date): date as? V
@@ -363,61 +372,61 @@ struct AxisValue {
 
 struct AxisMarkValues: ExpressibleByArrayLiteral {
     static let automatic = AxisMarkValues()
-    static func automatic(desiredCount: Int? = nil, roundLowerBound: Bool? = nil, roundUpperBound: Bool? = nil) -> AxisMarkValues { AxisMarkValues() }
-    static func stride(by component: Calendar.Component, count: Int = 1) -> AxisMarkValues { AxisMarkValues() }
-    static func stride(by step: Double) -> AxisMarkValues { AxisMarkValues() }
+    static func automatic(desiredCount _: Int? = nil, roundLowerBound _: Bool? = nil, roundUpperBound _: Bool? = nil) -> AxisMarkValues { AxisMarkValues() }
+    static func stride(by _: Calendar.Component, count _: Int = 1) -> AxisMarkValues { AxisMarkValues() }
+    static func stride(by _: Double) -> AxisMarkValues { AxisMarkValues() }
     init() {}
-    init(arrayLiteral elements: Double...) {}
-    init(_ values: [some Plottable]) {}
+    init(arrayLiteral _: Double...) {}
+    init(_: [some Plottable]) {}
 }
 
 enum AxisMarkPosition { case automatic, leading, trailing, top, bottom }
 enum AxisMarkPreset { case automatic, extended, aligned, inset }
 
 struct AxisMarks: AxisContent {
-    init(preset: AxisMarkPreset = .automatic, position: AxisMarkPosition = .automatic, values: AxisMarkValues = .automatic) {}
+    init(preset _: AxisMarkPreset = .automatic, position _: AxisMarkPosition = .automatic, values _: AxisMarkValues = .automatic) {}
 
     init(
-        preset: AxisMarkPreset = .automatic, position: AxisMarkPosition = .automatic, values: AxisMarkValues = .automatic,
-        @AxisContentBuilder content: @escaping (AxisValue) -> AxisGroup
+        preset _: AxisMarkPreset = .automatic, position _: AxisMarkPosition = .automatic, values _: AxisMarkValues = .automatic,
+        @AxisContentBuilder content _: @escaping (AxisValue) -> AxisGroup,
     ) {}
 
     init(
-        preset: AxisMarkPreset = .automatic, position: AxisMarkPosition = .automatic, values: [some Plottable],
-        @AxisContentBuilder content: @escaping (AxisValue) -> AxisGroup
+        preset _: AxisMarkPreset = .automatic, position _: AxisMarkPosition = .automatic, values _: [some Plottable],
+        @AxisContentBuilder content _: @escaping (AxisValue) -> AxisGroup,
     ) {}
 
-    init(preset: AxisMarkPreset = .automatic, position: AxisMarkPosition = .automatic, values: [some Plottable]) {}
+    init(preset _: AxisMarkPreset = .automatic, position _: AxisMarkPosition = .automatic, values _: [some Plottable]) {}
 }
 
 struct AxisGridLine: AxisContent {
-    init(centered: Bool? = nil, stroke: StrokeStyle? = nil) {}
-    func foregroundStyle(_ style: some ShapeStyle) -> AxisGridLine { self }
+    init(centered _: Bool? = nil, stroke _: StrokeStyle? = nil) {}
+    func foregroundStyle(_: some ShapeStyle) -> AxisGridLine { self }
 }
 
 struct AxisTick: AxisContent {
-    init(centered: Bool? = nil, length: CGFloat? = nil, stroke: StrokeStyle? = nil) {}
-    func foregroundStyle(_ style: some ShapeStyle) -> AxisTick { self }
+    init(centered _: Bool? = nil, length _: CGFloat? = nil, stroke _: StrokeStyle? = nil) {}
+    func foregroundStyle(_: some ShapeStyle) -> AxisTick { self }
 }
 
 struct AxisValueLabel: AxisContent {
     init() {}
-    init(centered: Bool? = nil, anchor: UnitPoint? = nil, multiLabelAlignment: Alignment? = nil, collisionResolution: AxisValueLabelCollisionResolution = .automatic, offsetsMarks: Bool? = nil, orientation: AxisValueLabelOrientation = .automatic, horizontalSpacing: CGFloat? = nil, verticalSpacing: CGFloat? = nil) {}
-    init(format: Date.FormatStyle, centered: Bool? = nil, anchor: UnitPoint? = nil, collisionResolution: AxisValueLabelCollisionResolution = .automatic) {}
-    init(format: FloatingPointFormatStyle<Double>, centered: Bool? = nil, anchor: UnitPoint? = nil, collisionResolution: AxisValueLabelCollisionResolution = .automatic) {}
-    init(format: FloatingPointFormatStyle<Double>.Percent, centered: Bool? = nil, anchor: UnitPoint? = nil, collisionResolution: AxisValueLabelCollisionResolution = .automatic) {}
-    init(format: IntegerFormatStyle<Int>, centered: Bool? = nil, anchor: UnitPoint? = nil, collisionResolution: AxisValueLabelCollisionResolution = .automatic) {}
-    init<C: View>(@ViewBuilder content: () -> C) {}
-    init<C: View>(centered: Bool?, anchor: UnitPoint? = nil, @ViewBuilder content: () -> C) {}
-    func font(_ font: Font?) -> AxisValueLabel { self }
-    func foregroundStyle(_ style: some ShapeStyle) -> AxisValueLabel { self }
+    init(centered _: Bool? = nil, anchor _: UnitPoint? = nil, multiLabelAlignment _: Alignment? = nil, collisionResolution _: AxisValueLabelCollisionResolution = .automatic, offsetsMarks _: Bool? = nil, orientation _: AxisValueLabelOrientation = .automatic, horizontalSpacing _: CGFloat? = nil, verticalSpacing _: CGFloat? = nil) {}
+    init(format _: Date.FormatStyle, centered _: Bool? = nil, anchor _: UnitPoint? = nil, collisionResolution _: AxisValueLabelCollisionResolution = .automatic) {}
+    init(format _: FloatingPointFormatStyle<Double>, centered _: Bool? = nil, anchor _: UnitPoint? = nil, collisionResolution _: AxisValueLabelCollisionResolution = .automatic) {}
+    init(format _: FloatingPointFormatStyle<Double>.Percent, centered _: Bool? = nil, anchor _: UnitPoint? = nil, collisionResolution _: AxisValueLabelCollisionResolution = .automatic) {}
+    init(format _: IntegerFormatStyle<Int>, centered _: Bool? = nil, anchor _: UnitPoint? = nil, collisionResolution _: AxisValueLabelCollisionResolution = .automatic) {}
+    init(@ViewBuilder content _: () -> some View) {}
+    init(centered _: Bool?, anchor _: UnitPoint? = nil, @ViewBuilder content _: () -> some View) {}
+    func font(_: Font?) -> AxisValueLabel { self }
+    func foregroundStyle(_: some ShapeStyle) -> AxisValueLabel { self }
 }
 
 struct AxisValueLabelCollisionResolution {
     static let automatic = AxisValueLabelCollisionResolution()
     static let greedy = AxisValueLabelCollisionResolution()
     static let disabled = AxisValueLabelCollisionResolution()
-    static func greedy(priority: Double = 0, minimumSpacing: CGFloat = 0) -> AxisValueLabelCollisionResolution { .greedy }
+    static func greedy(priority _: Double = 0, minimumSpacing _: CGFloat = 0) -> AxisValueLabelCollisionResolution { .greedy }
 }
 
 enum AxisValueLabelOrientation { case automatic, horizontal, vertical, verticalReversed }
@@ -432,15 +441,8 @@ struct ChartAxisConfiguration: Equatable {
     var seriesColors: [String: Color] = [:]
 }
 
-private struct ChartAxisConfigurationKey: EnvironmentKey {
-    static let defaultValue = ChartAxisConfiguration()
-}
-
 extension EnvironmentValues {
-    var androidChartConfiguration: ChartAxisConfiguration {
-        get { self[ChartAxisConfigurationKey.self] }
-        set { self[ChartAxisConfigurationKey.self] = newValue }
-    }
+    @Entry var androidChartConfiguration: ChartAxisConfiguration = .init()
 }
 
 private extension ClosedRange where Bound: Plottable {
@@ -472,7 +474,7 @@ struct ChartConfigured<Content: View>: View {
 }
 
 extension View {
-    fileprivate func configureChart(_ change: @escaping (inout ChartAxisConfiguration) -> Void) -> some View {
+    private func configureChart(_ change: @escaping (inout ChartAxisConfiguration) -> Void) -> some View {
         ChartConfigured(content: self, change: change)
     }
 
@@ -484,24 +486,24 @@ extension View {
         configureChart { $0.yHidden = visibility == .hidden }
     }
 
-    func chartXAxis(@AxisContentBuilder content: () -> AxisGroup) -> some View { self }
-    func chartYAxis(@AxisContentBuilder content: () -> AxisGroup) -> some View { self }
+    func chartXAxis(@AxisContentBuilder content _: () -> AxisGroup) -> some View { self }
+    func chartYAxis(@AxisContentBuilder content _: () -> AxisGroup) -> some View { self }
 
-    func chartYScale<B: Plottable>(domain: ClosedRange<B>, type: ScaleType? = nil) -> some View {
+    func chartYScale(domain: ClosedRange<some Plottable>, type _: ScaleType? = nil) -> some View {
         let domain = domain.androidDomain
         return configureChart { $0.yDomain = domain }
     }
 
-    func chartXScale<B: Plottable>(domain: ClosedRange<B>, type: ScaleType? = nil) -> some View {
+    func chartXScale(domain: ClosedRange<some Plottable>, type _: ScaleType? = nil) -> some View {
         let domain = domain.androidDomain
         return configureChart { $0.xDomain = domain }
     }
 
-    func chartYScale(range: ClosedRange<CGFloat>) -> some View { self }
+    func chartYScale(range _: ClosedRange<CGFloat>) -> some View { self }
     /// A categorical domain: the renderer orders categories as the data first lists them.
-    func chartXScale(domain: [String]) -> some View { self }
-    func chartYScale(domain: [String]) -> some View { self }
-    func chartXScale(range: ClosedRange<CGFloat>) -> some View { self }
+    func chartXScale(domain _: [String]) -> some View { self }
+    func chartYScale(domain _: [String]) -> some View { self }
+    func chartXScale(range _: ClosedRange<CGFloat>) -> some View { self }
 
     func chartForegroundStyleScale(_ mapping: KeyValuePairs<String, Color>) -> some View {
         let colors = Dictionary(mapping.map { ($0.key, $0.value) }, uniquingKeysWith: { first, _ in first })
@@ -509,7 +511,7 @@ extension View {
     }
 
     /// A style range the renderer can use only where its entries are plain colors.
-    func chartForegroundStyleScale<D: Plottable, S: ShapeStyle>(domain: [D], range: [S]) -> some View {
+    func chartForegroundStyleScale(domain: [some Plottable], range: [some ShapeStyle]) -> some View {
         let names = domain.map { value -> String in
             if case let .category(name) = value.androidPlotted { return name }
             return String(describing: value)
@@ -523,24 +525,24 @@ extension View {
         return configureChart { $0.seriesColors = colors }
     }
 
-    func chartForegroundStyleScale<V>(_ mapping: @escaping (V) -> Color) -> some View { self }
+    func chartForegroundStyleScale<V>(_: @escaping (V) -> Color) -> some View { self }
 
-    func chartLegend(_ visibility: Visibility) -> some View { self }
-    func chartLegend(position: AnnotationPosition = .automatic, alignment: Alignment? = nil, spacing: CGFloat? = nil) -> some View { self }
-    func chartYAxisLabel(_ label: String, position: AnnotationPosition = .automatic, alignment: Alignment? = nil, spacing: CGFloat? = nil) -> some View { self }
-    func chartYAxisLabel(_ label: Text, position: AnnotationPosition = .automatic, alignment: Alignment? = nil, spacing: CGFloat? = nil) -> some View { self }
-    func chartXAxisLabel(_ label: String, position: AnnotationPosition = .automatic, alignment: Alignment? = nil, spacing: CGFloat? = nil) -> some View { self }
-    func chartXSelection<V>(value: Binding<V?>) -> some View { self }
-    func chartXSelection<V>(range: Binding<ClosedRange<V>?>) -> some View { self }
-    func chartOverlay<V: View>(alignment: Alignment = .center, @ViewBuilder content: @escaping (ChartProxy) -> V) -> some View { self }
-    func chartBackground<V: View>(alignment: Alignment = .center, @ViewBuilder content: @escaping (ChartProxy) -> V) -> some View { self }
-    func chartPlotStyle<V: View>(@ViewBuilder content: @escaping (ChartPlotContent) -> V) -> some View { self }
-    func chartScrollableAxes(_ axes: Axis.Set) -> some View { self }
-    func chartXVisibleDomain(length: some Numeric) -> some View { self }
-    func chartScrollPosition<V>(x: Binding<V>) -> some View { self }
-    func chartScrollPosition<V>(initialX: V) -> some View { self }
-    func chartXScrollWindow<L, W, I>(fullLength: L, window: W, initialX: I) -> some View { self }
-    func chartGesture(_ gesture: @escaping (ChartProxy) -> Void) -> some View { self }
+    func chartLegend(_: Visibility) -> some View { self }
+    func chartLegend(position _: AnnotationPosition = .automatic, alignment _: Alignment? = nil, spacing _: CGFloat? = nil) -> some View { self }
+    func chartYAxisLabel(_: String, position _: AnnotationPosition = .automatic, alignment _: Alignment? = nil, spacing _: CGFloat? = nil) -> some View { self }
+    func chartYAxisLabel(_: Text, position _: AnnotationPosition = .automatic, alignment _: Alignment? = nil, spacing _: CGFloat? = nil) -> some View { self }
+    func chartXAxisLabel(_: String, position _: AnnotationPosition = .automatic, alignment _: Alignment? = nil, spacing _: CGFloat? = nil) -> some View { self }
+    func chartXSelection(value _: Binding<(some Any)?>) -> some View { self }
+    func chartXSelection(range _: Binding<ClosedRange<some Any>?>) -> some View { self }
+    func chartOverlay(alignment _: Alignment = .center, @ViewBuilder content _: @escaping (ChartProxy) -> some View) -> some View { self }
+    func chartBackground(alignment _: Alignment = .center, @ViewBuilder content _: @escaping (ChartProxy) -> some View) -> some View { self }
+    func chartPlotStyle(@ViewBuilder content _: @escaping (ChartPlotContent) -> some View) -> some View { self }
+    func chartScrollableAxes(_: Axis.Set) -> some View { self }
+    func chartXVisibleDomain(length _: some Numeric) -> some View { self }
+    func chartScrollPosition(x _: Binding<some Any>) -> some View { self }
+    func chartScrollPosition(initialX _: some Any) -> some View { self }
+    func chartXScrollWindow(fullLength _: some Any, window _: some Any, initialX _: some Any) -> some View { self }
+    func chartGesture(_: @escaping (ChartProxy) -> Void) -> some View { self }
 }
 
 enum ScaleType { case linear, log, squareRoot, date, category, symmetricLog }
@@ -549,15 +551,15 @@ enum ScaleType { case linear, log, squareRoot, date, category, symmetricLog }
 struct ChartPlotAnchor {}
 
 extension GeometryProxy {
-    subscript(_ anchor: ChartPlotAnchor) -> CGRect { .zero }
+    subscript(_: ChartPlotAnchor) -> CGRect { .zero }
 }
 
 struct ChartProxy {
     var plotSize: CGSize { .zero }
     var plotFrame: ChartPlotAnchor? { nil }
-    func value<V>(atX x: CGFloat, as type: V.Type) -> V? { nil }
-    func position<V>(forX value: V) -> CGFloat? { nil }
-    func position<V>(forY value: V) -> CGFloat? { nil }
+    func value<V>(atX _: CGFloat, as _: V.Type) -> V? { nil }
+    func position(forX _: some Any) -> CGFloat? { nil }
+    func position(forY _: some Any) -> CGFloat? { nil }
 }
 
 struct ChartPlotContent: View {
@@ -728,7 +730,7 @@ private struct ChartRenderer {
 
     private func drawGrid(
         _ context: inout GraphicsContext, plot: CGRect, yDomain: ClosedRange<Double>, xDomain: ClosedRange<Double>,
-        categories: [String], py: (Double) -> CGFloat, px: (Double) -> CGFloat
+        categories: [String], py: (Double) -> CGFloat, px: (Double) -> CGFloat,
     ) {
         let grid = Color.secondary.opacity(0.25)
         if !configuration.yHidden {
@@ -739,7 +741,7 @@ private struct ChartRenderer {
                 context.stroke(line, with: .color(grid), style: StrokeStyle(lineWidth: 0.5, dash: [3, 3]))
                 context.draw(
                     Text(Self.format(value, span: yDomain.upperBound - yDomain.lowerBound)).font(.caption2).foregroundStyle(Color.secondary),
-                    at: CGPoint(x: plot.minX - 4, y: py(value)), anchor: .trailing
+                    at: CGPoint(x: plot.minX - 4, y: py(value)), anchor: .trailing,
                 )
             }
         }
@@ -759,7 +761,7 @@ private struct ChartRenderer {
             for value in Self.ticks(xDomain, count: 4) {
                 context.draw(
                     Text(Self.format(value, span: xDomain.upperBound - xDomain.lowerBound)).font(.caption2).foregroundStyle(Color.secondary),
-                    at: CGPoint(x: px(value), y: plot.maxY + 9)
+                    at: CGPoint(x: px(value), y: plot.maxY + 9),
                 )
             }
         }
@@ -799,7 +801,7 @@ private struct ChartRenderer {
             path.addCurve(
                 to: current,
                 control1: CGPoint(x: previous.x + mid, y: previous.y),
-                control2: CGPoint(x: current.x - mid, y: current.y)
+                control2: CGPoint(x: current.x - mid, y: current.y),
             )
         }
         return path

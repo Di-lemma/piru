@@ -8,8 +8,8 @@ import SkipFuse
 import SwiftData
 import SwiftUI
 
-/* SKIP @bridge */public struct PiruRootView: View {
-    /* SKIP @bridge */public init() {}
+/* SKIP @bridge */ public struct PiruRootView: View {
+    /* SKIP @bridge */ public init() {}
 
     public var body: some View {
         ContentView()
@@ -20,18 +20,18 @@ import SwiftUI
     }
 }
 
-/* SKIP @bridge */public final class PiruAppDelegate: Sendable {
-    /* SKIP @bridge */public static let shared = PiruAppDelegate()
+/* SKIP @bridge */ public final class PiruAppDelegate: Sendable {
+    /* SKIP @bridge */ public static let shared = PiruAppDelegate()
 
     private init() {}
 
-    /* SKIP @bridge */public func onInit() {}
-    /* SKIP @bridge */public func onLaunch() {}
-    /* SKIP @bridge */public func onResume() {}
-    /* SKIP @bridge */public func onPause() {}
-    /* SKIP @bridge */public func onStop() {}
-    /* SKIP @bridge */public func onDestroy() {}
-    /* SKIP @bridge */public func onLowMemory() {}
+    /* SKIP @bridge */ public func onInit() {}
+    /* SKIP @bridge */ public func onLaunch() {}
+    /* SKIP @bridge */ public func onResume() {}
+    /* SKIP @bridge */ public func onPause() {}
+    /* SKIP @bridge */ public func onStop() {}
+    /* SKIP @bridge */ public func onDestroy() {}
+    /* SKIP @bridge */ public func onLowMemory() {}
 }
 
 @MainActor

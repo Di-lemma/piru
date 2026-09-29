@@ -12,8 +12,8 @@ struct AndroidVGrid<Content: View>: View {
     let content: Content
 
     init(
-        columns: [GridItem], alignment: HorizontalAlignment = .center, spacing: CGFloat? = nil,
-        pinnedViews: PinnedScrollableViews = PinnedScrollableViews(), @ViewBuilder content: () -> Content
+        columns: [GridItem], alignment _: HorizontalAlignment = .center, spacing: CGFloat? = nil,
+        pinnedViews _: PinnedScrollableViews = PinnedScrollableViews(), @ViewBuilder content: () -> Content,
     ) {
         self.columns = columns
         self.spacing = spacing
@@ -27,7 +27,7 @@ struct AndroidVGrid<Content: View>: View {
         let rowSpacing = Double(spacing ?? 8)
         return ComposeView {
             try! AnyDynamicObject(
-                className: "piru.module.AndroidGridComposer", columnCount, columnSpacing, rowSpacing, children
+                className: "piru.module.AndroidGridComposer", columnCount, columnSpacing, rowSpacing, children,
             )
         }
     }

@@ -41,7 +41,7 @@ private nonisolated func keychainFile(_ attributes: [String: Any]) -> URL? {
     return directory.appending(path: "\(service).\(account)")
 }
 
-nonisolated func SecItemAdd(_ attributes: CFDictionary, _ result: UnsafeMutablePointer<CFTypeRef?>?) -> OSStatus {
+nonisolated func SecItemAdd(_ attributes: CFDictionary, _: UnsafeMutablePointer<CFTypeRef?>?) -> OSStatus {
     guard let file = keychainFile(attributes), let data = attributes[kSecValueData] as? Data else { return errSecParam }
     if FileManager.default.fileExists(atPath: file.path) { return errSecDuplicateItem }
     do {
@@ -59,7 +59,7 @@ nonisolated func SecItemCopyMatching(_ query: CFDictionary, _ result: UnsafeMuta
     return errSecSuccess
 }
 
-nonisolated func SecRandomCopyBytes(_ rnd: Int?, _ count: Int, _ bytes: UnsafeMutableRawPointer) -> Int32 {
+nonisolated func SecRandomCopyBytes(_: Int?, _ count: Int, _ bytes: UnsafeMutableRawPointer) -> Int32 {
     var generator = SystemRandomNumberGenerator()
     let buffer = bytes.assumingMemoryBound(to: UInt8.self)
     for index in 0 ..< count {
@@ -87,14 +87,14 @@ nonisolated func CCKeyDerivationPBKDF(
     _ prf: CCPseudoRandomAlgorithm,
     _ rounds: UInt32,
     _ derivedKey: UnsafeMutablePointer<UInt8>?,
-    _ derivedKeyLength: Int
+    _ derivedKeyLength: Int,
 ) -> Int32 {
     guard algorithm == kCCPBKDF2, prf == kCCPRFHmacAlgSHA256, let derivedKey else { return kCCParamError }
     let passwordBytes = password.map { Data(bytes: $0, count: passwordLength) } ?? Data()
     let saltBytes = salt.map { Data(bytes: $0, count: saltLength) } ?? Data()
     guard let key = try? KDF.Insecure.PBKDF2.deriveKey(
         from: passwordBytes, salt: saltBytes, using: .sha256,
-        outputByteCount: derivedKeyLength, unsafeUncheckedRounds: Int(rounds)
+        outputByteCount: derivedKeyLength, unsafeUncheckedRounds: Int(rounds),
     ) else { return kCCParamError }
     key.withUnsafeBytes { raw in
         for index in 0 ..< derivedKeyLength {

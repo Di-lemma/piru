@@ -11,10 +11,10 @@ nonisolated struct CGColorSpace {
     static let displayP3 = "kCGColorSpaceDisplayP3"
     static let sRGB = "kCGColorSpaceSRGB"
 
-    init?(name: String) {}
+    init?(name _: String) {}
 }
 
-nonisolated final class CGDataProvider {
+final nonisolated class CGDataProvider {
     let data: Data
 
     init?(data: CFData) {
@@ -27,14 +27,25 @@ nonisolated struct CGBitmapInfo: OptionSet {
 }
 
 nonisolated enum CGImageAlphaInfo: UInt32 {
-    case none, premultipliedLast, premultipliedFirst, last, first, noneSkipLast, noneSkipFirst, alphaOnly
+    case none
+    case premultipliedLast
+    case premultipliedFirst
+    case last
+    case first
+    case noneSkipLast
+    case noneSkipFirst
+    case alphaOnly
 }
 
 nonisolated enum CGColorRenderingIntent {
-    case defaultIntent, absoluteColorimetric, relativeColorimetric, perceptual, saturation
+    case defaultIntent
+    case absoluteColorimetric
+    case relativeColorimetric
+    case perceptual
+    case saturation
 }
 
-nonisolated final class CGImage {
+final nonisolated class CGImage {
     let width: Int
     let height: Int
     /// Premultiplied RGBA, 8 bits per component, rows packed.
@@ -42,8 +53,8 @@ nonisolated final class CGImage {
 
     init?(
         width: Int, height: Int, bitsPerComponent: Int, bitsPerPixel: Int, bytesPerRow: Int,
-        space: CGColorSpace, bitmapInfo: CGBitmapInfo, provider: CGDataProvider,
-        decode: UnsafePointer<CGFloat>?, shouldInterpolate: Bool, intent: CGColorRenderingIntent
+        space _: CGColorSpace, bitmapInfo _: CGBitmapInfo, provider: CGDataProvider,
+        decode _: UnsafePointer<CGFloat>?, shouldInterpolate _: Bool, intent _: CGColorRenderingIntent,
     ) {
         guard bitsPerComponent == 8, bitsPerPixel == 32, bytesPerRow == width * 4,
               provider.data.count >= bytesPerRow * height else { return nil }
@@ -95,13 +106,13 @@ nonisolated final class CGImage {
     }
 }
 
-nonisolated private let crcTable: [UInt32] = (0 ..< 256).map { n in
+private nonisolated let crcTable: [UInt32] = (0 ..< 256).map { n in
     var c = UInt32(n)
     for _ in 0 ..< 8 { c = c & 1 == 1 ? 0xEDB8_8320 ^ (c >> 1) : c >> 1 }
     return c
 }
 
-nonisolated private extension Data {
+private nonisolated extension Data {
     mutating func appendBigEndian(_ value: UInt32) {
         append(contentsOf: [UInt8(value >> 24), UInt8((value >> 16) & 0xFF), UInt8((value >> 8) & 0xFF), UInt8(value & 0xFF)])
     }
@@ -117,7 +128,7 @@ nonisolated private extension Data {
 }
 
 extension Image {
-    init(decorative image: CGImage, scale: CGFloat, orientation: Image.Orientation = .up) {
+    init(decorative image: CGImage, scale: CGFloat, orientation _: Image.Orientation = .up) {
         if let ui = UIImage(data: image.pngData, scale: scale) {
             self.init(uiImage: ui)
         } else {

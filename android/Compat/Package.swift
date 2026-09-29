@@ -31,7 +31,7 @@ let package = Package(
         // the module is empty: there, swift-crypto itself re-exports the real CryptoKit.
         .target(
             name: "CryptoKit",
-            dependencies: [.product(name: "Crypto", package: "swift-crypto", condition: .when(platforms: portable))]
+            dependencies: [.product(name: "Crypto", package: "swift-crypto", condition: .when(platforms: portable))],
         ),
         .target(name: "CoreLocation"),
         .target(name: "SwiftData", dependencies: ["PortableData"]),
@@ -55,15 +55,15 @@ let package = Package(
                 .product(name: "SwiftDiagnostics", package: "swift-syntax"),
                 .product(name: "SwiftCompilerPlugin", package: "swift-syntax"),
             ],
-            exclude: ["VENDORED.md"]
+            exclude: ["VENDORED.md"],
         ),
         .macro(
             name: "PortableDataMacros",
             dependencies: [
                 .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
                 .product(name: "SwiftCompilerPlugin", package: "swift-syntax"),
-            ]
+            ],
         ),
         .testTarget(name: "PortableDataTests", dependencies: ["PortableData"]),
-    ]
+    ],
 )

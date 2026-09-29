@@ -29,12 +29,12 @@ nonisolated extension Color {
         }
     }
 
-    func androidMix(with other: Color, by fraction: Double, in colorSpace: Any? = nil) -> Color {
+    func androidMix(with other: Color, by fraction: Double, in _: Any? = nil) -> Color {
         guard let a = androidComponents, let b = other.androidComponents else { return self }
         let t = min(max(fraction, 0), 1)
         return Color(
             red: a.red + (b.red - a.red) * t, green: a.green + (b.green - a.green) * t,
-            blue: a.blue + (b.blue - a.blue) * t, opacity: a.alpha + (b.alpha - a.alpha) * t
+            blue: a.blue + (b.blue - a.blue) * t, opacity: a.alpha + (b.alpha - a.alpha) * t,
         )
     }
 }

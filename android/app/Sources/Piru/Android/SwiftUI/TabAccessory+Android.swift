@@ -5,25 +5,19 @@
 import SwiftUI
 
 enum TabViewBottomAccessoryPlacement: Equatable {
-    case expanded, inline
-}
-
-private struct TabViewBottomAccessoryPlacementKey: EnvironmentKey {
-    static let defaultValue: TabViewBottomAccessoryPlacement? = .expanded
+    case expanded
+    case inline
 }
 
 extension EnvironmentValues {
-    var tabViewBottomAccessoryPlacement: TabViewBottomAccessoryPlacement? {
-        get { self[TabViewBottomAccessoryPlacementKey.self] }
-        set { self[TabViewBottomAccessoryPlacementKey.self] = newValue }
-    }
+    @Entry var tabViewBottomAccessoryPlacement: TabViewBottomAccessoryPlacement? = .expanded
 }
 
 extension View {
     /// Height of the Material navigation bar the accessory sits above.
     private static var navigationBarClearance: CGFloat { 88 }
 
-    func tabViewBottomAccessory<Content: View>(@ViewBuilder content: () -> Content) -> some View {
+    func tabViewBottomAccessory(@ViewBuilder content: () -> some View) -> some View {
         let accessory = content()
         return overlay(alignment: .bottom) {
             accessory

@@ -11,7 +11,7 @@ final class WidgetCenter: @unchecked Sendable {
     static let shared = WidgetCenter()
 
     func reloadAllTimelines() {}
-    func reloadTimelines(ofKind kind: String) {}
+    func reloadTimelines(ofKind _: String) {}
 }
 
 // MARK: - UniformTypeIdentifiers
@@ -33,23 +33,23 @@ struct UTType: Hashable, Sendable {
 extension View {
     // TODO(android): open Android's document picker (ACTION_OPEN_DOCUMENT / ACTION_CREATE_DOCUMENT).
     func fileImporter(
-        isPresented: Binding<Bool>, allowedContentTypes: [UTType], allowsMultipleSelection: Bool = false,
-        onCompletion: @escaping (Result<URL, any Error>) -> Void
+        isPresented _: Binding<Bool>, allowedContentTypes _: [UTType], allowsMultipleSelection _: Bool = false,
+        onCompletion _: @escaping (Result<URL, any Error>) -> Void,
     ) -> some View { self }
 
     func fileImporter(
-        isPresented: Binding<Bool>, allowedContentTypes: [UTType], allowsMultipleSelection: Bool,
-        onCompletion: @escaping (Result<[URL], any Error>) -> Void
+        isPresented _: Binding<Bool>, allowedContentTypes _: [UTType], allowsMultipleSelection _: Bool,
+        onCompletion _: @escaping (Result<[URL], any Error>) -> Void,
     ) -> some View { self }
 
-    func fileExporter<D>(
-        isPresented: Binding<Bool>, document: D?, contentType: UTType, defaultFilename: String? = nil,
-        onCompletion: @escaping (Result<URL, any Error>) -> Void
+    func fileExporter(
+        isPresented _: Binding<Bool>, document _: (some Any)?, contentType _: UTType, defaultFilename _: String? = nil,
+        onCompletion _: @escaping (Result<URL, any Error>) -> Void,
     ) -> some View { self }
 
-    func fileExporter<D>(
-        isPresented: Binding<Bool>, document: D?, contentTypes: [UTType] = [], defaultFilename: String? = nil,
-        onCompletion: @escaping (Result<URL, any Error>) -> Void, onCancellation: @escaping () -> Void = {}
+    func fileExporter(
+        isPresented _: Binding<Bool>, document _: (some Any)?, contentTypes _: [UTType] = [], defaultFilename _: String? = nil,
+        onCompletion _: @escaping (Result<URL, any Error>) -> Void, onCancellation _: @escaping () -> Void = {},
     ) -> some View { self }
 }
 
@@ -68,7 +68,7 @@ final class HealthKitVitals {
 
     func connectWouldPrompt() async -> Bool { false }
 
-    func vitals(from start: Date, to end: Date) async -> SessionVitals {
+    func vitals(from _: Date, to _: Date) async -> SessionVitals {
         SessionVitals(heartRate: [], bloodPressure: [])
     }
 }
@@ -126,13 +126,13 @@ final class SkinShop {
 
     var ownsEverything: Bool { false }
 
-    func product(for skin: Skin) -> Product? { nil }
+    func product(for _: Skin) -> Product? { nil }
 
     var everythingProduct: Product? { nil }
 
     func start() {}
 
-    func buy(_ product: Product, then: @escaping () -> Void = {}) {}
+    func buy(_: Product, then _: @escaping () -> Void = {}) {}
 
     func restore() async {
         notice = .nothingToRestore
@@ -211,7 +211,7 @@ struct CLLocation {
 struct MKCoordinateRegion {
     var center: CLLocationCoordinate2D
 
-    init(center: CLLocationCoordinate2D, latitudinalMeters: Double, longitudinalMeters: Double) {
+    init(center: CLLocationCoordinate2D, latitudinalMeters _: Double, longitudinalMeters _: Double) {
         self.center = center
     }
 }
@@ -238,7 +238,7 @@ struct Marker: View {
 struct Map<Content: View>: View {
     private let content: Content
 
-    init(initialPosition: MapCameraPosition, @ViewBuilder content: () -> Content) {
+    init(initialPosition _: MapCameraPosition, @ViewBuilder content: () -> Content) {
         self.content = content()
     }
 
@@ -257,7 +257,7 @@ final class MKMapItem {
     let location: CLLocation
     var name: String?
 
-    init(location: CLLocation, address: Any?) {
+    init(location: CLLocation, address _: Any?) {
         self.location = location
     }
 
@@ -280,7 +280,7 @@ final class MKMapItem {
 enum OnboardingTips {
     static func configure() {}
     static func markOnboardingComplete() {}
-    static func updateEngagement(hasLoggedDose: Bool) {}
+    static func updateEngagement(hasLoggedDose _: Bool) {}
     static func logDoseInvoked() {}
     static func retireDataTipAfterSessionMenuTip() async {}
 }
@@ -294,7 +294,7 @@ struct GraphGestureTip: Tip {}
 struct ShareSessionTip: Tip {}
 
 extension View {
-    func popoverTip(_ tip: some Tip, arrowEdge: Edge? = nil) -> some View { self }
+    func popoverTip(_: some Tip, arrowEdge _: Edge? = nil) -> some View { self }
 }
 
 // MARK: - FileDocument
@@ -333,17 +333,17 @@ final class FileWrapper {
 /// Programmatic sharing of files and images. TODO(android): an ACTION_SEND intent through
 /// the activity; until then only SwiftUI ShareLinks share, which Skip bridges for text.
 enum ShareSheetPresenter {
-    static func present(_ items: [Any]) {}
+    static func present(_: [Any]) {}
 }
 
 /// Quick Look previews are iOS's; Android opens nothing.
 enum ImageQuickLook {
-    static func present(url: URL, from source: AnyObject?) {}
+    static func present(url _: URL, from _: AnyObject?) {}
 }
 
 /// The zoom-transition source view Quick Look animates from; there is none to track.
 struct ZoomSourceView: View {
-    init(onResolve: @escaping (AnyObject?) -> Void) {}
+    init(onResolve _: @escaping (AnyObject?) -> Void) {}
 
     var body: some View { Color.clear }
 }

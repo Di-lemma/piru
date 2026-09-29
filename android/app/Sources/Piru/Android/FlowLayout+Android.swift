@@ -9,7 +9,7 @@ import SwiftUI
 struct FlowLayout {
     var spacing: CGFloat = 8
 
-    func callAsFunction<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
+    func callAsFunction(@ViewBuilder _ content: () -> some View) -> some View {
         let children = content().Java_viewOrEmpty
         return ComposeView {
             try! AnyDynamicObject(className: "piru.module.AndroidFlowComposer", Double(spacing), children)

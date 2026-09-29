@@ -5,17 +5,8 @@
 import SwiftData
 import SwiftUI
 
-private struct ModelContextKey: EnvironmentKey {
-    static var defaultValue: ModelContext {
-        MainActor.assumeIsolated { ModelContainer.application!.mainContext }
-    }
-}
-
 extension EnvironmentValues {
-    var modelContext: ModelContext {
-        get { self[ModelContextKey.self] }
-        set { self[ModelContextKey.self] = newValue }
-    }
+    @Entry var modelContext: ModelContext = MainActor.assumeIsolated { ModelContainer.application!.mainContext }
 }
 
 /// Relays the main context's changes into Skip's Observation, which is what recomposes views.
@@ -54,15 +45,15 @@ struct Query<Element: PersistentModel> {
         descriptor = FetchDescriptor()
     }
 
-    init(_ descriptor: FetchDescriptor<Element>, animation: Animation? = nil) {
+    init(_ descriptor: FetchDescriptor<Element>, animation _: Animation? = nil) {
         self.descriptor = descriptor
     }
 
-    init(_ descriptor: FetchDescriptor<Element>, transaction: Transaction?) {
+    init(_ descriptor: FetchDescriptor<Element>, transaction _: Transaction?) {
         self.descriptor = descriptor
     }
 
-    init(filter: Predicate<Element>? = nil, sort: [SortDescriptor<Element>] = [], animation: Animation? = nil) {
+    init(filter: Predicate<Element>? = nil, sort: [SortDescriptor<Element>] = [], animation _: Animation? = nil) {
         descriptor = FetchDescriptor(predicate: filter, sortBy: sort)
     }
 
@@ -70,7 +61,7 @@ struct Query<Element: PersistentModel> {
         filter: Predicate<Element>? = nil,
         sort keyPath: KeyPath<Element, some Comparable> & Sendable,
         order: SortOrder = .forward,
-        animation: Animation? = nil
+        animation _: Animation? = nil,
     ) {
         descriptor = FetchDescriptor(predicate: filter, sortBy: [SortDescriptor(keyPath, order: order)])
     }
@@ -79,7 +70,7 @@ struct Query<Element: PersistentModel> {
         filter: Predicate<Element>? = nil,
         sort keyPath: KeyPath<Element, (some Comparable)?> & Sendable,
         order: SortOrder = .forward,
-        animation: Animation? = nil
+        animation _: Animation? = nil,
     ) {
         descriptor = FetchDescriptor(predicate: filter, sortBy: [SortDescriptor(keyPath, order: order)])
     }

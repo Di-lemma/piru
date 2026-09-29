@@ -38,7 +38,7 @@ let package = Package(
                 // AndroidResources reads the module's APK assets through it.
                 .product(
                     name: "AndroidAssetManager", package: "swift-android-native",
-                    condition: .when(platforms: [.android])
+                    condition: .when(platforms: [.android]),
                 ),
                 // android/substitutions.txt rewrites `import SwiftData` and `import CryptoKit`
                 // to these.
@@ -53,7 +53,7 @@ let package = Package(
             swiftSettings: appSwiftSettings + [
                 .unsafeFlags(["-Xfrontend", "-import-module", "-Xfrontend", "Observation"]),
             ],
-            plugins: [.plugin(name: "skipstone", package: "skip")]
+            plugins: [.plugin(name: "skipstone", package: "skip")],
         ),
-    ]
+    ],
 )

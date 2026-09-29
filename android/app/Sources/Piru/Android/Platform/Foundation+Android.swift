@@ -10,22 +10,22 @@ extension AndroidBundle {
     /// SwiftPM's generated `Bundle.module` accessor passes a private class that the module's
     /// MainActor default isolation makes main-actor-bound, and that metatype does not convert
     /// to `AnyClass` at the call. The generic parameter takes it as is.
-    convenience init<T: AnyObject>(for type: T.Type) {
+    convenience init(for type: (some AnyObject).Type) {
         self.init(for: type as AnyClass)
     }
 }
 
 nonisolated extension FileManager {
     /// Android has no iCloud Drive.
-    func url(forUbiquityContainerIdentifier containerIdentifier: String?) -> URL? { nil }
+    func url(forUbiquityContainerIdentifier _: String?) -> URL? { nil }
 
     var ubiquityIdentityToken: (any NSCoding & NSCopying & NSObjectProtocol)? { nil }
 
-    func startDownloadingUbiquitousItem(at url: URL) throws {}
+    func startDownloadingUbiquitousItem(at _: URL) throws {}
 
     /// An app group shares a container with extensions; Android's app has none, so its own
     /// files directory is the group container.
-    func containerURL(forSecurityApplicationGroupIdentifier groupIdentifier: String) -> URL? {
+    func containerURL(forSecurityApplicationGroupIdentifier _: String) -> URL? {
         urls(for: .applicationSupportDirectory, in: .userDomainMask).first
     }
 }
@@ -40,14 +40,14 @@ nonisolated extension URL {
 typealias NSErrorPointer = UnsafeMutablePointer<NSError?>?
 
 /// Coordinates nothing: only this process touches the app's files on Android.
-nonisolated final class NSFileCoordinator {
-    init(filePresenter: Any? = nil) {}
+final nonisolated class NSFileCoordinator {
+    init(filePresenter _: Any? = nil) {}
 
-    func coordinate(readingItemAt url: URL, options: ReadingOptions = [], error: NSErrorPointer, byAccessor reader: (URL) -> Void) {
+    func coordinate(readingItemAt url: URL, options _: ReadingOptions = [], error _: NSErrorPointer, byAccessor reader: (URL) -> Void) {
         reader(url)
     }
 
-    func coordinate(writingItemAt url: URL, options: WritingOptions = [], error: NSErrorPointer, byAccessor writer: (URL) -> Void) {
+    func coordinate(writingItemAt url: URL, options _: WritingOptions = [], error _: NSErrorPointer, byAccessor writer: (URL) -> Void) {
         writer(url)
     }
 
@@ -78,7 +78,10 @@ nonisolated extension DispatchQueue: @retroactive TaskExecutor {
 /// does not read, so the skins see a device at rest.
 nonisolated extension ProcessInfo {
     enum ThermalState: Int {
-        case nominal, fair, serious, critical
+        case nominal
+        case fair
+        case serious
+        case critical
     }
 
     var isLowPowerModeEnabled: Bool { false }
@@ -93,7 +96,7 @@ nonisolated extension Notification.Name {
 
 /// DateComponentsFormatter for the durations the app formats ("3h 10m", "1:05:00"), which
 /// swift-corelibs-foundation does not implement.
-nonisolated final class AndroidDateComponentsFormatter {
+final nonisolated class AndroidDateComponentsFormatter {
     enum UnitsStyle { case positional, abbreviated, short, full, spellOut, brief }
     enum ZeroFormattingBehavior { case `default`, dropLeading, dropMiddle, dropTrailing, dropAll, pad }
 
@@ -106,7 +109,7 @@ nonisolated final class AndroidDateComponentsFormatter {
         var remaining = Int(abs(interval).rounded())
         var parts: [(Int, String)] = []
         for (unit, seconds, suffix) in [(NSCalendar.Unit.day, 86400, "d"), (.hour, 3600, "h"), (.minute, 60, "m"), (.second, 1, "s")]
-        where allowedUnits.contains(unit) {
+            where allowedUnits.contains(unit) {
             parts.append((remaining / seconds, suffix))
             remaining %= seconds
         }
@@ -142,8 +145,8 @@ nonisolated struct AndroidMeasurementFormat {
     let numberStyle: FloatingPointFormatStyle<Double>
 
     static func measurement(
-        width: Width = .abbreviated, usage: Usage = .general,
-        numberFormatStyle: FloatingPointFormatStyle<Double> = .number
+        width _: Width = .abbreviated, usage _: Usage = .general,
+        numberFormatStyle: FloatingPointFormatStyle<Double> = .number,
     ) -> AndroidMeasurementFormat {
         AndroidMeasurementFormat(numberStyle: numberFormatStyle)
     }

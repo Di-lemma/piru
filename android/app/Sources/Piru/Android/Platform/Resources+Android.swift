@@ -15,7 +15,7 @@
         /// `Bundle.module` builds a Darwin-style `.bundle` URL that no Android bundle answers;
         /// Skip's path initializer maps `<main bundle>/<package>_Piru.resources` to the module.
         static let bundle: Bundle = AndroidBundle(
-            path: AndroidBundle.main.bundlePath + "/piru-android_Piru.resources", moduleName: "Piru"
+            path: AndroidBundle.main.bundlePath + "/piru-android_Piru.resources", moduleName: "Piru",
         ) {
             try! AnyDynamicObject(className: "piru.module._ModuleBundleAccessor_Piru").moduleBundle!
         } ?? .main
@@ -40,7 +40,7 @@
             if onDisk != Int(asset.length) {
                 guard let data = asset.read() else { return nil }
                 try? FileManager.default.createDirectory(
-                    at: destination.deletingLastPathComponent(), withIntermediateDirectories: true
+                    at: destination.deletingLastPathComponent(), withIntermediateDirectories: true,
                 )
                 guard (try? data.write(to: destination, options: .atomic)) != nil else { return nil }
             }
