@@ -115,8 +115,8 @@
 \.scrollPosition\(id:	.androidScrollPosition(id:
 # Text(Image) sets a symbol in the text line; the Image with the same font does on Android.
 \bText\(Image\(systemName: ("[^"]+")\)\)	Image(systemName: \1)
-# Binding.animation() is unavailable; the binding itself changes the value.
-(\$[\w.]+)\.animation\(\)	\1
+# Binding.animation(_:) is unavailable; its twin sets the value inside withAnimation.
+(\$[\w.]+)\.animation\(	\1.androidAnimation(
 
 # Styles SkipFuseUI lacks, mapped to the nearest Material one.
 \.datePickerStyle\(\.graphical\)	.datePickerStyle(.compact)

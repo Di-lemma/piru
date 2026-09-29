@@ -1,0 +1,38 @@
+SkipFuseUI has no Layout protocol; the chip title's width cap is a View with a capped frame, which SkipUI renders as a non-expanding Compose width cap that already wraps a short title
+
+diff --git a/Piru/Views/QuickLog/TrayMetaChips.swift b/Piru/Views/QuickLog/TrayMetaChips.swift
+index 6ca64815..75405094 100644
+--- a/Piru/Views/QuickLog/TrayMetaChips.swift
++++ b/Piru/Views/QuickLog/TrayMetaChips.swift
+@@ -329,6 +329,23 @@ struct TrayChipFace: View {
+     }
+ }
+ 
++#if os(Android)
++/// SkipUI makes a finite `maxWidth` a non-expanding Compose width cap, which already wraps
++/// a short title to its own width.
++struct CappedWidthLayout<Content: View>: View {
++    let maxWidth: CGFloat
++    let content: Content
++
++    init(maxWidth: CGFloat, @ViewBuilder content: () -> Content) {
++        self.maxWidth = maxWidth
++        self.content = content()
++    }
++
++    var body: some View {
++        content.frame(maxWidth: maxWidth, alignment: .leading)
++    }
++}
++#else
+ /// Sizes its one child to its ideal width, capped: a long place name truncates at
+ /// the cap, and a short title takes only what it needs. A `.frame(maxWidth:)` would
+ /// grow to the cap whenever the row has spare width to offer.
+@@ -346,6 +363,7 @@ struct CappedWidthLayout: Layout {
+         subviews.first?.place(at: bounds.origin, anchor: .topLeading, proposal: ProposedViewSize(bounds.size))
+     }
+ }
++#endif
+ 
+ // MARK: - Fit
+ 

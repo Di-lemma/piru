@@ -673,3 +673,23 @@ extension View {
         }
     }
 }
+
+extension Binding {
+    /// SkipFuseUI marks `Binding.animation(_:)` unavailable. The same thing written out: a
+    /// binding whose writes run inside `withAnimation`.
+    func androidAnimation(_ animation: Animation? = .default) -> Binding<Value> {
+        Binding(
+            get: { wrappedValue },
+            set: { newValue in withAnimation(animation) { wrappedValue = newValue } },
+        )
+    }
+}
+
+extension AttributedString {
+    /// SkipUI draws an AttributedString's text without its SwiftUI attributes, so a run's
+    /// underline has nowhere to go: setting one is accepted and the text draws plain.
+    var underlineStyle: Text.LineStyle? {
+        get { nil }
+        set {}
+    }
+}
