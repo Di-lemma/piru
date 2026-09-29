@@ -110,6 +110,91 @@ nonisolated enum StoreRecovery {
         return canonical
     }
 
+    // MARK: - Opening
+
+    /// The container ``openContainer(at:)`` built, and why the persistent store
+    /// could not back it when it fell back to memory.
+    struct OpenedStore {
+        let container: ModelContainer
+        /// The open failure, for the diagnostics report; `nil` when `container`
+        /// is backed by the store on disk.
+        let failureDetail: String?
+
+        var isInMemoryFallback: Bool {
+            failureDetail != nil
+        }
+    }
+
+    /// Open the canonical store and publish an open failure to
+    /// ``StoreLaunchState``, which the UI watches to show "Your Data Is Safe".
+    /// Run ``prepareCanonicalStore()`` first.
+    @MainActor
+    static func openCanonicalContainer() -> ModelContainer {
+        let opened = openContainer(at: canonicalStoreURL())
+        if let detail = opened.failureDetail {
+            StoreLaunchState.shared.failureDetail = detail
+            StoreLaunchState.shared.storeUnavailable = true
+        }
+        return opened.container
+    }
+
+    /// Build the SwiftData `ModelContainer` on the store at `storeURL`. The open
+    /// is layered so an upgrade never loses visible data:
+    ///
+    /// 1. **Automatic lightweight migration** — open the bare current schema with
+    ///    *no* explicit `SchemaMigrationPlan`. SwiftData infers the migration from
+    ///    whatever shape is on disk to ``PiruSchema/models``. Every shipped change
+    ///    is additive (new entities, new optional/defaulted properties), and this
+    ///    absorbs them all, including intermediate dev/TestFlight shapes. The one
+    ///    non-additive step (per-row `DoseEntry.id`) is finished *after* open by
+    ///    ``backfillDuplicateEntryIDs(container:)``. See the schema-migration
+    ///    policy above.
+    /// 2. **Preserve + in-memory** — if the store still won't open, it is left on
+    ///    disk untouched (a future version can recover it), the failure is
+    ///    returned in ``OpenedStore/failureDetail``, and the container is a
+    ///    transient in-memory store, so the app runs instead of crashing.
+    ///
+    /// Never answer an open failure with a fresh empty persistent store: data
+    /// written into it fragments the journal across two stores, the worst
+    /// outcome this path can produce.
+    static func openContainer(at storeURL: URL) -> OpenedStore {
+        // .none is critical: SwiftData would otherwise auto-enable CloudKit
+        // mirroring, which this schema can't satisfy (non-optional attributes,
+        // .unique constraints), failing every container open. iCloud entitlements
+        // are removed for App Store submission (Guideline 5.1.3(ii)).
+        let config = ModelConfiguration(url: storeURL, cloudKitDatabase: .none)
+
+        // The `quick_check` gate keeps a corrupt store from reaching SwiftData's
+        // open, which aborts the process *natively* on malformed SQLite instead
+        // of throwing, a failure the `catch` below could never intercept. A
+        // missing file passes the gate (fresh install).
+        let failureDetail: String
+        if StoreHealth.isReadable(at: storeURL) {
+            do {
+                let container = try ModelContainer(for: Schema(PiruSchema.models), configurations: config)
+                return OpenedStore(container: container, failureDetail: nil)
+            } catch {
+                Logger.app.fault("Store open failed under automatic lightweight migration: \(error.localizedDescription, privacy: .public). Preserving the store on disk and launching in-memory; data is not lost.")
+                failureDetail = error.localizedDescription
+            }
+        } else {
+            Logger.app.fault("Store failed the integrity pre-check. Preserving the store on disk and launching in-memory; data is not lost.")
+            failureDetail = "Store failed the SQLite integrity pre-check (PRAGMA quick_check)."
+        }
+
+        // An in-memory container fails only when the schema itself is invalid,
+        // which no launch can recover from.
+        do {
+            let container = try ModelContainer(
+                for: Schema(PiruSchema.models),
+                configurations: ModelConfiguration(isStoredInMemoryOnly: true, cloudKitDatabase: .none),
+            )
+            return OpenedStore(container: container, failureDetail: failureDetail)
+        } catch {
+            fatalError("Failed to create even an in-memory ModelContainer: \(error)")
+        }
+    }
+
     /// Ensure every ``DoseEntry`` carries its own unique `id`, reassigning
     /// duplicates in place. Call once right after the container opens.
     ///
@@ -330,7 +415,7 @@ nonisolated enum StoreRecovery {
     private static func countUserRows(at url: URL, allowsSave: Bool = true) -> Int? {
         do {
             // .none — never let the iCloud entitlement pull this probe into CloudKit
-            // setup (the schema is CloudKit-incompatible). See PiruApp.makeContainer.
+            // setup (the schema is CloudKit-incompatible). See openContainer(at:).
             let config = ModelConfiguration(url: url, allowsSave: allowsSave, cloudKitDatabase: .none)
             let container = try ModelContainer(for: Schema(PiruSchema.models), configurations: config)
             let context = ModelContext(container)
@@ -448,7 +533,7 @@ nonisolated enum StoreRecovery {
 // MARK: - Launch state
 
 /// Observable launch-time health of the on-disk store. Set by
-/// ``PiruApp/makeContainer()`` when it cannot open the persistent store and has
+/// ``StoreRecovery/openCanonicalContainer()`` when it cannot open the persistent store and has
 /// fallen back to a transient in-memory store. The UI watches this to show a
 /// reassuring "data temporarily unavailable" alert — the bytes are preserved on
 /// disk and a later launch / app version restores them; nothing is deleted.

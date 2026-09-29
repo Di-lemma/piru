@@ -56,7 +56,7 @@ struct PiruApp: App {
         // upgrade. See StoreRecovery.
         StoreRecovery.prepareCanonicalStore()
 
-        container = Self.makeContainer()
+        container = StoreRecovery.openCanonicalContainer()
 
         // Bind the user-profile store to the shared container before any view
         // reads disclosure tier / body weight, and run the one-time migration of
@@ -369,69 +369,5 @@ struct PiruApp: App {
                 LegacyHandoff.publishIfLegacy()
             }
         #endif
-    }
-
-    /// Build the SwiftData `ModelContainer` on the canonical (already-recovered)
-    /// store. The open path is layered so an upgrade never loses visible data:
-    ///
-    /// 1. **Automatic lightweight migration** — open the bare current schema with
-    ///    *no* explicit `SchemaMigrationPlan`. SwiftData infers the migration from
-    ///    whatever shape is on disk to ``PiruSchema/models``. Every shipped
-    ///    change has been additive (new entities, new optional/defaulted
-    ///    properties), and this absorbs them all — including the *intermediate*
-    ///    dev/TestFlight shapes that previously threw `SwiftDataError 1`, got
-    ///    mis-classified as corruption, and stranded data behind a fresh empty
-    ///    store. The one non-additive step (per-row `DoseEntry.id`) is finished
-    ///    *after* open by ``StoreRecovery/backfillDuplicateEntryIDs(container:)``,
-    ///    which uniquifies the shared UUID a lightweight migration fills in. See
-    ///    the schema-migration policy block in ``StoreRecovery``.
-    /// 2. **Preserve + in-memory** — if the store still won't open, it is NOT
-    ///    replaced. The bytes stay on disk untouched (a future version can recover
-    ///    them), ``StoreLaunchState`` is flagged so the UI shows a reassuring
-    ///    "temporarily unavailable" alert, and the app launches on a transient
-    ///    in-memory store rather than crashing or silently resetting.
-    ///
-    /// Never answer an open failure with a fresh empty persistent store: data
-    /// written into it fragments the journal across two stores, the worst
-    /// outcome this path can produce.
-    private static func makeContainer() -> ModelContainer {
-        let storeURL = StoreRecovery.canonicalStoreURL()
-        // .none is critical: SwiftData would otherwise auto-enable CloudKit
-        // mirroring, which this schema can't satisfy (non-optional attributes,
-        // .unique constraints), failing every container open. iCloud entitlements
-        // are removed for App Store submission (Guideline 5.1.3(ii)).
-        let config = ModelConfiguration(url: storeURL, cloudKitDatabase: .none)
-
-        // 1. Integrity pre-check, then automatic lightweight migration (also the
-        //    fresh-install path). The `quick_check` gate is what keeps a corrupt
-        //    store from reaching SwiftData's open, which aborts the process
-        //    *natively* on malformed SQLite (the build-30 crash) instead of
-        //    throwing — a failure the `catch` below could never intercept. A
-        //    missing file passes the gate (fresh install). On a healthy store,
-        //    SwiftData infers the migration from the on-disk shape to the current
-        //    models; the post-open backfill in `init` uniquifies any shared
-        //    DoseEntry.id the lightweight `id` migration filled in.
-        if StoreHealth.isReadable(at: storeURL) {
-            do {
-                return try ModelContainer(for: Schema(PiruSchema.models), configurations: config)
-            } catch {
-                Logger.app.fault("Store open failed under automatic lightweight migration: \(error.localizedDescription, privacy: .public). Preserving the store on disk and launching in-memory; data is not lost.")
-                StoreLaunchState.shared.failureDetail = error.localizedDescription
-            }
-        } else {
-            Logger.app.fault("Store failed the integrity pre-check. Preserving the store on disk and launching in-memory; data is not lost.")
-            StoreLaunchState.shared.failureDetail = "Store failed the SQLite integrity pre-check (PRAGMA quick_check)."
-        }
-
-        // 2. Preserve the store untouched; launch in-memory and flag the UI.
-        StoreLaunchState.shared.storeUnavailable = true
-        do {
-            return try ModelContainer(
-                for: Schema(PiruSchema.models),
-                configurations: ModelConfiguration(isStoredInMemoryOnly: true, cloudKitDatabase: .none),
-            )
-        } catch {
-            fatalError("Failed to create even an in-memory ModelContainer: \(error)")
-        }
     }
 }

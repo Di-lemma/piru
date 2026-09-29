@@ -180,6 +180,47 @@ struct StoreRecoveryTests {
         )
         #expect(StoreRecovery.sidecarTimestamp("default.store") == nil)
     }
+
+    // MARK: - openContainer
+
+    @Test
+    func `openContainer opens a healthy store on disk with its data`() throws {
+        let url = tmpStoreURL()
+        try seedStore(at: url, entries: 3)
+        let opened = StoreRecovery.openContainer(at: url)
+        #expect(!opened.isInMemoryFallback)
+        #expect(opened.failureDetail == nil)
+        #expect(try ModelContext(opened.container).fetchCount(FetchDescriptor<DoseEntry>()) == 3)
+    }
+
+    @Test
+    func `openContainer creates the store on a fresh install`() throws {
+        let url = tmpStoreURL()
+        let opened = StoreRecovery.openContainer(at: url)
+        #expect(!opened.isInMemoryFallback)
+        let context = ModelContext(opened.container)
+        context.insert(DoseEntry(substance: "Caffeine", amount: 100))
+        try context.save()
+        #expect(FileManager.default.fileExists(atPath: url.path))
+    }
+
+    @Test
+    func `openContainer runs a corrupt store in memory and leaves its bytes untouched`() throws {
+        let url = tmpStoreURL()
+        let garbage = Data(repeating: 0x00, count: 4_096)
+        try garbage.write(to: url)
+
+        let opened = StoreRecovery.openContainer(at: url)
+
+        #expect(opened.isInMemoryFallback)
+        #expect(opened.failureDetail?.isEmpty == false)
+        // The fallback store is usable, and what it holds never reaches the file.
+        let context = ModelContext(opened.container)
+        context.insert(DoseEntry(substance: "Caffeine", amount: 100))
+        try context.save()
+        #expect(try context.fetchCount(FetchDescriptor<DoseEntry>()) == 1)
+        #expect(try Data(contentsOf: url) == garbage)
+    }
 }
 
 // MARK: - Legacy (pre-`id`, pre-`saltForm`) on-disk shape

@@ -21,7 +21,7 @@ import SwiftData
 ///
 /// ## CloudKit
 /// Like the rest of the schema, this is opened with `cloudKitDatabase: .none`
-/// (see `PiruApp.makeContainer`), so the `.unique` `id` and the non-optional
+/// (see `StoreRecovery.openContainer(at:)`), so the `.unique` `id` and the non-optional
 /// `startDate` are fine. The ``doses`` relationship is optional with an explicit
 /// inverse (``DoseEntry/session``) and a `.nullify` delete rule, so deleting a
 /// session never deletes its doses — they simply become unassigned.

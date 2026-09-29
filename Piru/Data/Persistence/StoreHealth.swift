@@ -16,7 +16,7 @@ import os
 /// The invariant this enforces at its call sites: **no SQLite file reaches a
 /// SwiftData open without first passing `isReadable`.** Both the recovery probe
 /// (`StoreRecovery.userDataCount`) and the live container open
-/// (`PiruApp.makeContainer`) funnel through here.
+/// (`StoreRecovery.openContainer(at:)`) funnel through here.
 enum StoreHealth {
     /// Whether the SQLite store at `url` is safe to hand to SwiftData.
     ///
