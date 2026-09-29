@@ -9,6 +9,9 @@
 - **Upstream edits go through patches.** Edit the file in `Piru/` or `Shared/`, run
   `mkpatch.py`, then `git checkout --` the paths. To revise a patch, `git apply` it, edit,
   rewrite it with its line-1 reason, and revert.
+- **The dependency graph is locked** by `android/app/Package.resolved`, vendored clones included
+  (their commits are deterministic). After changing a vendor patch or a dependency, build, then
+  copy `$PIRU_ANDROID/stage/Package.resolved` back over it and commit both together.
 - **Keep `/* SKIP @bridge */` a block comment.** skipstone drops a declaration whose marker
   became `/** */` or `//`; `android/.swiftformat` turns off the rules that would do that.
   Inside a worktree, format with `swiftformat --config .swiftformat` plus the options in
