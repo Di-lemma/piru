@@ -1,5 +1,4 @@
 import BackgroundTasks
-import os
 import SwiftData
 import SwiftUI
 #if canImport(UIKit)
@@ -32,6 +31,8 @@ import WidgetKit
 
 // MARK: - App
 
+/// The iOS and macOS host. The launch and lifecycle policy is ``AppLaunch``,
+/// shared with the Android host; this type adds what only Apple platforms have.
 @main
 struct PiruApp: App {
     let container: ModelContainer
@@ -39,8 +40,8 @@ struct PiruApp: App {
 
     init() {
         // Release every GRDB lock when the app is backgrounded, before the first
-        // connection opens (the store probe below is one): a lock held into
-        // suspension is a 0xdead10cc kill. See DatabaseSuspension.
+        // connection opens (the store probe in `openStore` is one): a lock held
+        // into suspension is a 0xdead10cc kill. See DatabaseSuspension.
         DatabaseSuspension.install()
 
         // A successor install's first launch brings the legacy app's journal and
@@ -49,63 +50,16 @@ struct PiruApp: App {
         LegacyHandoff.importIfSuccessor()
         Self.publishLegacyHandoff()
 
-        // Recover the canonical store BEFORE opening it: if the App Group store
-        // is empty/absent but a legacy or backed-up store holds the user's data,
-        // restore it (backing up the empty store first; never deleting). This
-        // fixes the widget-creates-empty-store race that stranded data on
-        // upgrade. See StoreRecovery.
-        StoreRecovery.prepareCanonicalStore()
+        container = AppLaunch.openStore()
 
-        container = StoreRecovery.openCanonicalContainer()
-
-        // Bind the user-profile store to the shared container before any view
-        // reads disclosure tier / body weight, and run the one-time migration of
-        // the legacy GRDB disclosure tier into SwiftData.
-        UserProfileStore.shared.configure(container: container)
-        // Bind the tolerance engine to the store and load its cached per-target snapshot. Recompute
-        // is driven by the dose log when a Stage-2 surface consumes it; configuring here exercises the
-        // additive `ToleranceState` schema and makes the cache available.
-        ToleranceStore.shared.configure(container: container)
-        // Bind the body-load engine and start its debounced background warm, so the
-        // Insights "in your body over time" graph opens on a filled cache.
-        BodyLevelsManager.shared.configure(container: container)
-        // Bind the custom-substance store to the container and run the one-time,
-        // verify-before-delete migration of the legacy App-Group UserDefaults blob
-        // into the store, so user-authored substances are backed up and recovered
-        // with the rest of the data. Before any view reads them.
-        CustomSubstanceStore.shared.configure(container: container)
-        // Load user-defined per-substance units (the "1 capsule = 30 mg" table) so
-        // the library façade can fold them into every substance's unit picker.
-        CustomUnitStore.shared.configure(container: container)
-        // Bind notification preferences to the store (seeding once from the
-        // legacy wellness/phase flags) and refresh the UserDefaults mirror the
-        // schedulers gate on — before any dose can be logged this launch.
-        NotificationPreferencesStore.shared.configure(container: container)
-        // Point `Skin.current` at the observable store so the semantic-color
-        // shorthands in Shared/ follow a skin change, not a UserDefaults snapshot.
-        SkinStore.activate()
         // Reads what this person owns and starts listening for purchases that
         // land outside a purchase call (Ask to Buy, refunds, another device).
         SkinShop.shared.start()
-
-        // Automatic lightweight migration fills the SAME UUID into every
-        // pre-existing DoseEntry when it adds `id` (the default expression is
-        // evaluated once) — uniquify before any UI reads. Idempotent; gated so
-        // the full-log fetch runs once per build and store change.
-        LaunchPassGate.run("duplicateEntryIDs", container: container) {
-            StoreRecovery.backfillDuplicateEntryIDs(container: container)
-        }
 
         // Routes notification taps (routine reminders carry a piru:// deep
         // link). The center holds its delegate weakly — the shared instance
         // keeps it alive.
         UNUserNotificationCenter.current().delegate = DoseNotificationDelegate.shared
-        // Register every notification category once, here — not as a side
-        // effect of whichever type happens to schedule first. The container
-        // reference lets the Skip Today background action write occurrence
-        // state without a view hierarchy.
-        DoseNotificationManager.registerCategories()
-        DoseNotificationManager.modelContainer = container
 
         // Activate the Apple Watch sync: push the favorites/recents manifest to the wrist
         // and receive watch-logged doses through the canonical insert path. No-op where
@@ -154,106 +108,30 @@ struct PiruApp: App {
             #endif
             .task {
                 WidgetCenter.shared.reloadAllTimelines()
-                // Touch the store so its singleton init runs (opens the
-                // SQLite, seeds preferences) before the first view query —
-                // then await the batch prefill it kicked off. Everything
-                // below (session backfill's per-dose duration resolve, the
-                // PSID backfill, demo seeding) resolves substances, and a
-                // resolve against a cold batch builds it synchronously on the
-                // main actor.
-                _ = SubstanceStore.shared.count
-                await SubstanceStore.shared.ensureAllLoaded()
-                // Publish every substance's class color, bring the stored
-                // default rows in line with it, and mint rows for substances
-                // logged where there was no catalog (watch, widget intent).
-                SubstanceColorStore.installCatalogTints()
-                SubstanceColorStore.refreshDefaults(in: container.mainContext)
-                Task(name: "Mint substance color rows") {
-                    await LaunchPassGate.runAsync("substanceColorMint", container: container) {
-                        await SubstanceColorStore.mintMissingRows(
-                            container: container, defaults: SubstanceColorStore.backgroundDefaults,
-                        )
-                    }
-                }
-                // Set up first-run contextual tips (gated on onboarding completion).
+                await AppLaunch.finishLaunching(container: container, hooks: Self.launchHooks)
+            }
+        }
+        .modelContainer(container)
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .active {
+                AppLaunch.becameActive(container: container)
+            }
+            if phase == .background {
+                enterBackground()
+            }
+        }
+    }
+
+    /// TipKit and HealthKit work at the launch task's fixed points.
+    private static var launchHooks: AppLaunch.Hooks {
+        AppLaunch.Hooks(
+            engagementKnown: { hasLoggedDose in
+                // First-run contextual tips (gated on onboarding completion),
+                // then the tips ladder (log a dose → where settings live).
                 OnboardingTips.configure()
-                // First-run nudge sequencing: bump the launch counter and record whether a dose
-                // has ever been logged, so the tips ladder (log a dose → where settings live) and
-                // the Discord invite only surface once the user is genuinely engaged.
-                let launches = UserDefaults.standard.integer(forKey: "appLaunchCount") + 1
-                UserDefaults.standard.set(launches, forKey: "appLaunchCount")
-                let hasDose = ((try? container.mainContext.fetchCount(FetchDescriptor<DoseEntry>())) ?? 0) > 0
-                OnboardingTips.updateEngagement(hasLoggedDose: hasDose)
-                // Warm the search-history store (opens its App Group suite +
-                // decodes the recent list) at launch so the first Search-tab
-                // open doesn't pay the cold first-touch on its hot path.
-                _ = SearchHistoryStore.shared.recent
-                // Backfill sessions for any pre-session-model history. Idempotent
-                // and failure-isolated (only sets the optional relationship).
-                SessionService.ensureSessionsPopulated(in: container.mainContext)
-                // One-time: break up multi-day sessions that the old flat-ceiling
-                // heuristic chained together (nonstop redosing / long-acting tails).
-                SessionService.resplitOverlongSessions(in: container.mainContext)
-                // Give every pre-notes summary its place on the session
-                // timeline (additive; idempotent). Gated: its walk over every
-                // session with a summary only finds new work after a restore
-                // or an import, both of which bump the store generation.
-                LaunchPassGate.run("sessionNoteSummaries", container: container) {
-                    SessionNoteService.migrateLegacySummaries(in: container.mainContext)
-                }
-                // One-time: remap every logged dose onto its stable PSID identity
-                // (substanceUID + displayNameSnapshot). Backup-first, additive,
-                // never-drop, guarded once — see PSIDBackfillMigration. Runs here
-                // (post-launch, off the critical path) because nothing reads the
-                // new fields yet; the batch cache was awaited warm above.
-                PSIDBackfillMigration.runIfNeeded(container: container)
-                // Same identity onto the curated rows (recents, favorites,
-                // daily meds), so they key on substance identity instead of a
-                // name — additive, never-drop, guarded once. See D.2.3.
-                CuratedIdentityBackfillMigration.runIfNeeded(container: container)
-                // One-time: re-pin the 15 families corrected on 2026-09-12 so a
-                // dose stamped with the OLD family (which the name-gated backfills
-                // never revisit) doesn't split from a freshly logged one — see
-                // PSIDRepinMigration. Runs after the backfills so any row they
-                // just stamped (already the corrected family from this build's DB)
-                // is untouched and only legacy rows are rewritten.
-                PSIDRepinMigration.runIfNeeded(container: container)
-                // One-time: reclassify rows typed as an ester name ("Estradiol
-                // Valerate") onto the base substance + ester facet, so they title,
-                // feed the Injection Levels tool, and dedup like a picker-logged
-                // ester. Snapshot-first for dose history — see EsterIdentityBackfillMigration.
-                // Gated on the store token: its scan of every `saltForm == nil`
-                // row only finds new work after a dose write or an app update.
-                LaunchPassGate.run("esterIdentityBackfill", container: container) {
-                    EsterIdentityBackfillMigration.runIfNeeded(container: container)
-                }
-                ActiveSessionManager.shared.recoverSession(container: container)
-                // One-time: fold inventory items that share a substance
-                // identity (two scanned boxes, an alias and its canonical
-                // name) into one, before the recompute below replays the
-                // survivors. `create` enforces the identity at the write,
-                // so this only finds work in a store older than that.
-                LaunchPassGate.run("inventoryIdentityMerge", container: container) {
-                    for id in InventoryService.mergeDuplicateItems(in: container.mainContext) {
-                        DoseNotificationManager.cancelInventoryLowStock(itemID: id)
-                    }
-                }
-                // Warm the inventory caches so badges/widget read fresh
-                // numbers on first paint. Stock edits recompute their own item
-                // as they save, so only a dose-log change can leave a stale
-                // quantity behind; the gate skips the replay otherwise.
-                LaunchPassGate.run("inventoryRecompute", container: container) {
-                    InventoryService.recomputeAll(in: container.mainContext)
-                }
-                // Meds redesign cutover: fold the routine layer (time,
-                // remind, follow-up cadence) into per-med fields once.
-                // Runs before the reminder sync so folded state is what
-                // gets scheduled. See Specs/meds-reminders-redesign.md.
-                MedsMigrator.foldRoutinesIfNeeded(context: container.mainContext)
-                // Roll the routine follow-up horizon forward (they're
-                // materialized as one-shots over a few days) and drop
-                // today's re-asks for routines already logged.
-                await DoseNotificationManager.syncMedRemindersIfNeeded(container: container)
+                OnboardingTips.updateEngagement(hasLoggedDose: hasLoggedDose)
+            },
+            passesFinished: {
                 // If the user connected Apple Health for body weight, silently refresh it
                 // (no prompt). On a revoked/empty read we deliberately KEEP the last-known weight
                 // rather than clear it — a slightly stale real weight beats reverting to the 60 kg
@@ -262,94 +140,37 @@ struct PiruApp: App {
                 if UserProfileStore.shared.weightSource == .healthKit {
                     Task { await HealthKitBodyMass.shared.syncLatest() }
                 }
-                #if DEBUG
-                    // A `-piruImportFile <path>` launch wipes + imports an
-                    // exported JSON; a `-piruPersona <name>` launch wipes +
-                    // reseeds a user archetype for UI-state testing;
-                    // otherwise an empty store fills with the "week"
-                    // persona (`-piruNoDemoData` suppresses that).
-                    if !DemoData.insertImportFileData(container: container),
-                       !DemoData.insertPersonaData(container: container) {
-                        DemoData.insertDefaultData(container: container)
-                    }
-                    // `-piruScanFixture <name>` opens Tools ▸ Identify a Box
-                    // with a canned reading resolved (ScanFixtures).
-                    // Warm the batch cache first: the Tools tab's cards
-                    // resolve substances on render, and a cold cache
-                    // asserts in DEBUG.
-                    if ScanFixtures.isRequested {
-                        Task {
-                            // Source prefs load after launch and republish
-                            // the cache; wait them out, then warm it.
-                            try? await Task.sleep(for: .seconds(1))
-                            await SubstanceStore.shared.ensureAllLoaded()
-                            AppNavigator.shared.open(.tool(.identify), home: .tools)
-                        }
-                    }
-                    // `-piruScreenshots <dir>` walks every screen for
-                    // pipeline/screenshots.py to capture (ScreenshotTour).
-                    if ScreenshotTour.isRequested {
-                        Task(name: "Screenshot tour") {
-                            await ScreenshotTour.run(container: container)
-                        }
-                    }
-                #endif
+            },
+        )
+    }
+
+    private func enterBackground() {
+        // Tear down any live keyboard before suspension. Suspending with
+        // a first responder up can strand UIKit's scene-level keyboard
+        // state, and every sheet presented after foregrounding then lays
+        // out keyboard-avoiding — the QuickLog dock floats one keyboard
+        // height above the bottom with a dead touch zone below it
+        // (TestFlight feedback on build 2.2 (30), iOS 26.5.2).
+        #if canImport(UIKit)
+            UIApplication.shared.sendAction(
+                #selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil,
+            )
+        #endif
+        Self.publishLegacyHandoff(backgrounding: true)
+        // Hold a background-execution assertion across the await so
+        // iOS can't suspend the process mid-write; ended on completion
+        // or expiration, whichever comes first.
+        #if canImport(UIKit)
+            let assertion = BackgroundTaskAssertion(name: "AutomaticBackup")
+            Task {
+                defer { assertion.end() }
+                await AppLaunch.enteredBackground(container: container)
             }
-        }
-        .modelContainer(container)
-        .onChange(of: scenePhase) { _, phase in
-            // Coming back to the foreground: re-derive inventory caches so any
-            // doses logged from the widget / other surfaces while away are
-            // reflected, and a crossed threshold can notify. The gate shares
-            // its name with the launch pass, so the first activation after a
-            // launch that already replayed the log is skipped, and a later one
-            // replays only when the dose count or generation moved.
-            if phase == .active {
-                LaunchPassGate.run("inventoryRecompute", container: container) {
-                    InventoryService.recomputeAll(in: container.mainContext)
-                }
-                // Same horizon-roll as launch: doses logged from other
-                // surfaces while away may have satisfied a routine. The sync
-                // resolves med names, so it waits for the substance cache —
-                // a fast relaunch can reach here before the launch task has
-                // warmed it, and a cold `SubstanceStore.all` asserts in DEBUG.
-                Task(name: "Sync med reminders") {
-                    await SubstanceStore.shared.ensureAllLoaded()
-                    await DoseNotificationManager.syncMedRemindersIfNeeded(container: container)
-                }
+        #else
+            Task {
+                await AppLaunch.enteredBackground(container: container)
             }
-            // Opt-in, end-to-end encrypted iCloud backup on backgrounding. No-op
-            // unless the user enabled it; debounced and change-gated internally.
-            if phase == .background {
-                // Tear down any live keyboard before suspension. Suspending with
-                // a first responder up can strand UIKit's scene-level keyboard
-                // state, and every sheet presented after foregrounding then lays
-                // out keyboard-avoiding — the QuickLog dock floats one keyboard
-                // height above the bottom with a dead touch zone below it
-                // (TestFlight feedback on build 2.2 (30), iOS 26.5.2).
-                #if canImport(UIKit)
-                    UIApplication.shared.sendAction(
-                        #selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil,
-                    )
-                #endif
-                Self.publishLegacyHandoff(backgrounding: true)
-                let context = container.mainContext
-                // Hold a background-execution assertion across the await so
-                // iOS can't suspend the process mid-write; ended on completion
-                // or expiration, whichever comes first.
-                #if canImport(UIKit)
-                    let assertion = BackgroundTaskAssertion(name: "AutomaticBackup")
-                    Task {
-                        defer { assertion.end() }
-                        await BackupManager.shared.runAutomaticBackup(context: context)
-                    }
-                #else
-                    Task {
-                        await BackupManager.shared.runAutomaticBackup(context: context)
-                    }
-                #endif
-            }
-        }
+        #endif
     }
 
     /// Publish the legacy build's handoff off the main thread. On backgrounding
