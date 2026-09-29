@@ -57,6 +57,10 @@ ATTRIBUTION_FILE = "SubstanceStore+SourceContributions.swift"
 PROPERTY_NAMES = {
     ("off_targets", "clinical_consequence"): "labeledConsequence",
     ("drug_interactions_pk", "clinical_effect"): "labeledEffect",
+    # ActiveMetabolite (Data/Pharmacology) folds these into its potencies, which
+    # ActiveMetaboliteCard shows as `potency.basis` and `potency.target`.
+    ("metabolism", "metabolite_potency_basis"): "basis",
+    ("metabolism", "metabolite_potency_target"): "target",
 }
 
 #: Columns that are plumbing, not content. They are always "used" in the sense
