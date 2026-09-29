@@ -218,6 +218,16 @@ extension View {
         #endif
     }
 
+    /// Swipeable pages with no index dots (the caller draws its own): `.page`
+    /// is unavailable on macOS, where the tab view keeps its default style.
+    func pagedTabViewStyle() -> some View {
+        #if os(iOS)
+            self.tabViewStyle(.page(indexDisplayMode: .never))
+        #else
+            self
+        #endif
+    }
+
     /// The shape a long-press lifts into the context-menu preview. macOS
     /// draws no preview, so the API does not exist there.
     func contextMenuPreviewShape(_ shape: some Shape) -> some View {
