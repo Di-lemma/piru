@@ -43,7 +43,7 @@ struct TrayStagedListCard: View {
                                 // editor holds a text field whose own long-press
                                 // (cursor, paste) a context menu would take over.
                                 TrayRow(dose: item, model: model, namespace: morphNamespace)
-                                    .contentShape(.contextMenuPreview, Rectangle())
+                                    .contextMenuPreviewShape(Rectangle())
                                     .contextMenu {
                                         TrayRowContextMenu(model: model, item: item)
                                     }

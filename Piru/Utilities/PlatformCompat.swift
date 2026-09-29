@@ -218,6 +218,16 @@ extension View {
         #endif
     }
 
+    /// The shape a long-press lifts into the context-menu preview. macOS
+    /// draws no preview, so the API does not exist there.
+    func contextMenuPreviewShape(_ shape: some Shape) -> some View {
+        #if canImport(UIKit)
+            self.contentShape(.contextMenuPreview, shape)
+        #else
+            self
+        #endif
+    }
+
     func decimalKeyboard() -> some View {
         #if canImport(UIKit)
             self.keyboardType(.decimalPad)
