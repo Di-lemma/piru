@@ -8,6 +8,8 @@ struct SubstanceLibraryView: View {
     /// browse, showing only recent substances (empty) or results (typed).
     var isSearchSurface = false
 
+    @State private var search = SubstanceSearchModel()
+
     var body: some View {
         Group {
             if searchText.isEmpty, !isSearchSurface {
@@ -21,11 +23,14 @@ struct SubstanceLibraryView: View {
                         // The search concern (results, help resources, and the
                         // favorites @Query) lives in its own child so the browse
                         // branch above never subscribes to favorites.
-                        SubstanceSearchResultsList(searchText: searchText)
+                        SubstanceSearchResultsList(searchText: searchText, searchResults: search.results)
                     }
                 }
                 .insetGroupedListStyle()
                 .themedPage()
+                // On the list, not a row inside it: the search runs once per query
+                // however the rows below are rebuilt.
+                .task(id: searchText) { await search.update(for: searchText) }
             }
         }
         .appNavigationBar("Library", enabled: !isSearchSurface)
@@ -33,6 +38,30 @@ struct SubstanceLibraryView: View {
 }
 
 // MARK: - Search Results
+
+/// The typed query's matches, filled by the list's `.task(id:)`.
+@Observable
+@MainActor
+final class SubstanceSearchModel {
+    private(set) var results: [Substance] = []
+
+    /// Debounce, then rank + resolve OFF the main actor — the ranking scans the
+    /// whole name/alias index and the resolution runs the heavy per-substance
+    /// SQL for every result, so doing it inline stalls the keyboard on each
+    /// keystroke. The caller's `.task(id:)` cancels the prior run when the text
+    /// changes, so only the latest query resolves.
+    func update(for searchText: String) async {
+        guard !searchText.isEmpty else {
+            results = []
+            return
+        }
+        try? await Task.sleep(for: .milliseconds(150))
+        guard !Task.isCancelled else { return }
+        let found = await SubstanceLibrary.searchAsync(searchText)
+        guard !Task.isCancelled else { return }
+        results = found
+    }
+}
 
 /// The Library/Search typed-query results: matched substances (with favorite
 /// swipe + personal-name override) plus the crisis "help resources" section.
@@ -42,7 +71,7 @@ private struct SubstanceSearchResultsList: View {
     let searchText: String
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \FavoriteSubstance.createdAt, order: .reverse) private var favorites: [FavoriteSubstance]
-    @State private var searchResults: [Substance] = []
+    let searchResults: [Substance]
     /// Cached so each search-result row's swipe action doesn't rebuild the set.
     @State private var favoriteNames: Set<String> = []
 
@@ -77,22 +106,6 @@ private struct SubstanceSearchResultsList: View {
                     }
                 }
             }
-        }
-        .task(id: searchText) {
-            guard !searchText.isEmpty else {
-                searchResults = []
-                return
-            }
-            // Debounce, then rank + resolve OFF the main actor — the ranking
-            // scans the whole name/alias index and the resolution used to run the
-            // heavy per-substance SQL for every result, so doing it inline stalled
-            // the keyboard on each keystroke. The `.task(id:)` cancels the prior
-            // run when the text changes, so only the latest query resolves.
-            try? await Task.sleep(for: .milliseconds(150))
-            guard !Task.isCancelled else { return }
-            let results = await SubstanceLibrary.searchAsync(searchText)
-            guard !Task.isCancelled else { return }
-            searchResults = results
         }
         .task(id: favoritesSignature) {
             favoriteNames = Set(favorites.map { $0.substance.lowercased() })
