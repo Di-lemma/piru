@@ -28,7 +28,10 @@ extension View {
         return overlay(alignment: .bottom) {
             accessory
                 .frame(height: 52)
-                .background(Capsule().fill(Color.platformSystemBackground))
+                // iOS's glass bar: gray on a dark page (a shadow cannot show on black),
+                // near-white on a light one, edged by a hairline.
+                .background(Capsule().fill(.androidThickMaterial))
+                .overlay(Capsule().strokeBorder(Color.primary.opacity(0.08), lineWidth: 1))
                 .clipShape(Capsule())
                 .shadow(color: .black.opacity(0.15), radius: 8, y: 2)
                 .padding(.horizontal, 16)

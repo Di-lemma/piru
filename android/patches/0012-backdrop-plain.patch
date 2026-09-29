@@ -1,10 +1,25 @@
-SkinBackdrop: Android draws the skin's plain background. The decoration scene is a per-frame Canvas, and Compose has no immediate-mode canvas behind SkipFuseUI to draw it into
+SkinBackdrop on Android: the skin's plain background, within the safe area. The decoration scene is a per-frame Canvas Compose cannot draw, and a backdrop past the top edge covers Skip's search field
 
 diff --git a/Piru/Views/Components/SkinBackdrop.swift b/Piru/Views/Components/SkinBackdrop.swift
-index 8375ba6d..f7b05fae 100644
+index 8375ba6d..d064468d 100644
 --- a/Piru/Views/Components/SkinBackdrop.swift
 +++ b/Piru/Views/Components/SkinBackdrop.swift
-@@ -53,6 +53,7 @@ struct SkinBackdrop: View {
+@@ -7,7 +7,13 @@ extension View {
+     /// *fills* with `Theme.background` (dot rings, fades) keeps the plain color.
+     /// Screen roots only: a component that paints this multiplies the layer.
+     func skinBackdrop() -> some View {
+-        background { SkinBackdrop().ignoresSafeArea() }
++        #if os(Android)
++            // Within the safe area: Skip lays a `.searchable` field out above the content,
++            // and a backdrop reaching past the top would paint over it.
++            background { SkinBackdrop() }
++        #else
++            background { SkinBackdrop().ignoresSafeArea() }
++        #endif
+     }
+ }
+ 
+@@ -53,6 +59,7 @@ struct SkinBackdrop: View {
          let skin = skin ?? skins.current
          ZStack {
              skin.background
@@ -12,7 +27,7 @@ index 8375ba6d..f7b05fae 100644
              if let decor = skin.decorations, self.skin != nil || skins.decorationsEnabled {
                  if case .stickers = decor.scene {
                      stickerGlow(skin)
-@@ -112,6 +113,7 @@ struct SkinBackdrop: View {
+@@ -112,6 +119,7 @@ struct SkinBackdrop: View {
                      StainedGlass(tint: skin.background, lead: skin.palette.stroke)
                  }
              }

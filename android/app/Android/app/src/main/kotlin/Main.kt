@@ -157,6 +157,9 @@ internal fun SyncSystemBarsWithTheme() {
 @Composable
 internal fun PresentationRootView(context: ComposeContext) {
     val colorScheme = if (isSystemInDarkTheme()) ColorScheme.dark else ColorScheme.light
+    // Set around PresentationRoot, which builds the MaterialTheme from it: set inside, it
+    // arrives after the theme exists, and Android 12+ wallpaper colors win.
+    Material3ColorScheme({ colors, isDark -> piruMaterialColors(colors, isDark) }) {
     PresentationRoot(defaultColorScheme = colorScheme, context = context) { ctx ->
         SyncSystemBarsWithTheme()
         val contentContext = ctx.content()
@@ -164,4 +167,36 @@ internal fun PresentationRootView(context: ComposeContext) {
             AppRootView().Compose(context = contentContext)
         }
     }
+    }
+}
+
+
+/// Material's color slots in Piru's own colors, as the iOS app shows them. Without this the
+/// bars, fields and tab indicator take Android 12+ wallpaper colors. Light: the piru skin's
+/// white page, iOS's grouped grays and the text-safe accent (#AD365B). Dark: the black page
+/// and #111111 cards. surfaceTint is a neutral gray, so elevated surfaces (the tab bar, a
+/// scrolled header, menus) read as iOS's gray bars rather than pure page color.
+internal fun piruMaterialColors(colors: androidx.compose.material3.ColorScheme, isDark: Boolean): androidx.compose.material3.ColorScheme {
+    val c = { argb: Long -> androidx.compose.ui.graphics.Color(argb) }
+    return if (isDark) colors.copy(
+        primary = c(0xFFF57896), onPrimary = c(0xFF000000),
+        secondaryContainer = c(0xFF3A1622), onSecondaryContainer = c(0xFFF57896),
+        background = c(0xFF000000), onBackground = c(0xFFFFFFFF),
+        surface = c(0xFF000000), onSurface = c(0xFFFFFFFF), surfaceTint = c(0xFFC7C7CC),
+        surfaceVariant = c(0xFF1C1C1E), onSurfaceVariant = c(0xFF98989F),
+        surfaceContainerLowest = c(0xFF000000), surfaceContainerLow = c(0xFF111111),
+        surfaceContainer = c(0xFF1C1C1E), surfaceContainerHigh = c(0xFF2C2C2E),
+        surfaceContainerHighest = c(0xFF3A3A3C),
+        outline = c(0xFF545458), outlineVariant = c(0xFF38383A),
+    ) else colors.copy(
+        primary = c(0xFFAD365B), onPrimary = c(0xFFFFFFFF),
+        secondaryContainer = c(0xFFFBE3EA), onSecondaryContainer = c(0xFFAD365B),
+        background = c(0xFFFFFFFF), onBackground = c(0xFF000000),
+        surface = c(0xFFFFFFFF), onSurface = c(0xFF000000), surfaceTint = c(0xFF8E8E93),
+        surfaceVariant = c(0xFFF2F2F7), onSurfaceVariant = c(0xFF6C6C70),
+        surfaceContainerLowest = c(0xFFFFFFFF), surfaceContainerLow = c(0xFFF7F7F8),
+        surfaceContainer = c(0xFFF7F7F8), surfaceContainerHigh = c(0xFFF2F2F7),
+        surfaceContainerHighest = c(0xFFE9E9EE),
+        outline = c(0xFFC6C6C8), outlineVariant = c(0xFFE5E5EA),
+    )
 }
