@@ -30,6 +30,9 @@ import SwiftUI
     /* SKIP @bridge */ public func onInit() {
         AndroidPlatform.adoptDeviceTimeZone()
         UNUserNotificationCenter.current().delegate = AndroidNotificationDelegate.shared
+        PortableDataLog.install { category, message in
+            Logger(subsystem: "PortableData", category: category).error("\(message, privacy: .public)")
+        }
     }
 
     /* SKIP @bridge */ public func onTimeZoneChanged(_ identifier: String) {

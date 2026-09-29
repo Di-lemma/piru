@@ -1,6 +1,5 @@
 import Foundation
 import GRDB
-import os
 import Synchronization
 
 /// A container: one SQLite file (or an in-memory database) holding every model as a row.
@@ -56,8 +55,7 @@ public final class ModelContainer: @unchecked Sendable {
 
     func report(_ failure: LoadFailure) {
         failures.withLock { $0.append(failure) }
-        Logger(subsystem: "PortableData", category: "load")
-            .error("Skipped \(failure.description, privacy: .public)")
+        PortableDataLog.error("load", "Skipped \(failure.description)")
     }
 
     func type(named name: String) -> (any PersistentModel.Type)? {
@@ -585,8 +583,7 @@ public final class ModelContext: @unchecked Sendable {
             do {
                 try save()
             } catch {
-                Logger(subsystem: "PortableData", category: "autosave")
-                    .error("Autosave failed: \(String(describing: error), privacy: .public)")
+                PortableDataLog.error("autosave", "Autosave failed: \(error)")
             }
         }
     }
