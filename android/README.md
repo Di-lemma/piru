@@ -1,25 +1,65 @@
-# Piru on Android — the shared core
+# Piru on Android
 
-The app's own Swift, compiled for Android from the same files the iOS build compiles. Nothing
-here is a port: `PiruCore/Sources/Piru/` is a directory of symlinks into `Piru/` and `Shared/`,
-and every difference between the platforms lives in a small module named after the Apple
-framework it stands in for, so each shared file keeps its `import` line and its call sites.
+The iOS app, built for Android from the same sources. Nothing is ported by hand: the build
+stages `Piru/` and `Shared/` into a Skip Fuse package (native Swift on Android, SwiftUI bridged
+to Jetpack Compose) and applies a fixed set of changes, the way ungoogled-chromium carries a
+patch series over upstream. A Piru release is an Android release: rebuild, and fix any patch
+that no longer applies.
 
 ## Where it stands (2026-09-29)
 
-- **The core builds for Android arm64.** 107 files, 26k lines: the PK/PD engines, pharmacology,
-  domain types, the substance catalog store (GRDB), the interaction checker, and ten SwiftData
-  models.
-- **It runs.** `tools/run-smoke.sh` runs `piru-smoke` on an Android 36 emulator. It resolves
-  caffeine from the real 18 MB catalog, runs the PK model, saves and reloads a journal through
-  SwiftData's API, and reads zh-Hans from `Localizable.xcstrings`. The output is identical to
-  the same binary on macOS.
-- **iOS is unchanged in behavior.** The refactors this needed (below) build for every target
-  and pass all 2,218 tests.
-- **Size:** the stripped release smoke binary is 62 MB (≈25 MB gzipped). Most of that is the
-  statically linked Swift runtime, Foundation and ICU, which any Swift-on-Android app carries.
+- **The whole app runs on an Android 36 emulator.** Onboarding, Journal (vertical timeline, PK
+  curves, My Meds, the session accessory), Library, Tools and Insights render from the iOS views.
+  Search renders without its field and its class grid.
+- **The iOS tree carries no Android code.** Every difference is one of:
 
-## The compatibility layers
+| Where | What | Count |
+|---|---|---|
+| `exclude.txt` | iOS/macOS-only files the stage leaves out (`+iOS`, widgets, HealthKit, StoreKit, …) | 14 globs |
+| `patches/series` | `git apply` patches, each with its reason on line 1 | 12 |
+| `substitutions.txt` | regex rewrites applied to every staged file after the patches | 78 rules |
+| `app/Sources/Piru/Android/` | stand-ins for what SkipFuseUI lacks (Canvas, Charts, Grid, …) | 23 files |
+| `symbols.tsv` | SF Symbol → Material Symbol, fetched at a pinned commit | 286 rows |
+| `vendor/` | patches to GRDB, skip and skipstone, served through SwiftPM mirrors | 5 |
+| `Compat/` | SwiftData over GRDB (`PortableData`), `os`, CryptoKit, CoreLocation | 8 modules |
+
+## Building
+
+```bash
+android/tools/setup.sh         # once: toolchain, Android SDK/NDK, emulator (~6 GB, on the SSD)
+pipeline/fetch-db.sh           # the catalog, as for any checkout
+android/tools/build-app.sh     # stage + both Skip phases; ~3 min incremental, ~9 min clean
+android/tools/package-apk.sh   # Gradle → APK, installs on a running emulator
+android/tools/launch.sh shot   # restart, screenshot to $PIRU_ANDROID/build/shot.png, fatal lines
+```
+
+`build-app.sh` writes every compiler error to `$PIRU_ANDROID/build/app.errors`. To change an
+upstream file for Android: edit it in place, `android/tools/mkpatch.py <name> <paths> --message
+"why"`, then `git checkout -- <paths>`. `stage.py --check` reports patches that no longer apply.
+
+### What the build does that Skip's own tooling would
+
+- **Two phases, run by hand.** Phase 1 is Skip's iOS-triple pre-build: its skipstone plugin
+  writes the Kotlin side before anything compiles, and the compile after it fails by design.
+  Phase 2 is the bridge build, in its own scratch path, into the jni-libs Gradle packages.
+  Gradle's own Swift build is disabled because it would resolve an unpatched skipstone.
+- **Resources:** `Bundle.module` is SwiftPM's Darwin accessor, which no Android bundle answers;
+  `AndroidResources.bundle` maps to the module assets, and file resources (the catalog) are
+  copied out of the APK. Info.plist values are generated from `Piru/Info.plist`.
+- **Assets:** SkipUI finds an asset by folder name alone, so the catalog is flattened to
+  namespaced names (`surface__background`) and the generated symbols ask for those.
+
+## Known gaps
+
+- **Skins:** only the free skins, and no store. The decoration scenes (stickers, night sky)
+  draw the skin's plain background; they are a per-frame Canvas.
+- **Not wired on Android:** sharing files (ACTION_SEND), file import/export, notification
+  actions, Health Connect, location search, widgets.
+- **Material Symbols' license** is staged into `Resources/Licenses` but not listed in About.
+
+## The shared core (the earlier headless build)
+
+### The compatibility layers
 
 | Apple module | Stand-in | What it does |
 |---|---|---|
