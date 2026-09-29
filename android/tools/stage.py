@@ -52,6 +52,7 @@ VENDORED = {
     "skip": ("https://github.com/skiptools/skip.git", "1.9.11", "1.9.11"),
     "skipstone": ("https://github.com/skiptools/skipstone.git", "1.9.11", "1.9.11"),
     "skip-fuse-ui": ("https://github.com/skiptools/skip-fuse-ui.git", "1.18.3", "1.18.3"),
+    "skip-ui": ("https://github.com/skiptools/skip-ui.git", "1.60.0", "1.60.0"),
 }
 
 
@@ -157,6 +158,48 @@ def rewrite_chart_bodies(tree: Path):
                 path.write_text(new)
                 changed += 1
     return changed
+
+
+# Launcher icon densities: (folder, pixels per dp).
+DENSITIES = [("mdpi", 1), ("hdpi", 1.5), ("xhdpi", 2), ("xxhdpi", 3), ("xxxhdpi", 4)]
+
+
+def stage_launcher_icon(tree: Path):
+    """The Android launcher icon from the iOS app's rendered icon (AppIconArtwork). The
+    adaptive foreground holds the icon at 80 of its 108 dp, so the pill stays inside the
+    72 dp every launcher mask shows and the icon's own squircle covers any mask shape; the
+    background is the icon's pink, seen only outside the mask. No monochrome layer: a
+    silhouette of the whole artwork is a blob, and without one Android shows the icon."""
+    from PIL import Image
+
+    icon = Image.open(
+        REPO / "Shared/Assets.xcassets/AppIconArtwork.imageset/piru-app-icon.png"
+    ).convert("RGBA")
+    pink = icon.getpixel((icon.width // 2, icon.height // 8))
+    res = tree / "Android/app/src/main/res"
+    for folder, scale in DENSITIES:
+        out = res / f"mipmap-{folder}"
+        out.mkdir(parents=True, exist_ok=True)
+        canvas = round(108 * scale)
+        inner = round(80 * scale)
+        foreground = Image.new("RGBA", (canvas, canvas), (0, 0, 0, 0))
+        offset = (canvas - inner) // 2
+        foreground.paste(icon.resize((inner, inner), Image.LANCZOS), (offset, offset))
+        foreground.save(out / "ic_launcher_foreground.png", optimize=True)
+        Image.new("RGBA", (canvas, canvas), pink).save(
+            out / "ic_launcher_background.png", optimize=True
+        )
+        legacy = round(48 * scale)
+        icon.resize((legacy, legacy), Image.LANCZOS).save(out / "ic_launcher.png", optimize=True)
+        (out / "ic_launcher_monochrome.png").unlink(missing_ok=True)
+    (res / "mipmap-anydpi").mkdir(parents=True, exist_ok=True)
+    (res / "mipmap-anydpi/ic_launcher.xml").write_text(
+        '<?xml version="1.0" encoding="utf-8"?>\n'
+        '<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">\n'
+        '<background android:drawable="@mipmap/ic_launcher_background" />\n'
+        '<foreground android:drawable="@mipmap/ic_launcher_foreground" />\n'
+        "</adaptive-icon>\n"
+    )
 
 
 def stage_template(tree: Path):
@@ -727,6 +770,7 @@ def main():
         substituted = apply_substitutions(scratch)
         rewrite_chart_bodies(scratch)
         stage_resources(scratch)
+        stage_launcher_icon(scratch)
         STAGE.mkdir(parents=True, exist_ok=True)
         sync(scratch, STAGE)
         stage_vendored(STAGE)

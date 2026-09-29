@@ -23,9 +23,15 @@ LOG="$PIRU_ANDROID/build/app.log"
 BRIDGE="$PIRU_ANDROID/stage/.build/Android/Piru"
 set +e
 KOTLIN="$PIRU_ANDROID/stage/.build/plugins/outputs/stage/Piru/destination/skipstone/Piru/src/main/kotlin"
+# Resolve first: after stage.py purges a moved vendored package, the build alone does not
+# check it out again, and would transpile nothing new.
+xcrun swift package resolve --package-path . > "$PIRU_ANDROID/build/transpile.log" 2>&1
 env -u SKIP_BRIDGE xcrun swift build --triple arm64-apple-ios --sdk "$(xcrun --sdk iphoneos --show-sdk-path)" \
-    --package-path . --build-system native > "$PIRU_ANDROID/build/transpile.log" 2>&1
-if [[ -n $(find "$KOTLIN" -name '*.kt' -print -quit 2>/dev/null) ]]; then
+    --package-path . --build-system native >> "$PIRU_ANDROID/build/transpile.log" 2>&1
+if grep -q "because of missing inputs" "$PIRU_ANDROID/build/transpile.log"; then
+    echo "transpile could not read its sources; see $PIRU_ANDROID/build/transpile.log"
+    STATUS=1
+elif [[ -n $(find "$KOTLIN" -name '*.kt' -print -quit 2>/dev/null) ]]; then
     echo "transpiled $(find "$KOTLIN" -name '*.kt' | wc -l | tr -d ' ') Kotlin files"
     STATUS=0
 else
