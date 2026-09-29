@@ -37,6 +37,12 @@
   "title": "Amphetamine-type central nervous system stimulants release norepinephrine more potently than they release dopamine and serotonin",
   "year": "2001"
  },
+ "doi:10.1002/1099-081x(200001)21:1<23::aid-bdd212>3.0.co;2-v": {
+  "journal": "Biopharmaceutics & drug disposition",
+  "subjects": [],
+  "title": "Effect of food on the pharmacokinetics of osmotic controlled-release methylphenidate HCl in healthy subjects",
+  "year": "2000"
+ },
  "doi:10.1002/1873-3468.12649": {
   "journal": "FEBS letters",
   "subjects": [],
@@ -566,6 +572,12 @@
   "subjects": [],
   "title": "Physiologically\u2010based pharmacokinetic modeling of dextromethorphan to investigate interindividual variability within CYP2D6 activity score groups",
   "year": 2022
+ },
+ "doi:10.1002/psp4.13282": {
+  "journal": "CPT: pharmacometrics & systems pharmacology",
+  "subjects": [],
+  "title": "MDMA pharmacokinetics: A population and physiologically based pharmacokinetics model-informed analysis",
+  "year": "2025"
  },
  "doi:10.1002/syn.20647": {
   "journal": "Synapse (New York, N.Y.)",
@@ -1116,6 +1128,12 @@
   "title": "The use of caffeine as a metabolic probe for human drug metabolizing enzymes",
   "year": "1996"
  },
+ "doi:10.1016/0920-1211(95)00051-8": {
+  "journal": "Epilepsy Research",
+  "subjects": [],
+  "title": "Effect of a high-protein meal on gabapentin pharmacokinetics",
+  "year": 1996
+ },
  "doi:10.1016/0960-894x(95)00573-c": {
   "journal": "Bioorganic &amp; Medicinal Chemistry Letters",
   "subjects": [],
@@ -1595,6 +1613,12 @@
   "subjects": [],
   "title": "Impact of early ventricular tachycardia ablation in patients with an implantable cardioverter-defibrillator: An updated systematic review and meta-analysis of randomized controlled trials",
   "year": 2022
+ },
+ "doi:10.1016/j.ijpx.2026.100584": {
+  "journal": "International journal of pharmaceutics: X",
+  "subjects": [],
+  "title": "Applicability of methylliberine as a salivary marker under postprandial conditions",
+  "year": "2026"
  },
  "doi:10.1016/j.jcte.2017.01.004": {
   "journal": "Journal of clinical & translational endocrinology",
@@ -2517,6 +2541,12 @@
   "subjects": [],
   "title": "Pharmacophore/Receptor Models for GABA<sub>A</sub>/BzR Subtypes (\u03b11\u03b23\u03b32, \u03b15\u03b23\u03b32, and \u03b16\u03b23\u03b32) via a Comprehensive Ligand-Mapping Approach",
   "year": 1999
+ },
+ "doi:10.1021/mp500022u": {
+  "journal": "Molecular pharmaceutics",
+  "subjects": [],
+  "title": "Intragastric volume changes after intake of a high-caloric, high-fat standard breakfast in healthy human subjects investigated by MRI",
+  "year": "2014"
  },
  "doi:10.1021/np0205699": {
   "journal": "Journal of Natural Products",
@@ -3933,6 +3963,12 @@
   "subjects": [],
   "title": "Letters to the editor",
   "year": "2013"
+ },
+ "doi:10.1097/jcp.0000000000001277": {
+  "journal": "Journal of clinical psychopharmacology",
+  "subjects": [],
+  "title": "Randomized Controlled Crossover Trials of the Pharmacokinetics of PRC-063, a Novel Multilayer Extended-Release Formulation of Methylphenidate, in Healthy Adults",
+  "year": "2020"
  },
  "doi:10.1097/jcp.0b013e3181c34c34": null,
  "doi:10.1097/mjt.0000000000000275": {
@@ -5407,6 +5443,12 @@
   "title": "Fibroblasts and myofibroblasts in wound healing",
   "year": "2014"
  },
+ "doi:10.2147/cpaa.s119676": {
+  "journal": "Clinical pharmacology : advances and applications",
+  "subjects": [],
+  "title": "Effect of food on the pharmacokinetics of dronabinol oral solution versus dronabinol capsules in healthy volunteers",
+  "year": "2017"
+ },
  "doi:10.2147/dddt.s199574": {
   "journal": "Drug Design, Development and Therapy",
   "subjects": [],
@@ -6377,6 +6419,12 @@
   "journal": "Amino acids",
   "subjects": [],
   "title": "Memantine and the amino-alkyl-cyclohexane MRZ 2/579 are moderate affinity uncompetitive NMDA receptor antagonists--in vitro characterisation.",
+  "year": "2000"
+ },
+ "pmid:11038435": {
+  "journal": "Biopharmaceutics & drug disposition",
+  "subjects": [],
+  "title": "Effect of food on the pharmacokinetics of osmotic controlled-release methylphenidate HCl in healthy subjects.",
   "year": "2000"
  },
  "pmid:11061418": {
@@ -8591,6 +8639,12 @@
   "title": "Observations on the ultrastructure of equatorial scleral collagen fibrils in sheep eyes.",
   "year": "2012"
  },
+ "pmid:22078184": {
+  "journal": "Contraception",
+  "subjects": [],
+  "title": "Comparative pharmacokinetics and pharmacodynamics after subcutaneous and intramuscular administration of medroxyprogesterone acetate (25 mg) and estradiol cypionate (5 mg).",
+  "year": "2011"
+ },
  "pmid:22169943": {
   "journal": "Neuropsychopharmacology : official publication of the American College of Neuropsychopharmacology",
   "subjects": [],
@@ -9088,6 +9142,12 @@
   "subjects": [],
   "title": "Clinical profile of thoracic trauma in children--a study from Aligarh, N. India.",
   "year": "1988"
+ },
+ "pmid:24697247": {
+  "journal": "Molecular pharmaceutics",
+  "subjects": [],
+  "title": "Intragastric volume changes after intake of a high-caloric, high-fat standard breakfast in healthy human subjects investigated by MRI.",
+  "year": "2014"
  },
  "pmid:24706503": {
   "journal": "Journal of clinical pharmacology",
@@ -9887,6 +9947,12 @@
   "title": "Crystal Structure of an LSD-Bound Human Serotonin Receptor.",
   "year": "2017"
  },
+ "pmid:28138268": {
+  "journal": "Clinical pharmacology : advances and applications",
+  "subjects": [],
+  "title": "Effect of food on the pharmacokinetics of dronabinol oral solution versus dronabinol capsules in healthy volunteers.",
+  "year": "2017"
+ },
  "pmid:28220701": {
   "journal": "ACS chemical neuroscience",
   "subjects": [],
@@ -10072,6 +10138,12 @@
   "subjects": [],
   "title": "The Clinical Pharmacokinetics of Amphetamines Utilized in the Treatment of Attention-Deficit/Hyperactivity Disorder.",
   "year": "2017"
+ },
+ "pmid:28910830": {
+  "journal": "Pharmacopsychiatry",
+  "subjects": [],
+  "title": "Consensus Guidelines for Therapeutic Drug Monitoring in Neuropsychopharmacology: Update 2017.",
+  "year": "2018"
  },
  "pmid:28972983": {
   "journal": "PLoS medicine",
@@ -10719,6 +10791,12 @@
   "journal": "Therapeutics and clinical risk management",
   "subjects": [],
   "title": "Safe Use of Opioids in Chronic Kidney Disease and Hemodialysis Patients: Tips and Tricks for Non-Pain Specialists.",
+  "year": "2020"
+ },
+ "pmid:33009228": {
+  "journal": "Journal of clinical psychopharmacology",
+  "subjects": [],
+  "title": "Randomized Controlled Crossover Trials of the Pharmacokinetics of PRC-063, a Novel Multilayer Extended-Release Formulation of Methylphenidate, in Healthy Adults.",
   "year": "2020"
  },
  "pmid:33142953": {
@@ -11501,6 +11579,12 @@
   "title": "Classics in Chemical Neuroscience: Tianeptine.",
   "year": "2024"
  },
+ "pmid:39592887": {
+  "journal": "CPT: pharmacometrics & systems pharmacology",
+  "subjects": [],
+  "title": "MDMA pharmacokinetics: A population and physiologically based pharmacokinetics model-informed analysis.",
+  "year": "2025"
+ },
  "pmid:39719487": {
   "journal": "Neuropsychopharmacology : official publication of the American College of Neuropsychopharmacology",
   "subjects": [],
@@ -11691,6 +11775,12 @@
   "journal": "ACS chemical neuroscience",
   "subjects": [],
   "title": "Short- and Long-Acting Psychedelics: Structure-Activity Relationships, Pharmacology, and Implications for Neuropsychiatric Therapeutics.",
+  "year": "2026"
+ },
+ "pmid:42370028": {
+  "journal": "International journal of pharmaceutics: X",
+  "subjects": [],
+  "title": "Applicability of methylliberine as a salivary marker under postprandial conditions.",
   "year": "2026"
  },
  "pmid:455892": {
@@ -12441,6 +12531,12 @@
   "journal": "General pharmacology",
   "subjects": [],
   "title": "The use of caffeine as a metabolic probe for human drug metabolizing enzymes.",
+  "year": "1996"
+ },
+ "pmid:8925804": {
+  "journal": "Epilepsy research",
+  "subjects": [],
+  "title": "Effect of a high-protein meal on gabapentin pharmacokinetics.",
   "year": "1996"
  },
  "pmid:8925872": {
