@@ -1,0 +1,38 @@
+// iOS 26's tab-bar bottom accessory, which holds Piru's Log button and live-session pill.
+// Compose's navigation bar has no accessory slot, so the content floats just above the bar,
+// always in its expanded placement: the Material bar does not minimize on scroll.
+
+import SwiftUI
+
+enum TabViewBottomAccessoryPlacement: Equatable {
+    case expanded, inline
+}
+
+private struct TabViewBottomAccessoryPlacementKey: EnvironmentKey {
+    static let defaultValue: TabViewBottomAccessoryPlacement? = .expanded
+}
+
+extension EnvironmentValues {
+    var tabViewBottomAccessoryPlacement: TabViewBottomAccessoryPlacement? {
+        get { self[TabViewBottomAccessoryPlacementKey.self] }
+        set { self[TabViewBottomAccessoryPlacementKey.self] = newValue }
+    }
+}
+
+extension View {
+    /// Height of the Material navigation bar the accessory sits above.
+    private static var navigationBarClearance: CGFloat { 88 }
+
+    func tabViewBottomAccessory<Content: View>(@ViewBuilder content: () -> Content) -> some View {
+        let accessory = content()
+        return overlay(alignment: .bottom) {
+            accessory
+                .frame(height: 52)
+                .background(Capsule().fill(Color.platformSystemBackground))
+                .clipShape(Capsule())
+                .shadow(color: .black.opacity(0.15), radius: 8, y: 2)
+                .padding(.horizontal, 16)
+                .padding(.bottom, Self.navigationBarClearance)
+        }
+    }
+}

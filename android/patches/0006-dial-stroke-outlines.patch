@@ -1,0 +1,74 @@
+DoseIntensityCard: Compose paths cannot be turned into stroke outlines (strokedPath and Path.forEach are unavailable), so on Android the dial's arc bands and ridges are built as outlines directly (Android/SwiftUI/Path+Android.swift).
+
+diff --git a/Piru/Views/Library/SubstanceDetail/DoseIntensityCard.swift b/Piru/Views/Library/SubstanceDetail/DoseIntensityCard.swift
+index 803861a4..d180608b 100644
+--- a/Piru/Views/Library/SubstanceDetail/DoseIntensityCard.swift
++++ b/Piru/Views/Library/SubstanceDetail/DoseIntensityCard.swift
+@@ -474,6 +474,13 @@ private nonisolated struct ArcSegment: Shape {
+         // The round caps reach thickness/2 past each end; pull the span in by
+         // that much so the pill spans the band rather than overhanging it.
+         let capDeg = (thickness / 2) / max(radius, 1) * 180 / .pi
++        #if os(Android)
++            // Compose paths cannot be stroked into outlines; the band is built as one.
++            return .androidStrokedArc(
++                center: center, radius: radius,
++                startDegrees: startDeg + capDeg, endDegrees: startDeg + sweepDeg - capDeg, width: thickness,
++            )
++        #else
+         var arc = Path()
+         arc.addArc(
+             center: center, radius: radius,
+@@ -482,6 +489,7 @@ private nonisolated struct ArcSegment: Shape {
+             clockwise: false,
+         )
+         return arc.strokedPath(StrokeStyle(lineWidth: thickness, lineCap: .round))
++        #endif
+     }
+ }
+ 
+@@ -563,6 +571,17 @@ private nonisolated struct GrabberRidges: Shape {
+         let half = Self.ridgeLength / 2
+         let first = -Double(Self.count - 1) / 2
+ 
++        #if os(Android)
++            let segments = (0 ..< Self.count).map { index -> (CGPoint, CGPoint) in
++                let offset = (first + Double(index)) * Self.spacing
++                let seat = CGPoint(x: hub.x + tangent.x * offset, y: hub.y + tangent.y * offset)
++                return (
++                    CGPoint(x: seat.x - radial.x * half, y: seat.y - radial.y * half),
++                    CGPoint(x: seat.x + radial.x * half, y: seat.y + radial.y * half),
++                )
++            }
++            return .androidStrokedSegments(segments, width: Self.ridgeWidth)
++        #else
+         var path = Path()
+         for index in 0 ..< Self.count {
+             let offset = (first + Double(index)) * Self.spacing
+@@ -571,6 +590,7 @@ private nonisolated struct GrabberRidges: Shape {
+             path.addLine(to: CGPoint(x: seat.x + radial.x * half, y: seat.y + radial.y * half))
+         }
+         return path.strokedPath(StrokeStyle(lineWidth: Self.ridgeWidth, lineCap: .round))
++        #endif
+     }
+ }
+ 
+@@ -585,6 +605,11 @@ private nonisolated struct ArcRing: Shape {
+     let sweepDeg: Double
+ 
+     func path(in _: CGRect) -> Path {
++        #if os(Android)
++            return .androidStrokedArc(
++                center: center, radius: radius, startDegrees: startDeg, endDegrees: startDeg + sweepDeg, width: thickness,
++            )
++        #else
+         var path = Path()
+         path.addArc(
+             center: center, radius: radius,
+@@ -592,6 +617,7 @@ private nonisolated struct ArcRing: Shape {
+             clockwise: false,
+         )
+         return path.strokedPath(StrokeStyle(lineWidth: thickness, lineCap: .round))
++        #endif
+     }
+ }
+ 

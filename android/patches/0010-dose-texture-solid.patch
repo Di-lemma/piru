@@ -1,0 +1,25 @@
+Image(size:renderer:) and Color.resolve(in:) are unavailable in SkipFuseUI: textured dose bands fall back to solid color
+
+diff --git a/Piru/Views/Insights/Usage/DoseLevelTexture.swift b/Piru/Views/Insights/Usage/DoseLevelTexture.swift
+index 2357ae51..62cd2997 100644
+--- a/Piru/Views/Insights/Usage/DoseLevelTexture.swift
++++ b/Piru/Views/Insights/Usage/DoseLevelTexture.swift
+@@ -14,6 +14,10 @@ enum DoseLevelTexture {
+     /// resolved for `colorScheme` because a tile is drawn once, outside any
+     /// view's environment.
+     static func style(level: Int, color: Color, colorScheme: ColorScheme) -> AnyShapeStyle {
++        #if os(Android)
++            // No offscreen tile renderer on Android: the bands keep their colors, untextured.
++            return AnyShapeStyle(color)
++        #else
+         var environment = EnvironmentValues()
+         environment.colorScheme = colorScheme
+         let fill = Color(color.resolve(in: environment))
+@@ -27,6 +31,7 @@ enum DoseLevelTexture {
+             }
+         }
+         return AnyShapeStyle(ImagePaint(image: image))
++        #endif
+     }
+ 
+     /// The strokes of one tile. Diagonals run corner to corner and through the

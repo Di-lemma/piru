@@ -1,0 +1,40 @@
+# Upstream files the Android build does not compile, one glob per line, relative to the repo.
+# Every line says why. A file excluded here that other code names needs a stand-in in
+# app/Sources/Piru/Android/, which is where the Android behavior for that feature lives.
+
+# The iOS entry point; app/Sources/Piru/Android/PiruAndroidApp.swift replaces it.
+Piru/PiruApp.swift
+
+# macOS-only companions (the iOS target excludes these the same way).
+*+macOS.swift
+
+# UIKit-only: the camera scanner, WatchConnectivity, UIKit PDF rendering.
+Piru/iOS/*
+
+# iOS-only companions: UIKit representables, reached only from call sites inside
+# `#if canImport(UIKit)` / `#if os(iOS)` (the macOS target excludes them the same way).
+*+iOS.swift
+
+# Carries an install across from the pre-2026-09 bundle identity through its App Group; an
+# Android install has no predecessor. Android/Platform/Identity+Android.swift answers its reads.
+Piru/Data/Persistence/LegacyHandoff.swift
+
+# The cross-platform adapter: its branches are UIKit or AppKit, and Android is neither.
+# Android/PlatformCompat+Android.swift is its Android branch.
+Piru/Utilities/PlatformCompat.swift
+
+# Built on Apple frameworks Android lacks; Android/Platform/Frameworks+Android.swift declares
+# the same API with the feature off (Health, StoreKit, MapKit search, TipKit).
+Piru/Utilities/HealthKitVitals.swift
+Piru/Utilities/HealthKitBodyMass.swift
+Piru/Data/Services/SkinShop.swift
+Piru/Views/Journal/DailyDose/LocationPickerView.swift
+Piru/Utilities/OnboardingTips.swift
+
+# Custom ShapeStyles, which SkipFuseUI cannot bridge; Android/ContrastAwareStyles+Android.swift.
+Shared/ContrastAwareStyles.swift
+
+# A custom Layout, which SkipFuseUI cannot host; Android/FlowLayout+Android.swift.
+Piru/Views/Components/FlowLayout.swift
+# UIKit/AppKit share sheet; Android/Platform/Frameworks+Android.swift.
+Piru/Views/Components/ShareSheetPresenter.swift

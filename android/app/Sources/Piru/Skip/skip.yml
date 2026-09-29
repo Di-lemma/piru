@@ -1,0 +1,4 @@
+# Piru's single app module, compiled natively (Skip Fuse): the iOS app's Swift, staged by
+# android/tools/stage.py, with SwiftUI rendered through Jetpack Compose.
+skip:
+  mode: 'native'

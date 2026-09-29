@@ -1,0 +1,72 @@
+SkipFuseUI's TabContentBuilder composes neither ForEach nor a bare if: choose the user's tab bar by count
+
+diff --git a/Piru/Views/ContentView.swift b/Piru/Views/ContentView.swift
+index 0580db10..89daad2d 100644
+--- a/Piru/Views/ContentView.swift
++++ b/Piru/Views/ContentView.swift
+@@ -200,6 +200,9 @@ private struct MainTabView: View {
+         @Bindable var navigator = navigator
+         let layout = TabLayoutStore.shared.layout
+         return TabView(selection: $navigator.selectedTab) {
++            #if os(Android)
++                androidTabs(layout.tabs + (layout.showsSearch ? [TabID.search] : []))
++            #else
+             ForEach(layout.tabs) { tab in
+                 Tab(value: tab) {
+                     NavigationStack(path: navigator.pathBinding(for: tab)) {
+@@ -235,6 +238,7 @@ private struct MainTabView: View {
+                     }
+                 }
+             }
++            #endif
+         }
+         // Apple-Music-style fold: scrolling down minimizes the tab bar and slides
+         // the session accessory into its inline placement, which
+@@ -259,6 +263,47 @@ private struct MainTabView: View {
+                 navigator.reconcile(visible: visible)
+             }
+     }
++
++    #if os(Android)
++        /// SkipFuseUI's tab builder composes neither ForEach nor a bare `if` (its buildIf
++        /// yields a non-TabContent Optional), so the bar is chosen by count: at most four
++        /// tabs plus Search.
++        @TabContentBuilder<TabID>
++        private func androidTabs(_ tabs: [TabID]) -> some TabContent<TabID> {
++            if tabs.count >= 5 {
++                androidTab(tabs[0]); androidTab(tabs[1]); androidTab(tabs[2]); androidTab(tabs[3]); androidTab(tabs[4])
++            } else if tabs.count == 4 {
++                androidTab(tabs[0]); androidTab(tabs[1]); androidTab(tabs[2]); androidTab(tabs[3])
++            } else if tabs.count == 3 {
++                androidTab(tabs[0]); androidTab(tabs[1]); androidTab(tabs[2])
++            } else if tabs.count == 2 {
++                androidTab(tabs[0]); androidTab(tabs[1])
++            } else {
++                androidTab(tabs.first ?? .journal)
++            }
++        }
++
++        @TabContentBuilder<TabID>
++        private func androidTab(_ tab: TabID) -> some TabContent<TabID> {
++            Tab(value: tab) {
++                NavigationStack(path: navigator.pathBinding(for: tab)) {
++                    if tab == .search {
++                        SearchView(scope: $searchScope, searchText: $searchText)
++                            .withAppDestinations()
++                    } else {
++                        TabRootView(tab: tab, searchText: $searchText, librarySearchText: $librarySearchText)
++                            .withAppDestinations()
++                    }
++                }
++            } label: {
++                Label {
++                    Text(tab.title)
++                } icon: {
++                    Image(systemName: tab.systemImage)
++                }
++            }
++        }
++    #endif
+ }
+ 
+ /// One tab's root screen: a stock tab's hub, or the screen the user pinned.

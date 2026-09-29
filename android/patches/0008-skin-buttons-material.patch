@@ -1,0 +1,39 @@
+SkinChrome: SkinFuseUI bridges only its own button styles, so on Android a skin button is Material's filled (prominent) or outlined (neutral) button in the skin's tint.
+
+diff --git a/Piru/Views/Components/SkinChrome.swift b/Piru/Views/Components/SkinChrome.swift
+index 205d1197..42475160 100644
+--- a/Piru/Views/Components/SkinChrome.swift
++++ b/Piru/Views/Components/SkinChrome.swift
+@@ -19,14 +19,24 @@ extension View {
+     /// `.buttonStyle(.glass)` at every standalone action.
+     @ViewBuilder
+     func skinButtonStyle(_ prominence: SkinButtonProminence) -> some View {
++        #if os(Android)
++            // Compose hosts only its own button styles, so a skin's treatment is Material's
++            // filled or outlined button, tinted by the skin's accent.
++            switch prominence {
++            case .prominent: buttonStyle(.borderedProminent)
++            case .neutral: buttonStyle(.bordered)
++            }
++        #else
+         let skin = SkinStore.shared.current
+         if let gilding = skin.gilding {
+             buttonStyle(GildedButtonStyle(prominence: prominence, gilding: gilding))
+         } else {
+             surfaceButtonStyle(prominence, surface: skin.surface)
+         }
++        #endif
+     }
+ 
++    #if !os(Android)
+     @ViewBuilder
+     private func surfaceButtonStyle(_ prominence: SkinButtonProminence, surface: SkinSurface) -> some View {
+         switch surface {
+@@ -53,6 +63,7 @@ extension View {
+             buttonStyle(NeonButtonStyle(prominence: prominence, stroke: stroke, glow: glow))
+         }
+     }
++    #endif
+ }
+ 
+ /// A gilded button: a ``GildedPlate`` under the ink, or, for the neutral

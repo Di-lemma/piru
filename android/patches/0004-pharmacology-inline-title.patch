@@ -1,0 +1,25 @@
+PharmacologyRows: SwiftUI-attributed text runs do not reach Compose, so on Android the inline receptor title is one plain bold run.
+
+diff --git a/Piru/Views/Components/PharmacologyRows.swift b/Piru/Views/Components/PharmacologyRows.swift
+index 4d017fa0..ef8ffe06 100644
+--- a/Piru/Views/Components/PharmacologyRows.swift
++++ b/Piru/Views/Components/PharmacologyRows.swift
+@@ -75,6 +75,10 @@ struct GroupedReceptorLiterature: View {
+     /// Column 1 for a single-measurement receptor: name + its action concatenated into one `Text` so the
+     /// dots/value/species/link columns start at the same place as the multi-row sub-rows.
+     private func inlineTitle(name: String, hit: BindingHit) -> Text {
++        #if os(Android)
++            // Compose text takes no SwiftUI-attributed runs; one plain run keeps the columns aligned.
++            return Text(verbatim: "\(name)  \(labelString(hit))").font(.subheadline.weight(.bold))
++        #else
+         // Build one styled `AttributedString` rather than interpolating `Text` segments: the
+         // interpolation form extracts a bogus `"%@  %@"` key into the string catalog, and `Text + Text`
+         // is deprecated in iOS 26 — the attributed run preserves each segment's font/color with neither.
+@@ -87,6 +91,7 @@ struct GroupedReceptorLiterature: View {
+         action.foregroundColor = Theme.secondaryLabel
+ 
+         return Text(title + AttributedString("  ") + action)
++        #endif
+     }
+ 
+     // MARK: column cells (shared by inline + sub-rows so every column lines up)

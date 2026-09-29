@@ -1,0 +1,22 @@
+TimelineStripCache: on Android a cached tint is the color's own Display P3 components, read back by Color+Android.swift, since a Compose color cannot be resolved.
+
+diff --git a/Piru/Views/Journal/TimelineStripCache.swift b/Piru/Views/Journal/TimelineStripCache.swift
+index b7d5d421..a2d33b7a 100644
+--- a/Piru/Views/Journal/TimelineStripCache.swift
++++ b/Piru/Views/Journal/TimelineStripCache.swift
+@@ -122,9 +122,15 @@ extension Color {
+     /// Resolved in a default environment: cached colors are substance tints
+     /// and shifts of them, which carry no appearance variants.
+     nonisolated func cacheTint() -> P3Color {
++        #if os(Android)
++            // The tint's own components (Color+Android.swift): a Compose color cannot be resolved.
++            guard let c = androidComponents else { return .neutral }
++            return P3Color(red: c.red, green: c.green, blue: c.blue)
++        #else
+         let resolved = resolve(in: EnvironmentValues())
+         return Oklch(
+             linearRed: Double(resolved.linearRed), green: Double(resolved.linearGreen), blue: Double(resolved.linearBlue),
+         ).displayP3
++        #endif
+     }
+ }

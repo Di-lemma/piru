@@ -34,6 +34,10 @@ public final class ModelContainer: @unchecked Sendable {
         try self.init(for: Schema(types), configurations: configurations)
     }
 
+    /// The container the app's views read, set by `.modelContainer(_:)`; `@Query` and the
+    /// `modelContext` environment default to its main context.
+    public nonisolated(unsafe) static var application: ModelContainer?
+
     @MainActor
     public var mainContext: ModelContext {
         if let main { return main }
@@ -65,9 +69,19 @@ public enum PortableDataError: Error {
 /// A working set of models over a container. Each entity is read whole on first use and
 /// held in an identity map, so every fetch after that is a filter over objects already
 /// in memory — the shape of a personal journal, where the whole log is a few thousand rows.
-public final class ModelContext {
+/// `@unchecked Sendable` as SwiftData's is used: one context lives on one actor, and the
+/// environment value that carries the main context needs a Sendable default.
+public final class ModelContext: @unchecked Sendable {
     public let container: ModelContainer
     public var autosaveEnabled = true
+
+    /// Called after every insert, delete and save. A UI layer hangs its invalidation here, in
+    /// whichever Observation its views track (Skip's, on Android).
+    public var changeHandler: (() -> Void)?
+
+    private func changed() {
+        changeHandler?()
+    }
 
     private var registry: [PersistentIdentifier: any PersistentModel] = [:]
     private var byEntity: [String: [PersistentIdentifier]] = [:]
@@ -96,6 +110,7 @@ public final class ModelContext {
         model._$backing.context = self
         model._$backing.isDeleted = false
         register(model, id)
+        changed()
     }
 
     public func delete(_ model: some PersistentModel) {
@@ -104,6 +119,7 @@ public final class ModelContext {
         registry[id] = nil
         byEntity[id.entityName]?.removeAll { $0 == id }
         deleted[id] = model
+        changed()
     }
 
     public func delete<T: PersistentModel>(model: T.Type, where predicate: Predicate<T>? = nil) throws {
@@ -154,6 +170,7 @@ public final class ModelContext {
         }
         deleted.removeAll()
         try resolveInverses()
+        changed()
     }
 
     private func adopt(_ model: any PersistentModel) {

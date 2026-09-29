@@ -1,0 +1,41 @@
+SessionNoteEditor: Compose sliders take no minimum/maximum value labels, so on Android they sit beside the slider in an HStack.
+
+diff --git a/Piru/Views/Journal/Session/Notes/SessionNoteEditor.swift b/Piru/Views/Journal/Session/Notes/SessionNoteEditor.swift
+index ad19abff..4b4cdc55 100644
+--- a/Piru/Views/Journal/Session/Notes/SessionNoteEditor.swift
++++ b/Piru/Views/Journal/Session/Notes/SessionNoteEditor.swift
+@@ -342,14 +342,26 @@ private struct SevenStepRow: View {
+                         .foregroundStyle(Theme.tertiaryLabel)
+                 }
+             }
+-            Slider(value: sliderValue, in: -3 ... 3, step: 1) {
+-                Text(title)
+-            } minimumValueLabel: {
+-                Text(low).font(.caption2).foregroundStyle(Theme.secondaryLabel)
+-            } maximumValueLabel: {
+-                Text(high).font(.caption2).foregroundStyle(Theme.secondaryLabel)
+-            }
+-            .tint(value == nil ? Color.secondary.opacity(Theme.Opacity.muted) : Theme.accent)
++            #if os(Android)
++                // Compose sliders take no value labels; they sit beside it.
++                HStack(spacing: Spacing.sm) {
++                    Text(low).font(.caption2).foregroundStyle(Theme.secondaryLabel)
++                    Slider(value: sliderValue, in: -3 ... 3, step: 1) {
++                        Text(title)
++                    }
++                    .tint(value == nil ? Color.secondary.opacity(Theme.Opacity.muted) : Theme.accent)
++                    Text(high).font(.caption2).foregroundStyle(Theme.secondaryLabel)
++                }
++            #else
++                Slider(value: sliderValue, in: -3 ... 3, step: 1) {
++                    Text(title)
++                } minimumValueLabel: {
++                    Text(low).font(.caption2).foregroundStyle(Theme.secondaryLabel)
++                } maximumValueLabel: {
++                    Text(high).font(.caption2).foregroundStyle(Theme.secondaryLabel)
++                }
++                .tint(value == nil ? Color.secondary.opacity(Theme.Opacity.muted) : Theme.accent)
++            #endif
+         }
+         .padding(.vertical, Spacing.xxs)
+     }

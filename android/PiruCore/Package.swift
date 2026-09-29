@@ -1,5 +1,4 @@
 // swift-tools-version: 6.2
-import CompilerPluginSupport
 import PackageDescription
 
 /// The app's Swift settings, mirrored from Piru.xcodeproj so a shared file means the same
@@ -22,9 +21,8 @@ let package = Package(
         .library(name: "Piru", targets: ["Piru"]),
     ],
     dependencies: [
+        .package(path: "../Compat"),
         .package(url: "https://github.com/groue/GRDB.swift.git", exact: "7.10.0"),
-        .package(url: "https://github.com/apple/swift-crypto.git", from: "4.0.0"),
-        .package(url: "https://github.com/swiftlang/swift-syntax.git", exact: "604.0.0"),
     ],
     targets: [
         // Named `Piru` so module-qualified names (`Piru.SourceFacet`) resolve as they do in the app.
@@ -33,11 +31,11 @@ let package = Package(
             name: "Piru",
             dependencies: [
                 .product(name: "GRDB", package: "GRDB.swift"),
-                .target(name: "os", condition: .when(platforms: portable)),
-                .target(name: "OSLog", condition: .when(platforms: portable)),
-                .target(name: "CryptoKit", condition: .when(platforms: portable)),
-                .target(name: "CoreLocation", condition: .when(platforms: portable)),
-                .target(name: "SwiftData", condition: .when(platforms: portable)),
+                .product(name: "os", package: "Compat", condition: .when(platforms: portable)),
+                .product(name: "OSLog", package: "Compat", condition: .when(platforms: portable)),
+                .product(name: "CryptoKit", package: "Compat", condition: .when(platforms: portable)),
+                .product(name: "CoreLocation", package: "Compat", condition: .when(platforms: portable)),
+                .product(name: "SwiftData", package: "Compat", condition: .when(platforms: portable)),
             ],
             // Apple's Foundation re-exports Observation, so shared files write `@Observable`
             // under `import Foundation` alone; the implicit import reproduces that re-export.
@@ -46,28 +44,8 @@ let package = Package(
             ],
         ),
 
-        // Stand-ins, each named for the Apple module it replaces so `import X` compiles unchanged.
-        .target(name: "os"),
-        .target(name: "OSLog", dependencies: ["os"]),
-        // swift-crypto is Apple's API-compatible open-source build of CryptoKit.
-        .target(name: "CryptoKit", dependencies: [.product(name: "Crypto", package: "swift-crypto")]),
-        .target(name: "CoreLocation"),
-        .target(name: "SwiftData", dependencies: ["PortableData"]),
-
-        // SwiftData's API over SQLite. Named apart from SwiftData so it builds, and is tested, on macOS too.
-        .target(
-            name: "PortableData",
-            dependencies: ["PortableDataMacros", .product(name: "GRDB", package: "GRDB.swift")],
-        ),
-        .macro(
-            name: "PortableDataMacros",
-            dependencies: [
-                .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
-                .product(name: "SwiftCompilerPlugin", package: "swift-syntax"),
-            ],
-        ),
         // The core reads its identity from Info.plist, as the app's bundle provides it. On macOS the
-        // plist is linked into the binary; elsewhere it ships beside it as piru-smoke.resources/.
+        // plist is linked into the binary; elsewhere it sits at the root of the directory holding it.
         .executableTarget(
             name: "piru-smoke",
             dependencies: ["Piru"],
@@ -89,6 +67,5 @@ let package = Package(
                 ),
             ],
         ),
-        .testTarget(name: "PortableDataTests", dependencies: ["PortableData"], swiftSettings: appSwiftSettings),
     ],
 )

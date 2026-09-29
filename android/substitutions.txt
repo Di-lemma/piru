@@ -1,0 +1,127 @@
+# Regex substitutions applied to every staged Swift file, after the patch series.
+# Format: <python regex> TAB <replacement>. Lines starting with # are comments.
+#
+# Apple modules are replaced by rewriting their imports rather than by a module of the same
+# name: Skip's own packages probe `canImport(os)`, `canImport(OSLog)` and the like, and a
+# stand-in carrying the Apple name makes them take their Darwin branches.
+
+# Logger comes from SkipFuse (Skip's AndroidLogging); the privacy interpolation,
+# OSAllocatedUnfairLock and signposts from Android/OSCompat.swift.
+^([ \t]*)import (os|OSLog)$	\1import SkipFuse
+^([ \t]*)import SwiftData$	\1import PortableData
+^([ \t]*)import CryptoKit$	\1import Crypto
+# CLLocationCoordinate2D comes from Android/AndroidPlatformTypes.swift.
+^import CoreLocation$
+
+# Skip Fuse bridges every view and every property-wrapped view property to Compose, and it
+# cannot bridge a private one. No private type name in the app collides with another
+# type's, so lifting them to internal changes no meaning.
+^(\s*)((?:nonisolated\s+|final\s+)*)(?:private|fileprivate)\s+((?:nonisolated\s+|final\s+)*(?:struct|enum|class|actor)\s)	\1\2\3
+^(\s*@[^\n]*?)\b(?:private|fileprivate)\s+((?:static\s+)?(?:var|let)\b)	\1\2
+^(\s*@(?!ViewBuilder\b)\w+(?:\(.*\))?[ \t]*\n\s*)(?:private|fileprivate)\s+((?:static\s+)?(?:var|let)\b)	\1\2
+
+# Apple frameworks with no Android counterpart. The types the shared code names from them
+# are stood in for by app/Sources/Piru/Android/Platform/, one file per framework.
+^[ \t]*import (Charts|WidgetKit|TipKit|UniformTypeIdentifiers|StoreKit|HealthKit|MapKit|ActivityKit|VisionKit|CommonCrypto|PDFKit|QuickLook|CoreMotion|BackgroundTasks)$	
+# SkipFuseUI carries its own UserNotifications shim inside its SwiftUI module.
+^([ \t]*)import UserNotifications$	\1import SwiftUI
+# CGFloat, CGPoint, CGRect and CGSize are Foundation's on Android.
+^([ \t]*)import CoreGraphics$	\1import Foundation
+
+# `#if canImport(UIKit) … #else <AppKit> #endif` means "else macOS" upstream; Android is neither.
+^([ \t]*)#else([ \t]*\n[ \t]*import AppKit)$	\1#elseif canImport(AppKit)\2
+
+# Environment values SkipFuseUI has no Android source for (Android/AndroidEnvironment.swift).
+\\\.accessibilityDifferentiateWithoutColor\b	\\.androidDifferentiateWithoutColor
+# AndroidBundle marks this unavailable; the device's language list is what it would match against.
+\bBundle\.main\.preferredLocalizations\b	Locale.preferredLanguages
+\\\.dynamicTypeSize\b	\\.androidDynamicTypeSize
+\\\.displayScale\b	\\.androidDisplayScale
+\\\.isPresented\b	\\.androidIsPresented
+
+# `@Entry` is a SwiftUI macro Skip does not expand; this is its expansion, written out.
+# (An untyped Bool entry gets its type first, since the expansion names it.)
+^([ \t]*)@Entry var (\w+) = (true|false)$	\1@Entry var \2: Bool = \3
+^([ \t]*)@Entry var (\w+): ([^=\n]+?) = (.+)$	\1var \2: \3 {\n\1    get { self[__Key_\2.self] }\n\1    set { self[__Key_\2.self] = newValue }\n\1}\n\n\1nonisolated struct __Key_\2: EnvironmentKey {\n\1    static var defaultValue: \3 { MainActor.assumeIsolated { \4 } }\n\1}
+\bNSPredicate\(format:	OSLogPredicate(format:
+
+# SwiftData's @Model makes a class Observable. Here @Model only persists, and Skip's own
+# @Observable (whose registrar also invalidates Compose) supplies the observation.
+^([ \t]*)@Model$	\1@Model\n\1@Observable
+
+# Xcode previews have no Android build (and Skip does not parse the macro). Every upstream
+# file keeps its previews at its end, so the tail from the first #Preview is compiled out.
+(?s)^(#Preview\b.*)\Z	#if !os(Android)\n\1\n#endif\n
+
+# Modifiers SkipFuseUI declares @available(*, unavailable): calls go to their `android` twins
+# in Android/SwiftUI/SwiftUI+Android.swift, which apply the nearest Compose behavior.
+\baccessibilityElement\(	androidAccessibilityElement(
+\baccessibilityHint\(	androidAccessibilityHint(
+\baccessibilityInputLabels\(	androidAccessibilityInputLabels(
+\bmonospacedDigit\(	androidMonospacedDigit(
+\bkerning\(	androidKerning(
+\blistRowInsets\(	androidListRowInsets(
+\bimageScale\(	androidImageScale(
+\bscrollEdgeEffectStyle\(	androidScrollEdgeEffectStyle(
+\.pendingNotificationRequests\(\)	.androidPendingNotificationRequests()
+\.stringArray\(forKey:	.androidStringArray(forKey:
+\bcontrolSize\(	androidControlSize(
+\btruncationMode\(	androidTruncationMode(
+\bglassEffect\(	androidGlassEffect(
+\bpresentationCompactAdaptation\(	androidPresentationCompactAdaptation(
+\bpresentationBackground\(	androidPresentationBackground(
+\blistSectionSpacing\(	androidListSectionSpacing(
+\bscrollBounceBehavior\(	androidScrollBounceBehavior(
+\bcontentTransition\(	androidContentTransition(
+\btextSelection\(	androidTextSelection(
+\baccessibilityAction\(	androidAccessibilityAction(
+\bscrollClipDisabled\(	androidScrollClipDisabled(
+\bsymbolEffect\(	androidSymbolEffect(
+\.transaction\s*\{	.androidTransaction {
+\.transaction\(value:	.androidTransaction(value:
+\.presentationDetents\(([^()\n]+), selection:	.androidPresentationDetents(\1, selection:
+\bpresentationBackgroundInteraction\(	androidPresentationBackgroundInteraction(
+\bpresentationContentInteraction\(	androidPresentationContentInteraction(
+\.dynamicTypeSize\(	.androidDynamicTypeSize(
+\.mix\(with:	.androidMix(with:
+\bGlassEffectContainer\b	AndroidGlassEffectContainer
+\bDateComponentsFormatter\b	AndroidDateComponentsFormatter
+
+# Hierarchical shape styles SkipFuseUI marks unavailable (Android/SwiftUI/SwiftUI+Android.swift).
+\.fill\.tertiary\b	.androidFillTertiary
+\.fill\.secondary\b	.androidFillSecondary
+\.fill\.primary\b	.androidFillPrimary
+\.fill\.quaternary\b	.androidFillQuaternary
+(?<![\w.])\.tertiary\b	.androidTertiary
+(?<![\w.])\.quaternary\b	.androidQuaternary
+
+# SkipFuseUI's Namespace cannot be created (its init is unavailable, its ID has no public
+# init). Matched geometry is a no-op on Android, so any stable ID serves.
+^([ \t]*)@Namespace var (\w+)$	\1let \2 = AndroidNamespaceID()
+\bNamespace\.ID\b	AndroidNamespaceID
+\baccessibilityRepresentation\s*\{	androidAccessibilityRepresentation {
+\.pickerStyle\(\.inline\)	.pickerStyle(.menu)
+\bText\(([^,()]+), style: \.relative\)	Text(androidRelative: \1)
+
+# App-group suites do not exist on Android: Skip's UserDefaults(suiteName:) already resolves to
+# the app's one store. Dropping the suite from @AppStorage says so, and sidesteps a compiler
+# failure when such a wrapper shares a view with @Bindable.
+@AppStorage\(([^,()]+), store: UserDefaults\(suiteName: [^()]+\)\)	@AppStorage(\1)
+
+# Markdown in an AttributedString: Android's Foundation cannot parse it and SkipFuseUI cannot
+# show one. The property becomes the text with its markers removed (emphasis is lost).
+^([ \t]*)(private )?var (\w+): AttributedString \{\n([ \t]*)\(try\? AttributedString\(markdown: ([^)]+)\)\) \?\? AttributedString\(\5\)	\1\2var \3: String {\n\4androidPlainMarkdown(\5)
+\.coordinateSpace\(	.androidCoordinateSpace(
+\.scrollPosition\(id:	.androidScrollPosition(id:
+# Text(Image) sets a symbol in the text line; the Image with the same font does on Android.
+\bText\(Image\(systemName: ("[^"]+")\)\)	Image(systemName: \1)
+# Binding.animation() is unavailable; the binding itself changes the value.
+(\$[\w.]+)\.animation\(\)	\1
+
+# Styles SkipFuseUI lacks, mapped to the nearest Material one.
+\.datePickerStyle\(\.graphical\)	.datePickerStyle(.compact)
+\.pickerStyle\(\.wheel\)	.pickerStyle(.menu)
+\.buttonStyle\(\.glassProminent\)	.buttonStyle(.borderedProminent)
+\.buttonStyle\(\.glass\)	.buttonStyle(.bordered)
+\.listStyle\(\.insetGrouped\)	.listStyle(.automatic)
+\.menuStyle\(\.button\)	

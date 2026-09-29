@@ -1,0 +1,57 @@
+SkinType: Android takes the macOS branch, with the skin faces loaded by family from the module's resources and iOS's default text-style sizes in place of AppKit's font queries.
+
+diff --git a/Piru/Views/Components/SkinType.swift b/Piru/Views/Components/SkinType.swift
+index 8c9ee338..3ad7454b 100644
+--- a/Piru/Views/Components/SkinType.swift
++++ b/Piru/Views/Components/SkinType.swift
+@@ -340,7 +340,12 @@ extension Font {
+         }
+ 
+         static func registered(_ family: String, weight _: Font.Weight) -> String? {
+-            NSFontManager.shared.availableFontFamilies.contains(family) ? family : nil
++            #if os(Android)
++                // Skin faces ship in the module's resources, which Compose loads by name.
++                family
++            #else
++                NSFontManager.shared.availableFontFamilies.contains(family) ? family : nil
++            #endif
+         }
+     }
+ 
+@@ -357,9 +362,27 @@ extension Font {
+         }
+ 
+         var defaultPointSize: CGFloat {
+-            NSFont.preferredFont(forTextStyle: nsTextStyle).pointSize
++            #if os(Android)
++                // iOS's default sizes, which the skin faces were set against.
++                switch self {
++                case .largeTitle: 34
++                case .title: 28
++                case .title2: 22
++                case .title3: 20
++                case .headline, .body: 17
++                case .callout: 16
++                case .subheadline: 15
++                case .footnote: 13
++                case .caption: 12
++                case .caption2: 11
++                default: 17
++                }
++            #else
++                NSFont.preferredFont(forTextStyle: nsTextStyle).pointSize
++            #endif
+         }
+ 
++        #if !os(Android)
+         var nsTextStyle: NSFont.TextStyle {
+             switch self {
+             case .largeTitle: .largeTitle
+@@ -376,6 +399,7 @@ extension Font {
+             @unknown default: .body
+             }
+         }
++        #endif
+     }
+ 
+     /// macOS has no UIKit navigation bar to style; SwiftUI titles take the

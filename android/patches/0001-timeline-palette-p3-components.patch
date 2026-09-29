@@ -1,0 +1,54 @@
+TimelineCurvePalette: on Android the phase colors shift from the tint's own Display P3 components (read back by Color+Android.swift), since a Compose color cannot be resolved; a color without components draws every phase in the base color.
+
+diff --git a/Piru/Views/Journal/TimelineCurvePalette.swift b/Piru/Views/Journal/TimelineCurvePalette.swift
+index d8140ab5..f9efe250 100644
+--- a/Piru/Views/Journal/TimelineCurvePalette.swift
++++ b/Piru/Views/Journal/TimelineCurvePalette.swift
+@@ -82,18 +82,35 @@ struct TimelineCurvePalette {
+ 
+     init(base: Color, environment: EnvironmentValues) {
+         self.base = base
+-        let resolved = base.resolve(in: environment)
+-        let oklch = Oklch(
+-            linearRed: Double(resolved.linearRed),
+-            green: Double(resolved.linearGreen),
+-            blue: Double(resolved.linearBlue),
+-        )
+-        var colors: [TimelineCurvePhase: Color] = [:]
+-        for phase in TimelineCurvePhase.allCases {
+-            let rgb = phase.shifted(oklch).linearRGB
+-            colors[phase] = Color(.sRGBLinear, red: rgb.red, green: rgb.green, blue: rgb.blue)
+-        }
+-        self.colors = colors
++        #if os(Android)
++            // A Compose color cannot be resolved, but a tint keeps the Display P3 components it
++            // was made from (Color+Android.swift), so the phases shift from those, and come
++            // back as the same kind of color.
++            if let c = base.androidComponents {
++                let oklch = Oklch(displayP3: P3Color(red: c.red, green: c.green, blue: c.blue))
++                var colors: [TimelineCurvePhase: Color] = [:]
++                for phase in TimelineCurvePhase.allCases {
++                    let p3 = phase.shifted(oklch).displayP3
++                    colors[phase] = Color(.displayP3, red: p3.red, green: p3.green, blue: p3.blue)
++                }
++                self.colors = colors
++            } else {
++                colors = Dictionary(uniqueKeysWithValues: TimelineCurvePhase.allCases.map { ($0, base) })
++            }
++        #else
++            let resolved = base.resolve(in: environment)
++            let oklch = Oklch(
++                linearRed: Double(resolved.linearRed),
++                green: Double(resolved.linearGreen),
++                blue: Double(resolved.linearBlue),
++            )
++            var colors: [TimelineCurvePhase: Color] = [:]
++            for phase in TimelineCurvePhase.allCases {
++                let rgb = phase.shifted(oklch).linearRGB
++                colors[phase] = Color(.sRGBLinear, red: rgb.red, green: rgb.green, blue: rgb.blue)
++            }
++            self.colors = colors
++        #endif
+     }
+ 
+     /// The stroke color for `phase`; the substance color itself when a point

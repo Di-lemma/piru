@@ -1,0 +1,56 @@
+TimelineGraphView: on Android the graph pans with a plain drag; pinch-zoom and the hold-to-scrub rule need gesture composition SkipFuseUI does not provide. Double-tap still resets the zoom.
+
+diff --git a/Shared/TimelineGraphView.swift b/Shared/TimelineGraphView.swift
+index 2025be81..1f1e31c8 100644
+--- a/Shared/TimelineGraphView.swift
++++ b/Shared/TimelineGraphView.swift
+@@ -559,8 +559,10 @@ struct TimelineGraphView: View, Equatable {
+                     graphCanvas
+                         .contentShape(Rectangle())
+                         .gesture(panZoomGesture(graphWidth: geom.width))
++                    #if !os(Android)
+                         .highPriorityGesture(scrubGesture(geom: geom))
+                         .simultaneousGesture(touchTrackingGesture())
++                    #endif
+                         .onTapGesture(count: 2) {
+                             withAnimation(.easeInOut(duration: 0.3)) {
+                                 zoom = 1.0
+@@ -631,6 +633,19 @@ struct TimelineGraphView: View, Equatable {
+     /// drag maps screen translation → minutes through the live `visibleSpan`,
+     /// anchored on `gestureStartPan` so the mapping is absolute, not cumulative.
+     private func panZoomGesture(graphWidth: CGFloat) -> some Gesture {
++        #if os(Android)
++            // Compose gestures do not compose simultaneously here: the drag pans, and
++            // double-tap resets the zoom.
++            DragGesture(minimumDistance: 8)
++                .onChanged { value in
++                    guard graphWidth > 0 else { return }
++                    let dxMinutes = -Double(value.translation.width) / Double(graphWidth) * visibleSpan
++                    panOffset = min(max(0, gestureStartPan + dxMinutes), maxPanOffset)
++                }
++                .onEnded { _ in
++                    gestureStartPan = panOffset
++                }
++        #else
+         SimultaneousGesture(
+             DragGesture(minimumDistance: 8)
+                 .onChanged { value in
+@@ -661,8 +676,10 @@ struct TimelineGraphView: View, Equatable {
+                     gestureStartPan = panOffset
+                 },
+         )
++        #endif
+     }
+ 
++    #if !os(Android)
+     /// Hold-then-drag to inspect: a long press arms the scrub so a quick drag
+     /// still pans, then the finger position becomes `scrubX`. High-priority so
+     /// it pre-empts the pan once armed; releasing clears the rule.
+@@ -690,6 +707,7 @@ struct TimelineGraphView: View, Equatable {
+         DragGesture(minimumDistance: 0)
+             .onChanged { lastTouchX = $0.location.x }
+     }
++    #endif
+ 
+     /// The floating readout above the scrub rule: scrubbed clock time plus each
+     /// present curve's name and intensity, and the heart rate. SwiftUI (not Canvas

@@ -6,7 +6,7 @@ import Foundation
 /// Refines `SendableMetatype`, as SwiftData's does, and `@Model` declares the conformance
 /// on the class itself: that is what keeps a model out of `-default-isolation MainActor`,
 /// so its key paths are `Sendable` and `#Predicate` and `SortDescriptor` accept them.
-public protocol PersistentModel: AnyObject, Hashable, SendableMetatype {
+public protocol PersistentModel: AnyObject, Hashable, Identifiable, SendableMetatype {
     var _$backing: ModelBacking { get }
     init(_$snapshot: Snapshot) throws
     func _$encode(into snapshot: inout Snapshot)
@@ -31,6 +31,11 @@ public extension PersistentModel {
 
     var isDeleted: Bool {
         _$backing.isDeleted
+    }
+
+    /// A model without an `id` of its own is identified by its store identity, as in SwiftData.
+    var id: PersistentIdentifier {
+        persistentModelID
     }
 
     static func == (lhs: Self, rhs: Self) -> Bool {

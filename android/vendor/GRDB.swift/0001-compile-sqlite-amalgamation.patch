@@ -1,0 +1,66 @@
+diff --git a/Package.swift b/Package.swift
+index 5dd36af8e..f41246a35 100644
+--- a/Package.swift
++++ b/Package.swift
+@@ -62,9 +62,25 @@ let package = Package(
+     dependencies: dependencies,
+     targets: [
+         // GRDB+SQLCipher: Delete the GRDBSQLite target
+-        .systemLibrary(
++        // Android ships no public SQLite, so the amalgamation is compiled in, with the
++        // compile options of Apple's system SQLite (android/tools/build-sqlite.sh lists them).
++        .target(
+             name: "GRDBSQLite",
+-            providers: [.apt(["libsqlite3-dev"])]),
++            cSettings: [
++                "SQLITE_USE_URI=1", "SQLITE_DQS=3", "SQLITE_THREADSAFE=2",
++                "SQLITE_DEFAULT_MEMSTATUS=0", "SQLITE_DEFAULT_SYNCHRONOUS=2", "SQLITE_DEFAULT_WAL_SYNCHRONOUS=1",
++                "SQLITE_DEFAULT_CACHE_SIZE=2000", "SQLITE_DEFAULT_JOURNAL_SIZE_LIMIT=32768", "SQLITE_TEMP_STORE=1",
++                "SQLITE_MAX_VARIABLE_NUMBER=500000", "SQLITE_MAX_ATTACHED=10", "SQLITE_MAX_MMAP_SIZE=1073741824",
++                "SQLITE_ENABLE_FTS3", "SQLITE_ENABLE_FTS3_PARENTHESIS", "SQLITE_ENABLE_FTS4", "SQLITE_ENABLE_FTS5",
++                "SQLITE_ENABLE_RTREE", "SQLITE_ENABLE_MATH_FUNCTIONS", "SQLITE_ENABLE_COLUMN_METADATA",
++                "SQLITE_ENABLE_SNAPSHOT", "SQLITE_ENABLE_PREUPDATE_HOOK", "SQLITE_ENABLE_SESSION",
++                "SQLITE_ENABLE_PERCENTILE", "SQLITE_ENABLE_UPDATE_DELETE_LIMIT", "SQLITE_ENABLE_API_ARMOR",
++                "SQLITE_OMIT_LOAD_EXTENSION", "HAVE_ISNAN",
++            ].map { define in
++                let parts = define.split(separator: "=", maxSplits: 1).map(String.init)
++                return .define(parts[0], to: parts.count > 1 ? parts[1] : nil)
++            }
++        ),
+         // GRDB+SQLCipher: Uncomment the GRDBSQLCipher target
+         //.target(
+         //    name: "GRDBSQLCipher",
+diff --git a/Sources/GRDBSQLite/include/module.modulemap b/Sources/GRDBSQLite/include/module.modulemap
+new file mode 100644
+index 000000000..cb60353b9
+--- /dev/null
++++ b/Sources/GRDBSQLite/include/module.modulemap
+@@ -0,0 +1,4 @@
++module GRDBSQLite {
++    header "shim.h"
++    export *
++}
+diff --git a/Sources/GRDBSQLite/shim.h b/Sources/GRDBSQLite/include/shim.h
+similarity index 99%
+rename from Sources/GRDBSQLite/shim.h
+rename to Sources/GRDBSQLite/include/shim.h
+index 8a10c34cd..2dfa53a6f 100644
+--- a/Sources/GRDBSQLite/shim.h
++++ b/Sources/GRDBSQLite/include/shim.h
+@@ -1,4 +1,4 @@
+-#include <sqlite3.h>
++#include "sqlite3.h"
+ 
+ typedef void(*_errorLogCallback)(void *pArg, int iErrCode, const char *zMsg);
+ 
+diff --git a/Sources/GRDBSQLite/module.modulemap b/Sources/GRDBSQLite/module.modulemap
+deleted file mode 100644
+index 95e4e886f..000000000
+--- a/Sources/GRDBSQLite/module.modulemap
++++ /dev/null
+@@ -1,5 +0,0 @@
+-module GRDBSQLite [system] {
+-    header "shim.h"
+-    link "sqlite3"
+-    export *
+-}
