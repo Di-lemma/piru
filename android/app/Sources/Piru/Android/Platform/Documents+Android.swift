@@ -206,8 +206,8 @@ extension View {
         })
     }
 
-    func fileExporter<D: FileDocument>(
-        isPresented: Binding<Bool>, document: D?, contentType: UTType, defaultFilename: String? = nil,
+    func fileExporter(
+        isPresented: Binding<Bool>, document: (some FileDocument)?, contentType: UTType, defaultFilename: String? = nil,
         onCompletion: @escaping (Result<URL, any Error>) -> Void,
     ) -> some View {
         modifier(AndroidExporter(
@@ -216,8 +216,8 @@ extension View {
         ))
     }
 
-    func fileExporter<D: FileDocument>(
-        isPresented: Binding<Bool>, document: D?, contentTypes: [UTType] = [], defaultFilename: String? = nil,
+    func fileExporter(
+        isPresented: Binding<Bool>, document: (some FileDocument)?, contentTypes: [UTType] = [], defaultFilename: String? = nil,
         onCompletion: @escaping (Result<URL, any Error>) -> Void, onCancellation _: @escaping () -> Void = {},
     ) -> some View {
         modifier(AndroidExporter(

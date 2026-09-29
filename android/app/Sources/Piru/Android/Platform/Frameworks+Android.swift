@@ -320,4 +320,3 @@ struct ZoomSourceView: View {
 
     var body: some View { Color.clear }
 }
-
