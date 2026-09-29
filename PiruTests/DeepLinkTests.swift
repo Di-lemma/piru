@@ -51,6 +51,19 @@ struct DeepLinkTests {
     }
 
     @Test
+    func `a repeated query parameter keeps its first value`() {
+        let outcome = decode("piru://quicklog?substance=MDMA&substance=Ketamine")
+        #expect(outcome?.sheet == .quickLog(routine: nil, prefillSubstance: "MDMA"))
+    }
+
+    @Test
+    func `a repeated tab override keeps its first value`() {
+        let outcome = decode("piru://settings?tab=library&tab=tools")
+        #expect(outcome?.tab == .library)
+        #expect(outcome?.sheet == .settings)
+    }
+
+    @Test
     func `quickLog with a routine round-trips through encode`() {
         let snap = NavigatorSnapshot(selectedTab: .journal, sheetStack: [.quickLog(routine: "Night Meds")])
         let url = DeepLink.encode(snap)

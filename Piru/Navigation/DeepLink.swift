@@ -90,10 +90,13 @@ nonisolated enum DeepLink {
         let pathSegments = components.path
             .split(separator: "/", omittingEmptySubsequences: true)
             .map(String.init)
-        let query = Dictionary(uniqueKeysWithValues: (components.queryItems ?? []).compactMap { item -> (String, String)? in
+        // A repeated parameter keeps its first value. The URL comes from outside
+        // the app (a notification, another app, a pasted link), so its shape is
+        // untrusted input and a duplicate key must never trap.
+        let query = Dictionary((components.queryItems ?? []).compactMap { item -> (String, String)? in
             guard let value = item.value else { return nil }
             return (item.name, value)
-        })
+        }, uniquingKeysWith: { first, _ in first })
 
         // Tab-only deep link: switch tab, no sheet.
         if let tab = AppTab(rawValue: host), pathSegments.isEmpty {
