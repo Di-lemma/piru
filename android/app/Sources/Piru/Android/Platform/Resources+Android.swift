@@ -25,8 +25,7 @@
         private static let assetDirectory = "piru/module/Resources"
         private static let subdirectories = ["", "Licenses/"]
 
-        /// The resource copied into Caches/Resources, refreshed whenever this build's copy
-        /// differs in size from the one on disk.
+        /// The resource copied into Caches/Resources on first use.
         static func url(forResource name: String?, withExtension ext: String?) -> URL? {
             guard let name, let manager = assetManager else { return nil }
             let file = ext.map { "\(name).\($0)" } ?? name
@@ -34,10 +33,8 @@
                 manager.open(from: "\(assetDirectory)/\($0)\(file)", mode: .streaming)
             }).first else { return nil }
             defer { asset.close() }
-            let caches = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
-            let destination = caches.appendingPathComponent("Resources/\(file)")
-            let onDisk = (try? FileManager.default.attributesOfItem(atPath: destination.path)[.size] as? Int) ?? -1
-            if onDisk != Int(asset.length) {
+            let destination = copiedResources.appendingPathComponent(file)
+            if !FileManager.default.fileExists(atPath: destination.path) {
                 guard let data = asset.read() else { return nil }
                 try? FileManager.default.createDirectory(
                     at: destination.deletingLastPathComponent(), withIntermediateDirectories: true,
@@ -46,6 +43,22 @@
             }
             return destination
         }
+
+        /// Caches/Resources, emptied whenever the APK's resources differ from the ones copied
+        /// out: `PiruResourceStamp` hashes every staged resource, so a rebuilt catalog of the
+        /// same size still replaces the old copy.
+        private static let copiedResources: URL = {
+            let caches = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
+            let folder = caches.appendingPathComponent("Resources", isDirectory: true)
+            let stampFile = folder.appendingPathComponent(".stamp")
+            let stamp = AndroidInfoPlist.object(forInfoDictionaryKey: "PiruResourceStamp") as? String ?? ""
+            if (try? String(contentsOf: stampFile, encoding: .utf8)) != stamp {
+                try? FileManager.default.removeItem(at: folder)
+                try? FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+                try? stamp.write(to: stampFile, atomically: true, encoding: .utf8)
+            }
+            return folder
+        }()
 
         private static let assetManager: AndroidAssetManager? = {
             let context = ProcessInfo.processInfo.dynamicAndroidContext()

@@ -33,8 +33,9 @@
 
 # Environment values SkipFuseUI has no Android source for (Android/AndroidEnvironment.swift).
 \\\.accessibilityDifferentiateWithoutColor\b	\\.androidDifferentiateWithoutColor
-# AndroidBundle marks this unavailable; the device's language list is what it would match against.
-\bBundle\.main\.preferredLocalizations\b	Locale.preferredLanguages
+# semantic: which language catalog content appears in. AndroidBundle marks preferredLocalizations
+# unavailable; the twin intersects the user's languages with the app's, as iOS does.
+\bBundle\.main\.preferredLocalizations\b	Bundle.androidPreferredLocalizations
 \\\.dynamicTypeSize\b	\\.androidDynamicTypeSize
 \\\.displayScale\b	\\.androidDisplayScale
 \\\.isPresented\b	\\.androidIsPresented
@@ -103,10 +104,13 @@
 \.pickerStyle\(\.inline\)	.pickerStyle(.menu)
 \bText\(([^,()]+), style: \.relative\)	Text(androidRelative: \1)
 
-# App-group suites do not exist on Android: Skip's UserDefaults(suiteName:) already resolves to
-# the app's one store. Dropping the suite from @AppStorage says so, and sidesteps a compiler
-# failure when such a wrapper shares a view with @Bindable.
+# semantic: every setting lives in UserDefaults.standard. Android has no app group, and Skip's
+# UserDefaults(suiteName:) is a second SharedPreferences file, so the Settings UI and the code
+# reading the group suite would disagree. The .standard and app-group key sets are disjoint, so
+# one store holds both. @AppStorage drops its suite (a store: argument beside @Bindable fails to
+# compile); every other construction reads the twin, which is .standard.
 @AppStorage\(([^,()]+), store: UserDefaults\(suiteName: [^()]+\)\)	@AppStorage(\1)
+\bUserDefaults\(suiteName: [^()]+\)	UserDefaults.androidAppGroup
 
 # Markdown in an AttributedString: Android's Foundation cannot parse it and SkipFuseUI cannot
 # show one. The property becomes the text with its markers removed (emphasis is lost).

@@ -21,6 +21,7 @@ whose content did not change keep their timestamps, so an incremental build stay
 import argparse
 import filecmp
 import fnmatch
+import hashlib
 import json
 import os
 import plistlib
@@ -288,9 +289,7 @@ def stage_resources(tree: Path):
     """The resources the iOS bundle carries that the shared code reads at runtime."""
     resources = tree / MODULE / "Resources"
     resources.mkdir(parents=True, exist_ok=True)
-    catalog = REPO / "Piru/Data/piru-substances.sqlite"
-    if not catalog.exists():
-        raise SystemExit("Piru/Data/piru-substances.sqlite is missing: run pipeline/fetch-db.sh")
+    catalog = verified_catalog()
     for source in [
         catalog,
         REPO / "Piru/Data/MoleculeShapes.json",
@@ -306,7 +305,36 @@ def stage_resources(tree: Path):
     generate_asset_symbols(
         REPO / "Shared/Assets.xcassets", tree / MODULE / "Generated/AssetSymbols.swift"
     )
-    generate_info_plist(tree / MODULE / "Generated/InfoPlist.swift")
+    generate_info_plist(
+        tree / MODULE / "Generated/InfoPlist.swift",
+        {"PiruResourceStamp": resource_stamp(resources)},
+    )
+
+
+def verified_catalog() -> Path:
+    """The bundled catalog, refused unless it is the one Piru/Data/manifest.json describes: an
+    older or newer file would ship data the build was not made with."""
+    catalog = REPO / "Piru/Data/piru-substances.sqlite"
+    if not catalog.exists():
+        raise SystemExit("Piru/Data/piru-substances.sqlite is missing: run pipeline/fetch-db.sh")
+    expected = json.loads((REPO / "Piru/Data/manifest.json").read_text())["sqlite_sha256"]
+    actual = hashlib.sha256(catalog.read_bytes()).hexdigest()
+    if actual != expected:
+        raise SystemExit(
+            f"Piru/Data/piru-substances.sqlite is {actual[:12]}…, the manifest expects {expected[:12]}…:"
+            " run pipeline/fetch-db.sh --force"
+        )
+    return catalog
+
+
+def resource_stamp(resources: Path) -> str:
+    """One hash over every staged resource file. The app re-copies its resources out of the
+    APK when this changes (Android/Platform/Resources+Android.swift)."""
+    digest = hashlib.sha256()
+    for path in sorted(p for p in resources.rglob("*") if p.is_file()):
+        digest.update(path.relative_to(resources).as_posix().encode())
+        digest.update(hashlib.sha256(path.read_bytes()).digest())
+    return digest.hexdigest()
 
 
 # MARK: - Symbols
@@ -461,12 +489,13 @@ def expand(value: str, settings: dict[str, str]) -> str | None:
     return None
 
 
-def generate_info_plist(out: Path):
+def generate_info_plist(out: Path, extra: dict[str, str]):
     """Piru/Info.plist's string values with build settings expanded, for the code that reads
     `Bundle.main`'s Info dictionary: Android's main bundle has none (substitutions.txt points
-    those reads here)."""
+    those reads here). `extra` adds values the Android build derives itself."""
     settings = build_settings()
     info = plistlib.loads((REPO / "Piru/Info.plist").read_bytes())
+    info.update(extra)
     info.setdefault("CFBundleShortVersionString", "$(MARKETING_VERSION)")
     info.setdefault("CFBundleVersion", "$(CURRENT_PROJECT_VERSION)")
     info.setdefault("CFBundleIdentifier", "$(PRODUCT_BUNDLE_IDENTIFIER)")
@@ -822,6 +851,7 @@ def main():
         scratch = Path(scratch_dir)
         count = stage_sources(scratch)
         applied = apply_patches(scratch)
+        verified_catalog()
         if args.check:
             print(f"{len(applied)} patches apply to {count} upstream files")
             return

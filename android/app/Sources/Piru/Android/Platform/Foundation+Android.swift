@@ -134,6 +134,13 @@ extension UserDefaults {
     nonisolated func androidStringArray(forKey key: String) -> [String]? {
         object(forKey: key) as? [String]
     }
+
+    /// The app-group suite on Android: the standard store, where the Settings UI writes
+    /// (substitutions.txt, the `UserDefaults(suiteName:)` rule). Optional, as the suite
+    /// initializer it replaces is.
+    nonisolated static var androidAppGroup: UserDefaults? {
+        .standard
+    }
 }
 
 /// `Measurement.formatted(.measurement(...))`, which Android's Foundation does not implement:

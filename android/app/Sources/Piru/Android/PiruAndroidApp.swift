@@ -25,7 +25,16 @@ import SwiftUI
 
     private init() {}
 
-    /* SKIP @bridge */ public func onInit() {}
+    /// Runs from Application.onCreate, before any view or model reads the time zone.
+    /* SKIP @bridge */ public func onInit() {
+        AndroidPlatform.adoptDeviceTimeZone()
+        UNUserNotificationCenter.current().delegate = AndroidNotificationDelegate.shared
+    }
+
+    /* SKIP @bridge */ public func onTimeZoneChanged(_ identifier: String) {
+        AndroidPlatform.adoptDeviceTimeZone(identifier)
+    }
+
     /* SKIP @bridge */ public func onLaunch() {}
     /* SKIP @bridge */ public func onResume() {}
     /* SKIP @bridge */ public func onPause() {}
@@ -60,6 +69,7 @@ enum PiruAndroidLaunch {
         CustomSubstanceStore.shared.configure(container: container)
         CustomUnitStore.shared.configure(container: container)
         NotificationPreferencesStore.shared.configure(container: container)
+        DoseNotificationManager.modelContainer = container
         SkinStore.activate()
         return container
     }()
