@@ -9,7 +9,7 @@ import Foundation
 /// another in the app.
 nonisolated enum DosePhaseGlyph {
     static let comeup = "arrow.up.right"
-    static let peak = "sparkles"
+    static let peak = "sun.max.fill"
     static let offset = "arrow.down.right"
     static let afterglow = "moon.stars"
     static let ended = "checkmark.circle"
