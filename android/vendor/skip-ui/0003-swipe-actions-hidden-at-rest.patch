@@ -1,0 +1,34 @@
+diff --git a/Sources/SkipUI/SkipUI/Containers/List.swift b/Sources/SkipUI/SkipUI/Containers/List.swift
+index e7d029f..ae58f21 100644
+--- a/Sources/SkipUI/SkipUI/Containers/List.swift
++++ b/Sources/SkipUI/SkipUI/Containers/List.swift
+@@ -57,6 +57,7 @@ import androidx.compose.runtime.remember
+ import androidx.compose.runtime.rememberCoroutineScope
+ import androidx.compose.runtime.rememberUpdatedState
+ import androidx.compose.ui.Modifier
++import androidx.compose.ui.draw.alpha
+ import androidx.compose.ui.draw.clip
+ import androidx.compose.ui.draw.clipToBounds
+ import androidx.compose.ui.draw.shadow
+@@ -798,7 +799,9 @@ public final class List : View, Renderable {
+             let trailingCount = Float(trailingButtons.size)
+ 
+             if leadingButtons.size > 0 && curOffset >= Float(0) {
+-                Box(modifier: Modifier.matchParentSize(), contentAlignment: androidx.compose.ui.Alignment.CenterStart) {
++                // Laid out at rest, so its width sets the anchors, but not drawn: a row whose
++                // background is translucent would show its actions without any swipe.
++                Box(modifier: Modifier.matchParentSize().alpha(curOffset == Float(0) ? Float(0) : Float(1)), contentAlignment: androidx.compose.ui.Alignment.CenterStart) {
+                     if leadingUseStretch {
+                         let rowWidthDp = with(density) { revealedLeadingPx.toDp() }
+                         Row(modifier: Modifier.fillMaxHeight().width(rowWidthDp)) {
+@@ -841,7 +844,9 @@ public final class List : View, Renderable {
+                 }
+             }
+             if trailingButtons.size > 0 && curOffset <= Float(0) {
+-                Box(modifier: Modifier.matchParentSize(), contentAlignment: androidx.compose.ui.Alignment.CenterEnd) {
++                // Laid out at rest, so its width sets the anchors, but not drawn: a row whose
++                // background is translucent would show its actions without any swipe.
++                Box(modifier: Modifier.matchParentSize().alpha(curOffset == Float(0) ? Float(0) : Float(1)), contentAlignment: androidx.compose.ui.Alignment.CenterEnd) {
+                     if trailingUseStretch {
+                         let rowWidthDp = with(density) { revealedTrailingPx.toDp() }
+                         Row(modifier: Modifier.fillMaxHeight().width(rowWidthDp)) {

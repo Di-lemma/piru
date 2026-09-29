@@ -12,6 +12,11 @@
 - **The dependency graph is locked** by `android/app/Package.resolved`, vendored clones included
   (their commits are deterministic). After changing a vendor patch or a dependency, build, then
   copy `$PIRU_ANDROID/stage/Package.resolved` back over it and commit both together.
+- **A vendor patch can leave its Kotlin stale.** skipstone does not re-transpile a dependency
+  whose checkout moved, and phase 1 stops before reaching it. After changing a skip-ui or
+  skip-fuse-ui patch, run phase 1 for that target (`swift build --triple arm64-apple-ios …
+  --target SkipUI` in the stage) and check the patch reached
+  `.build/plugins/outputs/<package>/…/*.kt` before packaging.
 - **Keep `/* SKIP @bridge */` a block comment.** skipstone drops a declaration whose marker
   became `/** */` or `//`; `android/.swiftformat` turns off the rules that would do that.
   Inside a worktree, format with `swiftformat --config .swiftformat` plus the options in
