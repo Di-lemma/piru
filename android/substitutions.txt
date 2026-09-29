@@ -142,3 +142,6 @@ Bundle\.main\.url\(forResource:	AndroidResources.url(forResource:
 \.regularMaterial\b	.androidRegularMaterial
 \.thickMaterial\b	.androidThickMaterial
 \.ultraThickMaterial\b	.androidUltraThickMaterial
+
+# Skip's LazyVGrid lays out nothing inside a scroll view (Grid+Android.swift).
+\bLazyVGrid\(	AndroidVGrid(

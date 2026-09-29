@@ -89,7 +89,7 @@ index d737f7b8..99ef4612 100644
 +        private var androidDockHeight: CGFloat {
 +            let height = containerHeight > 0 ? containerHeight : 800
 +            if searchActive { return height * 0.7 }
-+            return tray.isEmpty ? 104 : height * 0.5
++            return tray.isEmpty ? 104 : height * 0.62
 +        }
 +    #endif
 +
