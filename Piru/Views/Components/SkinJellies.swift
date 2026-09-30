@@ -238,6 +238,16 @@ nonisolated enum JellySpecies: CaseIterable, Sendable {
 
 // MARK: - Remi (classic)
 
+/// Bitjelly's colors, lent to the arcade's mini-jellies — its brood — so the
+/// summons match the boss they come out of.
+nonisolated enum BroodPalette {
+    static let bell = Remi.P.bellMid
+    static let rim = Remi.P.bellRim
+    static let top = Remi.P.bellTop
+    static let pink = Remi.P.pink
+    static let eye = Remi.P.eye
+}
+
 private nonisolated enum Remi {
     nonisolated enum P {
         static let bellTop = Color(jelly: 0xEDEFFF)
@@ -366,6 +376,14 @@ private nonisolated enum Remi {
 }
 
 // MARK: - Bitjelly
+
+extension JellySpecies {
+    /// One of Bitjelly's grid cells, in the space `draw` paints it into, for
+    /// drawing on its face.
+    nonisolated static func bitjellyCell(_ q: Int, _ r: Int) -> CGRect {
+        Bitjelly.rect(q, r).offsetBy(dx: -32, dy: -25)
+    }
+}
 
 private nonisolated enum Bitjelly {
     static let gridW = 14

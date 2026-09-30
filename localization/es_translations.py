@@ -23,6 +23,20 @@ Not medical advice→No es consejo médico.
 """
 
 ES = {
+    # Hebi Arcade
+    "Score": "Puntos",
+    "Best": "Récord",
+    "Game over": "Fin del juego",
+    "Leave the game": "Salir del juego",
+    "Drag to fly, double-tap to roll": "Arrastra para volar, toca dos veces para girar",
+    "Wide!": "¡Disparo amplio!",
+    "Wider!": "¡Más amplio!",
+    "Wingmen!": "¡Escoltas!",
+    "Shields!": "¡Escudos!",
+    "Extra roll!": "¡Giro extra!",
+    "Bomb!": "¡Bomba!",
+    "Laser!": "¡Láser!",
+    "Snake charmed!": "¡Serpiente encantada!",
     '"How is it going?" at set points in a session, opening a timestamped note. Turned on per session; off unless you ask.': "«¿Cómo va?» en puntos fijos de una sesión, abriendo una nota con marca de tiempo. Se activa por sesión; desactivado a menos que lo pidas.",
     "#": "#",
     "#%@": "#%@",
