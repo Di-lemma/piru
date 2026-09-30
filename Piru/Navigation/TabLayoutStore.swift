@@ -72,6 +72,8 @@ final class TabLayoutStore {
     static let shared = TabLayoutStore()
 
     nonisolated static let layoutKey = "tabLayout"
+    /// The names the user gave tabs, JSON by storage key; backed up with the layout.
+    nonisolated static let namesKey = "tabNames"
 
     @ObservationIgnored
     private let defaults: UserDefaults
@@ -88,9 +90,29 @@ final class TabLayoutStore {
         }
     }
 
+    /// Names the user gave tabs, by storage key. A tab without one is labelled
+    /// with its own title. Some titles are long for a tab bar ("Modeled
+    /// Tolerance"), and the titles themselves stay as they are, so the user
+    /// can shorten them here instead.
+    private(set) var names: [String: String] {
+        didSet {
+            guard names != oldValue else { return }
+            if names.isEmpty {
+                defaults.removeObject(forKey: Self.namesKey)
+            } else if let data = try? JSONEncoder().encode(names) {
+                defaults.set(data, forKey: Self.namesKey)
+            }
+        }
+    }
+
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
         layout = Self.load(from: defaults)
+        names = Self.loadNames(from: defaults)
+    }
+
+    private static func loadNames(from defaults: UserDefaults) -> [String: String] {
+        defaults.data(forKey: namesKey).flatMap { try? JSONDecoder().decode([String: String].self, from: $0) } ?? [:]
     }
 
     private static func load(from defaults: UserDefaults) -> TabLayout {
@@ -98,11 +120,13 @@ final class TabLayoutStore {
         return TabLayout(storageKeys: keys).normalized()
     }
 
-    /// Re-reads the layout after an import rewrote it.
+    /// Re-reads the layout and the names after an import rewrote them.
     func reloadFromDefaults() {
         guard !ephemeral else { return }
         let stored = Self.load(from: defaults)
         if stored != layout { layout = stored }
+        let storedNames = Self.loadNames(from: defaults)
+        if storedNames != names { names = storedNames }
     }
 
     // MARK: Queries
@@ -119,6 +143,17 @@ final class TabLayoutStore {
     /// Stock tabs not in the bar, in stock order.
     var addableStockTabs: [TabID] {
         [TabID.journal, .library, .tools, .insights].filter { !layout.tabs.contains($0) }
+    }
+
+    /// The name the user gave `tab`, if any.
+    func name(for tab: TabID) -> String? {
+        names[tab.storageKey]
+    }
+
+    /// How the bar and Settings ▸ Tabs label `tab`: the user's name for it, or
+    /// its own title. The tours show the stock titles.
+    func label(for tab: TabID) -> Text {
+        if !ephemeral, let name = names[tab.storageKey] { Text(verbatim: name) } else { Text(tab.title) }
     }
 
     /// Pinnable screens not in the bar, in picker order.
@@ -142,12 +177,20 @@ final class TabLayoutStore {
         layout.tabs.move(fromOffsets: source, toOffset: destination)
     }
 
+    /// Names `tab`. An empty name, or its own title, clears the name. Capped
+    /// at 24 characters, well past what a tab bar shows.
+    func rename(_ tab: TabID, to name: String) {
+        let trimmed = String(name.trimmingCharacters(in: .whitespacesAndNewlines).prefix(24))
+        names[tab.storageKey] = trimmed.isEmpty || trimmed == String(localized: tab.title) ? nil : trimmed
+    }
+
     func setShowsSearch(_ shows: Bool) {
         layout.showsSearch = shows
     }
 
     func reset() {
         layout = .default
+        names = [:]
     }
 
     /// Shows `override` without persisting it, or restores the stored layout

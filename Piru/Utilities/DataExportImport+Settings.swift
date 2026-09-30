@@ -90,6 +90,7 @@ enum ExportedSettings {
         .init(key: "injLevelsVolumeConcentration.testosterone", domain: .standard, kind: .double),
         .init(key: "quickLogFixedOrder", domain: .standard, kind: .bool),
         .init(key: TabLayoutStore.layoutKey, domain: .standard, kind: .strings),
+        .init(key: TabLayoutStore.namesKey, domain: .standard, kind: .data),
         .init(key: "quickLogSuppressedRecents", domain: .standard, kind: .strings),
         .init(key: "quickLogRoutinesCollapsed", domain: .standard, kind: .bool),
         .init(key: "alcoholEditorByDrink", domain: .standard, kind: .bool),

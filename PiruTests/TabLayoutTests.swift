@@ -118,6 +118,48 @@ struct TabLayoutStoreTests {
     }
 
     @Test
+    func `A renamed tab keeps its name across a relaunch`() {
+        let defaults = isolatedDefaults()
+        let tolerance = TabID.pinned(.insight(.tolerance))
+        TabLayoutStore(defaults: defaults).rename(tolerance, to: "  Tolerance ")
+        #expect(TabLayoutStore(defaults: defaults).name(for: tolerance) == "Tolerance")
+    }
+
+    @Test(arguments: ["", "   ", "Journal"])
+    func `An empty name, or the tab's own title, clears the name`(name: String) {
+        let store = TabLayoutStore(defaults: isolatedDefaults())
+        store.rename(.journal, to: "Diary")
+        store.rename(.journal, to: name)
+        #expect(store.name(for: .journal) == nil)
+    }
+
+    @Test
+    func `A name is capped at 24 characters`() {
+        let store = TabLayoutStore(defaults: isolatedDefaults())
+        store.rename(.library, to: String(repeating: "a", count: 40))
+        #expect(store.name(for: .library)?.count == 24)
+    }
+
+    @Test
+    func `Reset clears the names along with the layout`() {
+        let defaults = isolatedDefaults()
+        let store = TabLayoutStore(defaults: defaults)
+        store.rename(.tools, to: "Kit")
+        store.reset()
+        #expect(store.name(for: .tools) == nil)
+        #expect(TabLayoutStore(defaults: defaults).name(for: .tools) == nil)
+    }
+
+    @Test
+    func `An import's names are picked up on reload`() throws {
+        let defaults = isolatedDefaults()
+        let store = TabLayoutStore(defaults: defaults)
+        try defaults.set(JSONEncoder().encode(["insights": "Stats"]), forKey: TabLayoutStore.namesKey)
+        store.reloadFromDefaults()
+        #expect(store.name(for: .insights) == "Stats")
+    }
+
+    @Test
     func `Edits persist to defaults and reload in a new store`() {
         let defaults = isolatedDefaults()
         let store = TabLayoutStore(defaults: defaults)

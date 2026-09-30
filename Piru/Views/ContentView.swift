@@ -212,7 +212,7 @@ private struct MainTabView: View {
                     }
                 } label: {
                     Label {
-                        Text(tab.title)
+                        TabLayoutStore.shared.label(for: tab)
                     } icon: {
                         Image(systemName: tab.systemImage)
                     }
@@ -229,7 +229,7 @@ private struct MainTabView: View {
                     }
                 } label: {
                     Label {
-                        Text(TabID.search.title)
+                        TabLayoutStore.shared.label(for: .search)
                     } icon: {
                         Image(systemName: TabID.search.systemImage)
                     }

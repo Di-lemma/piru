@@ -1172,6 +1172,11 @@ T = {
     "Tabs": ("标签页", "分頁"),
     "In the Tab Bar": ("标签栏中", "分頁列中"),
     "Add a Tab…": ("添加标签页…", "新增分頁…"),
+    # Settings ▸ Tabs: renaming a tab
+    "Rename Tab": ("重命名标签页", "重新命名分頁"),
+    "Tab name": ("标签页名称", "分頁名稱"),
+    "Use Original Name": ("使用原名", "使用原始名稱"),
+    "Leave it empty to use the original name.": ("留空即使用原名。", "留空即使用原始名稱。"),
     "Up to four tabs, plus Search.": ("最多四个标签页，另加搜索。", "最多四個分頁，另加搜尋。"),
     "The tab bar is full. Remove a tab to add another.": (
         "标签栏已满。移除一个标签页后才能添加。",
@@ -8215,6 +8220,10 @@ if __name__ == "__main__":
         "Bomb!",
         "Laser!",
         "Snake charmed!",
+        "Rename Tab",
+        "Tab name",
+        "Use Original Name",
+        "Leave it empty to use the original name.",
         "Tabs",
         "In the Tab Bar",
         "Add a Tab…",
