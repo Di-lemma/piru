@@ -10,7 +10,7 @@
 
 
 [![kagerou.glass](https://img.shields.io/badge/kagerou.glass-EB4470?style=for-the-badge&logo=safari&logoColor=white)](https://kagerou.glass/piru/)
-[![TestFlight](https://img.shields.io/badge/TestFlight-%E5%8A%A0%E5%85%A5%E6%B5%8B%E8%AF%95-0D96F6?style=for-the-badge&logo=testflight&logoColor=white)](https://testflight.apple.com/join/4vcA7dY3)
+[![TestFlight](https://img.shields.io/badge/TestFlight-%E5%8A%A0%E5%85%A5%E6%B5%8B%E8%AF%95-0D96F6?style=for-the-badge&logo=testflight&logoColor=white)](https://testflight.apple.com/join/JVB4589D)
 [![Android](https://img.shields.io/badge/Android-%E4%B8%8B%E8%BD%BD%20APK-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://github.com/kageroumado/piru/releases?q=android&expanded=true)
 [![Discord](https://img.shields.io/badge/Discord-%E5%8A%A0%E5%85%A5%E6%88%91%E4%BB%AC-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/hbpMZhPSdx)
 
@@ -42,7 +42,7 @@
 
 ## 获取 Piru
 
-- **iPhone。** 在 [TestFlight](https://testflight.apple.com/join/4vcA7dY3) 上免费获取，需要 iOS 26 或更高版本。
+- **iPhone。** 在 [TestFlight](https://testflight.apple.com/join/JVB4589D) 上免费获取，需要 iOS 26 或更高版本。
 - **Android。** 免费的 alpha 版本发布在 [Releases 页面](https://github.com/kageroumado/piru/releases?q=android&expanded=true)，是已签名的 APK，
   需要 Android 9 或更高版本（64 位 ARM）。想自动获取更新，可以把本仓库添加到
   [Obtainium](https://github.com/ImranR98/Obtainium)，并按 `android-` 筛选发布版本。

@@ -10,7 +10,7 @@
 
 
 [![kagerou.glass](https://img.shields.io/badge/kagerou.glass-EB4470?style=for-the-badge&logo=safari&logoColor=white)](https://kagerou.glass/piru/)
-[![TestFlight](https://img.shields.io/badge/TestFlight-join%20the%20beta-0D96F6?style=for-the-badge&logo=testflight&logoColor=white)](https://testflight.apple.com/join/4vcA7dY3)
+[![TestFlight](https://img.shields.io/badge/TestFlight-join%20the%20beta-0D96F6?style=for-the-badge&logo=testflight&logoColor=white)](https://testflight.apple.com/join/JVB4589D)
 [![Android](https://img.shields.io/badge/Android-get%20the%20APK-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://github.com/kageroumado/piru/releases?q=android&expanded=true)
 [![Discord](https://img.shields.io/badge/Discord-join%20us-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/hbpMZhPSdx)
 
@@ -44,7 +44,7 @@ The journal is stored on your device. No account, ads, or analytics.
 
 ## Get Piru
 
-- **iPhone.** Free on [TestFlight](https://testflight.apple.com/join/4vcA7dY3), for iOS 26 or later.
+- **iPhone.** Free on [TestFlight](https://testflight.apple.com/join/JVB4589D), for iOS 26 or later.
 - **Android.** Free alpha builds are on the [releases page](https://github.com/kageroumado/piru/releases?q=android&expanded=true), as signed APKs for
   Android 9 or later (64-bit ARM). To get updates automatically, add this repository to
   [Obtainium](https://github.com/ImranR98/Obtainium) and filter releases by `android-`.
