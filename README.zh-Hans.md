@@ -11,6 +11,7 @@
 
 [![kagerou.glass](https://img.shields.io/badge/kagerou.glass-EB4470?style=for-the-badge&logo=safari&logoColor=white)](https://kagerou.glass/piru/)
 [![TestFlight](https://img.shields.io/badge/TestFlight-%E5%8A%A0%E5%85%A5%E6%B5%8B%E8%AF%95-0D96F6?style=for-the-badge&logo=testflight&logoColor=white)](https://testflight.apple.com/join/4vcA7dY3)
+[![Android](https://img.shields.io/badge/Android-%E4%B8%8B%E8%BD%BD%20APK-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://github.com/kageroumado/piru/releases?q=android&expanded=true)
 [![Discord](https://img.shields.io/badge/Discord-%E5%8A%A0%E5%85%A5%E6%88%91%E4%BB%AC-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/hbpMZhPSdx)
 
 <table>
@@ -27,21 +28,25 @@
 
 ---
 
-一款 iPhone 上的剂量日志与笔记本，附带离线参考资料库。
+一款 iPhone 和 Android 上的剂量日志与笔记本，附带离线参考资料库。
 
 - **日志。** 记下你摄入了什么、在什么时候、多少。片剂规格、每日服药安排和提醒都排在当天的时间线旁；
   时间线上的曲线是估算。
 - **会话与签到。** 在会话中随手写一条笔记，或事后再补。每条笔记都保留自己的时间戳、心情、强度和效应。
-  经你授权，Apple 健康可以把心率和血压加到时间线上。
+  在 iPhone 上，经你授权，Apple 健康可以把心率和血压加到时间线上。
 - **资料库。** 离线参考资料，提供 English、简体中文和繁體中文。每个条目都标明各字段的出处，
   出处不一致时由你决定以哪个为准。
 - **回顾。** 查看你的记录和服药日历，清点库存，并把记录或一次会话导出为报告。
 
 日志存储在你的设备上。没有账户、广告或分析。
 
-## 获取测试版
+## 获取 Piru
 
-在 [TestFlight](https://testflight.apple.com/join/4vcA7dY3) 上免费获取，需要 iOS 26 或更高版本。
+- **iPhone。** 在 [TestFlight](https://testflight.apple.com/join/4vcA7dY3) 上免费获取，需要 iOS 26 或更高版本。
+- **Android。** 免费的 alpha 版本发布在 [Releases 页面](https://github.com/kageroumado/piru/releases?q=android&expanded=true)，是已签名的 APK，
+  需要 Android 9 或更高版本（64 位 ARM）。想自动获取更新，可以把本仓库添加到
+  [Obtainium](https://github.com/ImranR98/Obtainium)，并按 `android-` 筛选发布版本。
+
 问题和错误报告请发到 [Discord](https://discord.gg/hbpMZhPSdx)。
 
 ## 构建

@@ -11,6 +11,7 @@
 
 [![kagerou.glass](https://img.shields.io/badge/kagerou.glass-EB4470?style=for-the-badge&logo=safari&logoColor=white)](https://kagerou.glass/piru/)
 [![TestFlight](https://img.shields.io/badge/TestFlight-join%20the%20beta-0D96F6?style=for-the-badge&logo=testflight&logoColor=white)](https://testflight.apple.com/join/4vcA7dY3)
+[![Android](https://img.shields.io/badge/Android-get%20the%20APK-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://github.com/kageroumado/piru/releases?q=android&expanded=true)
 [![Discord](https://img.shields.io/badge/Discord-join%20us-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/hbpMZhPSdx)
 
 <table>
@@ -27,13 +28,13 @@
 
 ---
 
-A dose journal and notebook for iPhone, with an offline reference library.
+A dose journal and notebook for iPhone and Android, with an offline reference library.
 
 - **Journal.** Log what you took, when, and how much. Tablet strengths, daily routines, and
   reminders sit beside the day's timeline, and the curves on it are estimates.
 - **Sessions and check-ins.** Write a note during a session or come back to it later. Each note
-  keeps its own timestamp, mood, intensity, and effects. With permission, Apple Health adds heart
-  rate and blood pressure to the timeline.
+  keeps its own timestamp, mood, intensity, and effects. On iPhone, with permission, Apple Health
+  adds heart rate and blood pressure to the timeline.
 - **Library.** An offline reference in English, 简体中文, and 繁體中文. Each entry shows the sources
   behind its fields, and you choose which source wins when they differ.
 - **Looking back.** Review your entries and your medication calendar, keep count of your supply,
@@ -41,10 +42,14 @@ A dose journal and notebook for iPhone, with an offline reference library.
 
 The journal is stored on your device. No account, ads, or analytics.
 
-## Get the beta
+## Get Piru
 
-Free on [TestFlight](https://testflight.apple.com/join/4vcA7dY3), for iOS 26 or later. Questions and
-bug reports go to the [Discord](https://discord.gg/hbpMZhPSdx).
+- **iPhone.** Free on [TestFlight](https://testflight.apple.com/join/4vcA7dY3), for iOS 26 or later.
+- **Android.** Free alpha builds are on the [releases page](https://github.com/kageroumado/piru/releases?q=android&expanded=true), as signed APKs for
+  Android 9 or later (64-bit ARM). To get updates automatically, add this repository to
+  [Obtainium](https://github.com/ImranR98/Obtainium) and filter releases by `android-`.
+
+Questions and bug reports go to the [Discord](https://discord.gg/hbpMZhPSdx).
 
 ## Building
 
