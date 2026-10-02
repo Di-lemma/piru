@@ -275,22 +275,21 @@ struct OnboardingRemindersStep: View {
             .padding(.horizontal, Spacing.xxxl)
             .padding(.top, 28)
         } footer: {
-            GlassPillButton(title: requesting ? "Turning On…" : "Enable Selected") {
+            // The only way forward, and it always reaches the system prompt: App Review
+            // rejects a pre-permission screen that can be left without it (guideline
+            // 5.1.1(iv)), so never add a skip button here. The switches and the
+            // system prompt's own "Don't Allow" are the opt-outs.
+            GlassPillButton(title: requesting ? "Turning On…" : "Continue") {
                 Task { await enableSelected() }
             }
-            GlassPillButton(title: "Not Now", prominence: .neutral, action: nav.advance)
         }
     }
 
     private func enableSelected() async {
         guard !requesting else { return }
-        let anySelected = doseReminders || sessionAlerts || safetyNet
-        if anySelected {
-            // The single OS prompt, asked at the moment of the first yes.
-            requesting = true
-            _ = await DoseNotificationManager.requestAuthorization()
-            requesting = false
-        }
+        requesting = true
+        _ = await DoseNotificationManager.requestAuthorization()
+        requesting = false
         // Persist the choices regardless of the grant — if the user denied at
         // the system prompt these are harmless no-ops, and the Notifications
         // screen surfaces the denied state with a path back to Settings.

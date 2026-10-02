@@ -7,10 +7,11 @@ import SwiftUI
 /// illustrative chart previews that overlay — an alcohol curve (both body-weight dependent and a
 /// reliable heart-rate raiser) with the heart rate a watch recorded beneath it.
 ///
-/// "Continue" is the connect action: it surfaces a single Health sheet covering weight, heart rate,
-/// and blood pressure, opts the session-vitals overlay on, and reads the latest weight. The weight
-/// stepper stays as a manual control — whatever it shows is saved, so a user who declines Health
-/// still keeps their weight. "I'll set this later" skips the whole thing.
+/// "Continue" is the only way forward, and it always raises the system Health sheet (weight, heart
+/// rate, blood pressure): App Review rejects a pre-permission screen the user can leave without
+/// reaching the system request (guideline 5.1.1(iv)), so never add a skip button here. Declining in
+/// that sheet is the opt-out. The weight stepper stays as a manual control — whatever it shows is
+/// saved, so a user who declines Health still keeps their weight.
 struct OnboardingHealthStep: View {
     @Environment(\.onboardingNav) private var nav
     @State private var health = HealthKitBodyMass.shared
@@ -56,7 +57,6 @@ struct OnboardingHealthStep: View {
             GlassPillButton(title: connecting ? "Connecting…" : "Continue") {
                 Task { await connectAndAdvance() }
             }
-            GlassPillButton(title: "I'll Set This Later", prominence: .neutral, action: nav.advance)
         }
     }
 
