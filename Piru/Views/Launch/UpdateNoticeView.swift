@@ -14,7 +14,6 @@ struct UpdateNoticeView: View {
     @ViewBuilder
     private var page: some View {
         switch notice {
-        case .appMoved: AppMovedNoticeView(successorHasImported: LegacyHandoff.successorImportedAt != nil)
         case .journalArrived: JournalArrivedNoticeView()
         case .classColors: ClassColorsNoticeView()
         }
@@ -22,37 +21,6 @@ struct UpdateNoticeView: View {
 }
 
 // MARK: - Handoff
-
-/// The legacy build's notice: Piru lives in a new app. Before the new app has
-/// run on this device it says the move is automatic; after, it says that what
-/// is logged here no longer follows.
-private struct AppMovedNoticeView: View {
-    let successorHasImported: Bool
-    @Environment(\.dismiss) private var dismiss
-    @Environment(\.openURL) private var openURL
-
-    var body: some View {
-        NoticePage(systemImage: "shippingbox.fill") {
-            if successorHasImported {
-                Text("Your journal has moved")
-            } else {
-                Text("Piru has moved")
-            }
-        } message: {
-            if successorHasImported {
-                Text("The new Piru app already has your journal. Entries you add here stay in this app and won't follow, so the new one is the place to log from now on.")
-            } else {
-                Text("Piru now lives in a new app. Install it on this device and the first time you open it, your journal, meds and settings come across on their own. Nothing here is deleted.")
-            }
-        } actions: {
-            GlassPillButton(title: "Open in TestFlight") {
-                openURL(AppIdentity.successorTestFlightURL)
-                dismiss()
-            }
-            GlassPillButton(title: "Not Now", prominence: .neutral) { dismiss() }
-        }
-    }
-}
 
 /// The successor's one-time notice after it brought a journal across.
 private struct JournalArrivedNoticeView: View {

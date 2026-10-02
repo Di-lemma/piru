@@ -57,8 +57,7 @@ struct LaunchSheetModifier: ViewModifier {
             if let forced = UserDefaults.standard.string(forKey: "piruShowUpdateNotice").flatMap(UpdateNotice.init) {
                 return .updateNotice(forced)
             }
-            // A notice would cover the screens the screenshot tour captures,
-            // and every legacy-identity build owes the move notice.
+            // A notice would cover the screens the screenshot tour captures.
             if ScreenshotTour.isRequested { return nil }
         #endif
         if let notice = UpdateNotice.next(in: modelContext) {

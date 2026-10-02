@@ -87,39 +87,49 @@ struct PiruApp: App {
     var body: some Scene {
         WindowGroup {
             SkinnedRoot {
-                #if DEBUG
-                    if ScreenshotTour.wantsWallpapers {
-                        ScreenshotTour.WallpaperCanvas()
-                    } else {
-                        // `-piruDifferentiateWithoutColor` turns the setting on
-                        // for this launch: the simulator's Accessibility
-                        // preference can't be set from simctl.
-                        ContentView()
-                            .transformEnvironment(\._accessibilityDifferentiateWithoutColor) { value in
-                                if Self.forcesDifferentiateWithoutColor { value = true }
-                            }
-                    }
-                #else
-                    ContentView()
-                #endif
+                if AppIdentity.isLegacy {
+                    AppMovedView()
+                } else {
+                    root
+                }
             }
             #if DEBUG && os(iOS)
             .statusBarHidden(ScreenshotTour.wantsWallpapers)
             #endif
             .task {
+                guard !AppIdentity.isLegacy else { return }
                 WidgetCenter.shared.reloadAllTimelines()
                 await AppLaunch.finishLaunching(container: container, hooks: Self.launchHooks)
             }
         }
         .modelContainer(container)
         .onChange(of: scenePhase) { _, phase in
-            if phase == .active {
+            if phase == .active, !AppIdentity.isLegacy {
                 AppLaunch.becameActive(container: container)
             }
             if phase == .background {
                 enterBackground()
             }
         }
+    }
+
+    @ViewBuilder
+    private var root: some View {
+        #if DEBUG
+            if ScreenshotTour.wantsWallpapers {
+                ScreenshotTour.WallpaperCanvas()
+            } else {
+                // `-piruDifferentiateWithoutColor` turns the setting on
+                // for this launch: the simulator's Accessibility
+                // preference can't be set from simctl.
+                ContentView()
+                    .transformEnvironment(\._accessibilityDifferentiateWithoutColor) { value in
+                        if Self.forcesDifferentiateWithoutColor { value = true }
+                    }
+            }
+        #else
+            ContentView()
+        #endif
     }
 
     /// TipKit and HealthKit work at the launch task's fixed points.
