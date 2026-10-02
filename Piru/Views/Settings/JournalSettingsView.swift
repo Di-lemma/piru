@@ -1,11 +1,12 @@
 import SwiftUI
 
-/// Day-grouping and timeline preferences.
+/// Day-grouping, timeline and adherence-calendar preferences.
 struct JournalSettingsView: View {
     @AppStorage("stackRedoses", store: UserDefaults(suiteName: AppIdentity.appGroup)) private var stackRedoses = true
     @AppStorage(LaneModeDefaults.enabledKey, store: UserDefaults(suiteName: LaneModeDefaults.suite)) private var stackedLanesEnabled = LaneModeDefaults.enabledDefault
     @AppStorage(LaneModeDefaults.thresholdKey, store: UserDefaults(suiteName: LaneModeDefaults.suite)) private var laneModeThreshold = LaneModeDefaults.thresholdDefault
     @AppStorage(Calendar.dayBoundaryHourKey, store: UserDefaults(suiteName: AppIdentity.appGroup)) private var dayBoundaryHour = 4
+    @AppStorage(AdherenceCalculator.splitsDayKey) private var adherenceSplitsDay = true
     @AppStorage(SessionGraphDefaults.enlargedKey, store: UserDefaults(suiteName: SessionGraphDefaults.suite)) private var sessionGraphEnlarged = SessionGraphDefaults.enlargedDefault
 
     var body: some View {
@@ -69,6 +70,19 @@ struct JournalSettingsView: View {
                     .tint(Theme.accent)
                 } header: {
                     Text("Timeline")
+                }
+
+                Section {
+                    Toggle(isOn: $adherenceSplitsDay) {
+                        CaptionedRowLabel(
+                            title: "Split Days at Noon",
+                            systemImage: "circle.lefthalf.filled",
+                            caption: Text("Shows morning and evening doses as two halves of each day. When off, a dose logged at any time counts toward the whole day."),
+                        )
+                    }
+                    .tint(Theme.accent)
+                } header: {
+                    Text("Adherence")
                 }
             }
             .listRowBackground(CardBackground())

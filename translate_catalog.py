@@ -7657,6 +7657,11 @@ T = {
         "將這筆記錄移到獨立的場次。",
     ),
     "Combine Repeated Entries": ("合并重复记录", "合併重複記錄"),
+    "Split Days at Noon": ("以中午划分每天", "以中午劃分每天"),
+    "Shows morning and evening doses as two halves of each day. When off, a dose logged at any time counts toward the whole day.": (
+        "把早间和晚间剂量显示为每天的两半。关闭后，当天任何时间记录的剂量都计入整天。",
+        "把早間和晚間劑量顯示為每天的兩半。關閉後，當天任何時間記錄的劑量都計入整天。",
+    ),
     "Combine repeated entries for the same substance into one curve. When off, each entry has its own curve.": (
         "将同一物质的重复记录合并为一条曲线。关闭时，每条记录各有一条曲线。",
         "將同一物質的重複記錄合併為一條曲線。關閉時，每筆記錄各有一條曲線。",
@@ -8171,6 +8176,8 @@ if __name__ == "__main__":
     # catalog yet. List them here so they get inserted; clear once Xcode has
     # picked them up on a real build (after which they're update-only).
     NEW_KEYS: set[str] = {
+        "Split Days at Noon",
+        "Shows morning and evening doses as two halves of each day. When off, a dose logged at any time counts toward the whole day.",
         "Nothing to Share",
         "The file picker could not be opened.",
         "The Swift runtime, Foundation and Dispatch, which run Piru on Android.",

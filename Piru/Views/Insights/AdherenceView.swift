@@ -310,6 +310,7 @@ private struct AdherenceCalendarGrid: View {
     let monthAdherenceByDay: [Date: DayAdherence]
     @Binding var selectedDay: DayAdherence?
     let calendar: Calendar
+    @AppStorage(AdherenceCalculator.splitsDayKey) private var splitsDay = true
 
     var body: some View {
         LazyVGrid(columns: columns, spacing: Spacing.xs) {
@@ -328,7 +329,7 @@ private struct AdherenceCalendarGrid: View {
                             day: calendar.component(.day, from: date),
                             status: isFuture ? .noData : (adherence?.status ?? .missed),
                             isToday: isToday,
-                            halves: isFuture ? nil : adherence?.halves,
+                            halves: isFuture || !splitsDay ? nil : adherence?.halves,
                         )
                     }
                     .buttonStyle(.plain)

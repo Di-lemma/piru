@@ -810,6 +810,8 @@ ES = {
     "Combination Products": "Productos combinados",
     "Combinations": "Combinaciones",
     "Combine Repeated Entries": "Combinar registros repetidos",
+    "Split Days at Noon": "Dividir los días al mediodía",
+    "Shows morning and evening doses as two halves of each day. When off, a dose logged at any time counts toward the whole day.": "Muestra las dosis de la mañana y de la noche como dos mitades de cada día. Si está desactivado, una dosis registrada a cualquier hora cuenta para todo el día.",
     "Combine repeated entries for the same substance into one curve. When off, each entry has its own curve.": "Combina los registros repetidos de la misma sustancia en una sola curva. Si está desactivado, cada registro tiene su propia curva.",
     "Combined depression peaks around %@": "La depresión combinada del SNC alcanza el pico hacia %@",
     "Combined QTc prolongation risk — monitor cardiac rhythm.": "Riesgo combinado de prolongación del QTc — vigila el ritmo cardíaco.",

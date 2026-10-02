@@ -173,6 +173,11 @@ enum AdherenceCalculator {
         )
     }
 
+    /// Standard defaults: whether the adherence calendar draws a day's morning
+    /// and evening as separate halves. Off, each day is one circle and a dose
+    /// logged at any hour counts toward it, which suits logging after the fact.
+    static let splitsDayKey = "adherenceSplitsDay"
+
     /// Noon, as minutes from midnight — the seam the day's halves are cut at.
     /// A local clock hour, not a claim about anyone's morning.
     static let noonMinutes = 12 * 60

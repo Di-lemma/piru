@@ -92252,6 +92252,62 @@
           }
         }
       }
+    },
+    "Split Days at Noon" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "以中午划分每天"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "以中午劃分每天"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dividir los días al mediodía"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dividir los días al mediodía"
+          }
+        }
+      }
+    },
+    "Shows morning and evening doses as two halves of each day. When off, a dose logged at any time counts toward the whole day." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "把早间和晚间剂量显示为每天的两半。关闭后，当天任何时间记录的剂量都计入整天。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "把早間和晚間劑量顯示為每天的兩半。關閉後，當天任何時間記錄的劑量都計入整天。"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Muestra las dosis de la mañana y de la noche como dos mitades de cada día. Si está desactivado, una dosis registrada a cualquier hora cuenta para todo el día."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Muestra las dosis de la mañana y de la noche como dos mitades de cada día. Si está desactivado, una dosis registrada a cualquier hora cuenta para todo el día."
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

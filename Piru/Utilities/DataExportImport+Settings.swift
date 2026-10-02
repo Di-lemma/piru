@@ -98,6 +98,7 @@ enum ExportedSettings {
         .init(key: "byVolumePreferredVolumeUnit", domain: .standard, kind: .string),
         .init(key: "liveActivityEnabled", domain: .standard, kind: .bool),
         .init(key: "substanceNamesInEnglish", domain: .standard, kind: .bool),
+        .init(key: AdherenceCalculator.splitsDayKey, domain: .standard, kind: .bool),
         .init(key: "inventory.sort", domain: .standard, kind: .string),
         .init(key: "inventory.grouped", domain: .standard, kind: .bool),
         .init(key: "inventory.collapsedCategories", domain: .standard, kind: .strings),
