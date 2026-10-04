@@ -1,4 +1,5 @@
 import Foundation
+import GRDB
 import SwiftData
 import Testing
 @testable import Piru
@@ -36,6 +37,31 @@ struct StoreHealthTests {
         }
     }
 
+    /// A WAL-mode store at `url` whose `-wal` holds committed frames that were never
+    /// checkpointed, and that no connection holds open.
+    ///
+    /// Built by copying a live writer's files rather than from a SwiftData seed: a
+    /// released `ModelContainer` closes on its own schedule and truncates its WAL
+    /// when it does, so a seeded store's WAL can empty itself mid-test. Copying
+    /// while the writer is still open captures frames no close has checkpointed;
+    /// SQLite rebuilds the WAL index from the copied `-wal` on the next open.
+    private func makeStoreWithUncheckpointedWAL(at url: URL) throws {
+        let source = url.deletingLastPathComponent().appendingPathComponent("source.store")
+        var config = Configuration()
+        config.prepareDatabase { db in
+            try db.execute(sql: "PRAGMA journal_mode = WAL")
+            try db.execute(sql: "PRAGMA wal_autocheckpoint = 0")
+        }
+        let writer = try DatabaseQueue(path: source.path, configuration: config)
+        try writer.write { db in
+            try db.execute(sql: "CREATE TABLE entry (id INTEGER PRIMARY KEY, amount REAL)")
+            try db.execute(sql: "INSERT INTO entry (amount) VALUES (50), (51), (52)")
+        }
+        try FileManager.default.copyItem(at: source, to: url)
+        try FileManager.default.copyItem(atPath: source.path + "-wal", toPath: url.path + "-wal")
+        try writer.close()
+    }
+
     @Test
     func `A missing file is readable — the fresh-install path`() {
         #expect(StoreHealth.isReadable(at: tmpStoreURL()))
@@ -55,7 +81,7 @@ struct StoreHealthTests {
         // The read-write probe used to checkpoint and delete the -wal on close,
         // an fsync on the App Group store that iOS suspended the process in.
         let url = tmpStoreURL()
-        try seedStore(at: url, entries: 3)
+        try makeStoreWithUncheckpointedWAL(at: url)
         let footprint = { () -> [String] in
             [url.path, url.path + "-wal"].map { path in
                 let attributes = (try? FileManager.default.attributesOfItem(atPath: path)) ?? [:]
@@ -63,6 +89,8 @@ struct StoreHealthTests {
             }
         }
         let before = footprint()
+        let walSize = try FileManager.default.attributesOfItem(atPath: url.path + "-wal")[.size] as? Int
+        try #require((walSize ?? 0) > 0, "the fixture must hand the probe a WAL with frames to checkpoint")
         #expect(StoreHealth.isReadable(at: url))
         #expect(footprint() == before)
     }
