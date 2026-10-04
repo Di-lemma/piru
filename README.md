@@ -14,6 +14,10 @@
 [![Android](https://img.shields.io/badge/Android-get%20the%20APK-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://github.com/kageroumado/piru/releases?q=android&expanded=true)
 [![Discord](https://img.shields.io/badge/Discord-join%20us-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/hbpMZhPSdx)
 
+<a href="https://kagerou.glass/get/piru/ios?from=readme"><img src=".github/download-iphone.svg" alt="Get Piru for iPhone on TestFlight" width="270" height="60"></a>
+<a href="https://kagerou.glass/get/piru/mac?from=readme"><img src=".github/download-mac.svg" alt="Download Piru for Mac" width="270" height="60"></a>
+<a href="https://kagerou.glass/get/piru/android?from=readme"><img src=".github/download-android.svg" alt="Download Piru for Android" width="270" height="60"></a><br><sub>Free · iPhone: TestFlight beta · Mac: signed, notarized disk image · Android: signed alpha APK</sub>
+
 <table>
   <tr>
     <td align="center"><img src=".github/piru-journal.png" alt="The Journal, with the day's doses on a timeline" width="290"></td>
@@ -44,8 +48,10 @@ The journal is stored on your device. No account, ads, or analytics.
 
 ## Get Piru
 
-- **iPhone.** Free on [TestFlight](https://testflight.apple.com/join/JVB4589D), for iOS 26 or later.
-- **Android.** Free alpha builds are on the [releases page](https://github.com/kageroumado/piru/releases?q=android&expanded=true), as signed APKs for
+- **iPhone.** Free on [TestFlight](https://kagerou.glass/get/piru/ios?from=readme), for iOS 26 or later.
+- **Mac.** [Download the disk image](https://kagerou.glass/get/piru/mac?from=readme): free, signed and notarized, for
+  macOS 26 or later on Apple silicon or Intel.
+- **Android.** [Download the latest alpha APK](https://kagerou.glass/get/piru/android?from=readme). Every alpha build is on the [releases page](https://github.com/kageroumado/piru/releases?q=android&expanded=true), as signed APKs for
   Android 9 or later (64-bit ARM). To get updates automatically, add this repository to
   [Obtainium](https://github.com/ImranR98/Obtainium) and filter releases by `android-`.
 

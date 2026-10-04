@@ -14,6 +14,10 @@
 [![Android](https://img.shields.io/badge/Android-%E4%B8%8B%E8%BD%BD%20APK-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://github.com/kageroumado/piru/releases?q=android&expanded=true)
 [![Discord](https://img.shields.io/badge/Discord-%E5%8A%A0%E5%85%A5%E6%88%91%E4%BB%AC-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/hbpMZhPSdx)
 
+<a href="https://kagerou.glass/get/piru/ios?from=readme"><img src=".github/download-iphone.zh-Hans.svg" alt="在 TestFlight 上获取 iPhone 版 Piru" width="270" height="60"></a>
+<a href="https://kagerou.glass/get/piru/mac?from=readme"><img src=".github/download-mac.zh-Hans.svg" alt="下载 Mac 版 Piru" width="270" height="60"></a>
+<a href="https://kagerou.glass/get/piru/android?from=readme"><img src=".github/download-android.zh-Hans.svg" alt="下载 Android 版 Piru" width="270" height="60"></a><br><sub>免费 · iPhone：TestFlight 测试版 · Mac：已签名并公证的磁盘映像 · Android：已签名的 alpha 版 APK</sub>
+
 <table>
   <tr>
     <td align="center"><img src=".github/piru-journal-zh.png" alt="日志，当天的剂量排在时间线上" width="290"></td>
@@ -42,8 +46,10 @@
 
 ## 获取 Piru
 
-- **iPhone。** 在 [TestFlight](https://testflight.apple.com/join/JVB4589D) 上免费获取，需要 iOS 26 或更高版本。
-- **Android。** 免费的 alpha 版本发布在 [Releases 页面](https://github.com/kageroumado/piru/releases?q=android&expanded=true)，是已签名的 APK，
+- **iPhone。** 在 [TestFlight](https://kagerou.glass/get/piru/ios?from=readme) 上免费获取，需要 iOS 26 或更高版本。
+- **Mac。** [下载磁盘映像](https://kagerou.glass/get/piru/mac?from=readme)：免费，已签名并公证，需要 macOS 26 或更高版本，
+  支持 Apple 芯片和 Intel。
+- **Android。** [下载最新的 alpha 版 APK](https://kagerou.glass/get/piru/android?from=readme)。所有 alpha 版本都发布在 [Releases 页面](https://github.com/kageroumado/piru/releases?q=android&expanded=true)，是已签名的 APK，
   需要 Android 9 或更高版本（64 位 ARM）。想自动获取更新，可以把本仓库添加到
   [Obtainium](https://github.com/ImranR98/Obtainium)，并按 `android-` 筛选发布版本。
 
