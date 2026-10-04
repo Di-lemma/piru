@@ -183,7 +183,7 @@ struct InteractionRuleTests {
     func `DORAs resolve to the orexinAntagonist class, not interaction-invisible .other`() {
         // Before: category Depressant → .other → zero rules (interaction-invisible).
         // Now a real class so their additive-sedation cautions fire.
-        for name in ["Suvorexant", "Lemborexant", "Daridorexant"] {
+        for name in ["Suvorexant", "Lemborexant", "Daridorexant", "Vornorexant"] {
             #expect(InteractionChecker.drugClasses(for: name) == [.orexinAntagonist], "\(name)")
         }
     }

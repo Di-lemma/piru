@@ -61678,6 +61678,47 @@
     ]
   },
   {
+    "name": "Vornorexant",
+    "display_name": "",
+    "aliases": [
+      "ORN0829",
+      "TS-142",
+      "Vorzzz"
+    ],
+    "category": "OrexinAntagonist",
+    "display_class": "medical_rx",
+    "tags": [
+      "DORA",
+      "orexin-antagonist",
+      "prescription-only",
+      "sedative-hypnotic"
+    ],
+    "default_route": "oral",
+    "all_routes": [
+      "oral"
+    ],
+    "routes_with_dose": [
+      "oral"
+    ],
+    "has_dose_data": true,
+    "has_duration_data": true,
+    "has_protocol_dosing": false,
+    "half_life_minutes": 120.0,
+    "mechanism_summary": "",
+    "effects": [],
+    "references": [
+      "10.1093/ijnp/pyaf077",
+      "PMDA review report (審査報告書), Vorzzz (ボルズィ錠) 2.5/5/10 mg, Taisho, 2025, Table 22",
+      "https://doi.org/10.1007/s00213-022-06089-6",
+      "https://doi.org/10.1093/sleep/zsaf291",
+      "https://doi.org/10.1111/pcn.13888",
+      "https://doi.org/10.1007/s00213-026-07095-8"
+    ],
+    "data_gaps": [
+      "mechanism_of_action"
+    ]
+  },
+  {
     "name": "Vortioxetine",
     "display_name": "",
     "aliases": [

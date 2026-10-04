@@ -1,21 +1,21 @@
 # Piru SQLite build report
 
-Built 2026-09-28.0 → `Piru/Data/piru-substances.sqlite` (18,087,936 bytes, sha256 `254d1c981146d914bb9721a11b2550d135847bafe3e74d5f31a30d61b88922de`)
+Built 2026-10-04.1 → `Piru/Data/piru-substances.sqlite` (18,092,032 bytes, sha256 `62bcb43489fb89c546e2e3d23fc01915c3594a48648f3d2c0460fbd6977d0aff`)
 
 ## Row counts
 
 | Table | Rows |
 |---|---|
-| substances | 1,688 |
-| aliases | 5,727 |
+| substances | 1,689 |
+| aliases | 5,730 |
 | sources | 18 |
 | source_field_priority | 2 |
-| citations | 2,478 |
-| categories | 1,558 |
-| tags | 7,049 |
-| dose_ranges | 2,738 |
-| durations | 10,467 |
-| half_lives | 716 |
+| citations | 2,484 |
+| categories | 1,559 |
+| tags | 7,053 |
+| dose_ranges | 2,739 |
+| durations | 10,471 |
+| half_lives | 717 |
 | mechanisms_summary | 1,212 |
 | effects | 2,952 |
 | subjective_effects | 23,645 |
@@ -29,20 +29,20 @@ Built 2026-09-28.0 → `Piru/Data/piru-substances.sqlite` (18,087,936 bytes, sha
 | receptor_oligomers | 8 |
 | downstream_signalling | 678 |
 | neuroimaging | 52 |
-| pk_routes | 434 |
+| pk_routes | 435 |
 | concentration_effects | 25 |
-| metabolism | 560 |
+| metabolism | 561 |
 | drug_interactions_pk | 205 |
 | pharmacogenetics | 305 |
 | off_targets | 209 |
 | class_contexts | 50 |
 | substance_classes | 680 |
-| molecule_shapes | 958 |
+| molecule_shapes | 959 |
 | class_reference_compounds | 40 |
 | class_representatives | 7 |
 | substance_flags | 13 |
 | regional_names | 5 |
-| localized_names | 1,606 |
+| localized_names | 1,608 |
 | opioid_mme | 11 |
 | interaction_rules | 99 |
 | substance_interaction_classes | 213 |
@@ -58,7 +58,7 @@ Built 2026-09-28.0 → `Piru/Data/piru-substances.sqlite` (18,087,936 bytes, sha
 | by_volume_dosing | 2 |
 | drink_presets | 4 |
 | zero_order_kinetics | 1 |
-| food_effects | 14 |
+| food_effects | 15 |
 | saturable_kinetics | 6 |
 | bioavailability_by_dose | 10 |
 | attenuation_bands | 1 |
@@ -97,7 +97,7 @@ Identifier columns a source was allowed to overwrite because the stored row cont
 
 | Source | Dose ranges | Bindings | Categories | Tags |
 |---|---|---|---|---|
-| piru-curated | 219 | 444 | 649 | 2,264 |
+| piru-curated | 220 | 444 | 650 | 2,268 |
 | peer-review-primary | 0 | 1,006 | 0 | 1,582 |
 | dosewiki | 290 | 12 | 0 | 0 |
 | drug.community | 819 | 0 | 0 | 124 |

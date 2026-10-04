@@ -217,6 +217,18 @@
       "meal": "FDA high-fat, high-calorie breakfast (~1000 kcal); light meal (~500 kcal) arm also run",
       "citation": "Wildgrube T, Link NA, Ritucci B, Grimm M, Engeli S, Weitschies W, Schick P. Applicability of methylliberine as a salivary marker under postprandial conditions. Int J Pharm X. 2026;12:100584. doi:10.1016/j.ijpx.2026.100584; PMID 42370028",
       "notes": "SALIVARY caffeine, 25 mg in a rapidly disintegrating compression-coated tablet, n=12 3-way crossover. Mean Tmax 29 +/- 12 min fasted, 65 +/- 35 light meal, 69 +/- 46 high-fat (significant). Mean Cmax 842 fasted vs 534 ng/mL high-fat; AUC0-24h 6952 vs 5954 (not significant). Ratios not reported by authors (computed from means would be ~0.63 and ~0.86), so null. A tablet, not a beverage; coffee drunk with a meal may behave differently."
+    },
+    {
+      "substance": "Vornorexant",
+      "product": null,
+      "tmaxFastedMin": 30,
+      "tmaxFedMin": 90,
+      "tmaxDelayMin": 60,
+      "cmaxRatio": 0.96,
+      "aucRatio": 1.17,
+      "meal": "breakfast of about 510 kcal (10 mg tablet, 12 healthy Japanese adults, study TS142-304)",
+      "citation": "PMDA review report (審査報告書), Vorzzz (ボルズィ錠) 2.5/5/10 mg, Taisho, 2025, Table 22; https://www.pmda.go.jp/drugs/2025/P20250902004/400059000_30700AMX00199_A100_1.pdf",
+      "notes": "Median tmax 0.50 h [0.50-3.00] fasted vs 1.50 h [0.50-2.00] fed. Fed/fasted GMR Cmax 0.96 [0.76, 1.21], AUC0-inf 1.17 [1.05, 1.31]. Review: 「ボルノレキサントの C max は食事摂取により大きな変化は認められなかったが、絶食下投与時と比較して、食後でボルノレキサントの AUC 0-∞は増加し、tmax は遅延した。」 The meal is lighter than the FDA high-fat standard the other rows use."
     }
   ]
 }

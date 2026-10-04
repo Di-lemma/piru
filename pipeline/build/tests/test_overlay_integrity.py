@@ -62,7 +62,9 @@ _KNOWN_CROSS_CATEGORY_DOSE = {
     frozenset({"Diphenhydramine", "Hydroxyzine"}),
     frozenset({"Epitalon", "THCP"}),
     frozenset({"Ketotifen", "Nabilone"}),
-    frozenset({"Lemborexant", "Selegiline"}),
+    # Lemborexant and Vornorexant genuinely share a label ladder (2.5 reduced / 5 standard /
+    # 10 max); Selegiline is the suspected clone here.
+    frozenset({"Lemborexant", "Selegiline", "Vornorexant"}),
     frozenset({"Metoprolol", "Topiramate"}),
 }
 _KNOWN_CROSS_CATEGORY_DURATION = {

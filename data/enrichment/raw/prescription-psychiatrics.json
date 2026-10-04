@@ -3322,6 +3322,76 @@
     ]
   },
   {
+    "name": "Vornorexant",
+    "aliases_added": [],
+    "iupac_name": null,
+    "smiles": null,
+    "inchikey": null,
+    "cas": null,
+    "pubchem_cid": null,
+    "pharmacology": {
+      "primary_targets": [],
+      "binding": [],
+      "biased_agonism": [],
+      "receptor_oligomerisation": [],
+      "downstream_signalling": null,
+      "neuroimaging": []
+    },
+    "human_pk": {
+      "routes": [
+        {
+          "route": "oral",
+          "bioavailability_pct": null,
+          "cmax_ng_per_ml": 289,
+          "tmax_min": 45,
+          "auc_0_inf_ng_h_per_ml": 1010,
+          "half_life_min": 118,
+          "vd_l_per_kg": null,
+          "clearance_ml_per_min_per_kg": null,
+          "protein_binding_pct": 95,
+          "dose_in_study_mg": 10,
+          "subject_n": null,
+          "subject_demographics": "healthy Japanese adults, single fasted dose (Kambe 2023 phase 1, PMID 37563858, as tabulated in the Taisho review Table 2); tmax median, others mean. Protein binding 94.5-96.3% (PMDA review)",
+          "reference": "doi:10.1093/ijnp/pyaf077"
+        }
+      ],
+      "concentration_effect": []
+    },
+    "drug_interactions_pk": [],
+    "pharmacogenetics": {
+      "relevant_genes": [],
+      "phenotype_effects": null,
+      "reference": null
+    },
+    "tolerance_and_dependence": {
+      "receptor_downregulation_half_time": null,
+      "cross_tolerance": [],
+      "withdrawal_syndrome": null,
+      "reference": null
+    },
+    "off_targets": [],
+    "demographic_differences": {
+      "sex": null,
+      "age": null,
+      "weight": null,
+      "renal_or_hepatic": null
+    },
+    "tags_to_add": [],
+    "tags_to_remove": [],
+    "confidence": "high",
+    "metabolism": [
+      {
+        "enzyme": "CYP3A4",
+        "fraction_of_clearance_pct": null,
+        "metabolite_name": "M3 (oxazinane dehydrogenation) and M1 (methyl hydroxylation)",
+        "metabolite_active": true,
+        "metabolite_potency_vs_parent_pct": null,
+        "reference": "https://www.pmda.go.jp/drugs/2025/P20250902004/400059000_30700AMX00199_A100_1.pdf",
+        "notes": "\"ボルノレキサント及び M3 のいずれも、CYP3A4 によって 90%以上が代謝物へ変換されることが示された\" (PMDA review). Itraconazole 200 mg raised vornorexant Cmax 2.24x and AUC0-inf 12.2x, so strong CYP3A inhibitors are contraindicated; moderate inhibitors take 2.5 mg (PBPK-predicted AUC ratio 2.67-4.00). \"M1 and M3 are active metabolites with weaker potency against OX1 and OX2 receptors\" (Konno 2024, doi:10.1002/prp2.1183); unchanged drug is primarily responsible for the effect (Chino 2025, doi:10.1093/ijnp/pyaf077)."
+      }
+    ]
+  },
+  {
     "name": "Flibanserin",
     "aliases_added": [],
     "iupac_name": null,

@@ -1,0 +1,79 @@
+{
+  "name": "Vornorexant",
+  "aliases": [
+    "Vorzzz",
+    "TS-142",
+    "ORN0829"
+  ],
+  "category": "OrexinAntagonist",
+  "defaultRoute": "oral",
+  "routes": [
+    {
+      "route": "oral",
+      "unit": "mg",
+      "doses": {
+        "threshold": 2.5,
+        "light": {
+          "lower": 5,
+          "upper": 5
+        },
+        "common": {
+          "lower": 5,
+          "upper": 10
+        },
+        "strong": {
+          "lower": 10,
+          "upper": 10
+        },
+        "heavy": 10
+      },
+      "duration": {
+        "onset": {
+          "min": 10,
+          "max": 30
+        },
+        "peak": {
+          "min": 60,
+          "max": 180
+        },
+        "offset": {
+          "min": 240,
+          "max": 330
+        },
+        "total": {
+          "min": 360,
+          "max": 480
+        }
+      }
+    }
+  ],
+  "effects": [
+    "Dual orexin receptor antagonist — about a 2-hour half-life, the shortest of the approved DORAs",
+    "Sleep onset and maintenance; persistent sleep began 8–12 min after lights-out in the phase 2 sleep-lab study",
+    "No next-morning impairment at 8–9 h in the driving study (10–20 mg) or in adults over 65 (5–10 mg)",
+    "Somnolence, nasopharyngitis, headache; sleep paralysis and hypnagogic hallucinations in about 1% over 52 weeks",
+    "Cleared mostly by CYP3A4: itraconazole raised exposure 12-fold, so strong CYP3A inhibitors are contraindicated",
+    "Approved in Japan (Vorzzz) in August 2025"
+  ],
+  "halfLifeMinutes": 120,
+  "halfLifeSource": "doi:10.1093/ijnp/pyaf077",
+  "inchikey": "AEZZJXJIJFSUEM-QFIPXVFZSA-N",
+  "smiles": "CC1=CC(=C(C=C1)N2N=CC=N2)C(=O)N3CCCO[C@H]3CN4C=CC(=N4)C5=NC=C(C=C5)F",
+  "formula": "C23H22FN7O2",
+  "pubchemCID": 137419776,
+  "sources": [
+    "https://www.pmda.go.jp/drugs/2025/P20250902004/400059000_30700AMX00199_A100_1.pdf",
+    "https://doi.org/10.1093/ijnp/pyaf077",
+    "https://doi.org/10.1007/s00213-022-06089-6",
+    "https://doi.org/10.1093/sleep/zsaf291",
+    "https://doi.org/10.1111/pcn.13888",
+    "https://doi.org/10.1007/s00213-026-07095-8",
+    "https://pubchem.ncbi.nlm.nih.gov/compound/137419776"
+  ],
+  "tags": [
+    "sedative-hypnotic",
+    "orexin-antagonist",
+    "DORA",
+    "prescription-only"
+  ]
+}

@@ -838,11 +838,23 @@
   "title": "Drug-drug interactions between psychiatric medications and MDMA or psilocybin: a systematic review",
   "year": 2022
  },
+ "doi:10.1007/s00213-022-06089-6": {
+  "journal": "Psychopharmacology",
+  "subjects": [],
+  "title": "Effects of TS-142, a novel dual orexin receptor antagonist, on sleep in patients with insomnia: a randomized, double-blind, placebo-controlled phase 2 study",
+  "year": "2022"
+ },
  "doi:10.1007/s00213-022-06279-2": {
   "journal": "Psychopharmacology",
   "subjects": [],
   "title": "Use of the head-twitch response to investigate the structure-activity relationships of 4-thio-substituted 2,5-dimethoxyphenylalkylamines",
   "year": "2023"
+ },
+ "doi:10.1007/s00213-026-07095-8": {
+  "journal": "Psychopharmacology",
+  "subjects": [],
+  "title": "Comparison of next-morning residual effects by bedtime administration of vornorexant and zopiclone in healthy older participants: postural stability, neuropsychological functions, and subjective sleepiness in a randomized clinical study",
+  "year": "2026"
  },
  "doi:10.1007/s00216-008-2486-x": {
   "journal": "Analytical and Bioanalytical Chemistry",
@@ -3583,6 +3595,12 @@
   "title": "Small-molecule TrkB receptor agonists improve motor function and extend survival in a mouse model of Huntington's disease",
   "year": 2013
  },
+ "doi:10.1093/ijnp/pyaf077": {
+  "journal": "The international journal of neuropsychopharmacology",
+  "subjects": [],
+  "title": "Current and novel dual orexin receptor antagonists for the treatment of insomnia: the emergence of vornorexant",
+  "year": "2025"
+ },
  "doi:10.1093/ijnp/pyv072": {
   "journal": "International Journal of Neuropsychopharmacology",
   "subjects": [],
@@ -3721,6 +3739,12 @@
   "subjects": [],
   "title": "Structural Brain Imaging Evidence for Multiple Pathological Processes at Different Stages of Brain Development in Schizophrenia",
   "year": 2005
+ },
+ "doi:10.1093/sleep/zsaf291": {
+  "journal": "Sleep",
+  "subjects": [],
+  "title": "Efficacy and safety of vornorexant in Japanese patients with insomnia: a randomized, placebo-controlled phase 3 pivotal study",
+  "year": "2026"
  },
  "doi:10.1097/00000539-199601000-00031": {
   "journal": "Anesthesia and analgesia",
@@ -4516,6 +4540,12 @@
   "subjects": [],
   "title": "The clinical pharmacology and potential therapeutic applications of 5\u2010methoxy\u2010N,N\u2010dimethyltryptamine (5\u2010MeO\u2010DMT)",
   "year": 2022
+ },
+ "doi:10.1111/pcn.13888": {
+  "journal": "Psychiatry and clinical neurosciences",
+  "subjects": [],
+  "title": "Driving performance in the morning after bedtime vornorexant administration: A randomized clinical trial using a driving simulator",
+  "year": "2025"
  },
  "doi:10.1113/jphysiol.2003.053447": {
   "journal": "The Journal of physiology",
